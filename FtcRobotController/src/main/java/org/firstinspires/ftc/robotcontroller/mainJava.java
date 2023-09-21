@@ -4,10 +4,13 @@ import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.ColorSensor;
+import com.qualcomm.robotcore.hardware.DcMotorSimple;
 
 @TeleOp(name="mainCode")
 public class mainJava extends OpMode
 {
+    ColorSensor colorSensor;
 
     DcMotor frontLeft;
     DcMotor frontRight;
@@ -27,6 +30,12 @@ public class mainJava extends OpMode
         frontRight = hardwareMap.dcMotor.get("frontRight");
         backLeft = hardwareMap.dcMotor.get("backLeft");
         backRight = hardwareMap.dcMotor.get("backRight");
+        colorSensor = hardwareMap.colorSensor.get("ColorSensor");
+
+        frontLeft.setDirection(DcMotorSimple.Direction.REVERSE);
+        frontRight.setDirection(DcMotorSimple.Direction.REVERSE);
+        backLeft.setDirection(DcMotorSimple.Direction.FORWARD);
+        backRight.setDirection(DcMotorSimple.Direction.FORWARD);
     }
 
     @Override
@@ -58,8 +67,24 @@ public class mainJava extends OpMode
 
         frontLeft.setPower((speed - turn - strafe) * strength);
         frontRight.setPower((speed + turn + strafe) * strength);
-        backLeft.setPower((0 - speed + turn - strafe) * strength);
-        backRight.setPower((0 - speed - turn + strafe) * strength);
+        backLeft.setPower((speed + turn - strafe) * strength);
+        backRight.setPower((speed - turn + strafe) * strength);
+
+        if(gamepad1.left_bumper)
+        {
+            while(colorSensor.red() < 500)
+            {
+                frontLeft.setPower(0.125);
+                frontRight.setPower(0.125);
+                backLeft.setPower(0.125);
+                backRight.setPower(0.125);
+            }
+        }
+
+        telemetry.addData("a", colorSensor.alpha());
+        telemetry.addData("r", colorSensor.red());
+        telemetry.addData("g", colorSensor.green());
+        telemetry.addData("b", colorSensor.blue());
     }
 
 }
