@@ -33,8 +33,8 @@ public class mainJava extends OpMode
         colorSensor = hardwareMap.colorSensor.get("ColorSensor");
 
         frontLeft.setDirection(DcMotor.Direction.REVERSE);
-        frontRight.setDirection(DcMotor.Direction.FORWARD);
-        backLeft.setDirection(DcMotor.Direction.REVERSE);
+        frontRight.setDirection(DcMotor.Direction.REVERSE);
+        backLeft.setDirection(DcMotor.Direction.FORWARD);
         backRight.setDirection(DcMotor.Direction.FORWARD);
     }
 
@@ -72,7 +72,7 @@ public class mainJava extends OpMode
 
         if(gamepad1.left_bumper)
         {
-            while(colorSensor.red() < 500)
+            while(colorSensor.blue() < 900)
             {
                 frontLeft.setPower(0.125);
                 frontRight.setPower(0.125);
