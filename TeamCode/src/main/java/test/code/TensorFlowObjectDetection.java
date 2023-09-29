@@ -53,8 +53,8 @@ import java.util.List;
 public class TensorFlowObjectDetection extends LinearOpMode {
 
     private static final boolean USE_WEBCAM = true;  // true for webcam, false for phone camera
-    private static final String TFOD_MODEL_ASSET = "/FIRST/tflitemodels/Skystone.tflite";
-    private static final String LABELS[] = {"Stone", "Skystone"};
+    //private static final String TFOD_MODEL_ASSET = "/FIRST/tflitemodels/Skystone.tflite";
+    //private static final String LABELS[] = {"Stone", "Skystone"};
 
     /**
      * The variable to store our instance of the TensorFlow Object Detection processor.
@@ -112,8 +112,8 @@ public class TensorFlowObjectDetection extends LinearOpMode {
 
             // Use setModelAssetName() if the TF Model is built in as an asset.
             //.setModelFileName(TFOD_MODEL_ASSET) if you have downloaded a custom team model to the Robot Controller..setModelFileName(TFOD_MODEL_ASSET)
-            .setModelFileName(TFOD_MODEL_ASSET)
-            .setModelLabels(LABELS)
+            //.setModelFileName(TFOD_MODEL_ASSET)
+            //.setModelLabels(LABELS)
             .setIsModelTensorFlow2(true)
             .setIsModelQuantized(true)
             .setModelInputSize(300)
