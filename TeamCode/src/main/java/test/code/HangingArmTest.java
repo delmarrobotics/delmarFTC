@@ -52,7 +52,7 @@ import com.qualcomm.robotcore.util.ElapsedTime;
  */
 
 @TeleOp(name="Test: Hanging Arm", group="Test")
-
+@SuppressWarnings("unused")
 public class HangingArmTest extends OpMode
 {
     // Name from robot configuration file on the driver station
@@ -128,7 +128,7 @@ public class HangingArmTest extends OpMode
         }
 
 
-        /*
+        /* noinspection
         if (gamepad1.x && ! servoUpOn){
                 hangingDeploy.setDirection(DcMotor.Direction.FORWARD);
                 hangingDeploy.setPower(1);
