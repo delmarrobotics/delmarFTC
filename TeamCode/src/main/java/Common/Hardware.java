@@ -94,6 +94,8 @@ public class Hardware {
      * All of the hardware devices are accessed via the hardware map, and initialized.
      */
     public void init(HardwareMap hardwareMap) {
+
+        // Define and initialize drive motors
         try {
             // Define and Initialize Motors (note: need to use reference to actual OpMode).
             leftDrive = hardwareMap.get(DcMotor.class, "left_drive");
@@ -121,6 +123,7 @@ public class Hardware {
             Log.e("zzz", e.getMessage());
         }
 
+        // Define and initialize the hanging arm hardware
         try {
             // Initial the hanging arm
             hangingServo = hardwareMap.get(CRServo.class, "hangingArmServo");
@@ -131,6 +134,14 @@ public class Hardware {
             Log.e("zzz", e.getMessage());
 
         }
+
+        // Define and initialize the pixel arm hardware
+
+        // Define and initialize pixel collector hardware
+
+        // Define and initial the Inertial measurement unit (imu)
+
+        // Define and initial the web camera
 
     }
 

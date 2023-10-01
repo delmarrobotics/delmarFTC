@@ -57,12 +57,13 @@ public class HangingArm
     }
 
     /**
-     * manually control the handing arm
+     * Manually control the handing arm
      */
     public void manualControl() {
 
         Gamepad gamepad = parent.gamepad1;
 
+        // Raise the hanging arm from its stored position
         if (gamepad.dpad_right) {
             robot.hangingArmOut();
             while (gamepad.dpad_right){
@@ -71,6 +72,7 @@ public class HangingArm
             robot.handingArmStop();
             parent.telemetry.addData("Status", "Hanging Arm Out");
         }
+        // Lower the hanging arm to its stored position
         else if (gamepad.dpad_left) {
             parent.telemetry.addData("Status", "Hanging Arm IN");
         }
@@ -85,7 +87,7 @@ public class HangingArm
     }
 
     /**
-     * Automatically raise the hanging arm
+     * Automatically raise the hanging arm to its fully deployed position
      */
     public void armUp(){
 
