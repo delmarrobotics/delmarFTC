@@ -54,12 +54,13 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 
 @TeleOp(name="Test: Hanging Arm", group="Test")
 
+@SuppressWarnings("unused")
 public class HangingArmTest extends OpMode
 {
     // Name from robot configuration file on the driver station
     final String HANGING_ARM_SERVO = "hangingArmServo";
     final String HANGING_ARM_MOTOR = "hangingArmMotor";
-    final String HANDING_ARM_DEPLOY_UP = "hangingArmDeployUp";
+    final String HANDING_ARM_DEPLOY_UP = "hangingArmUp";
 
     final double ARM_EXTEND_SPEED = 1;          // speed to run the servo the deploys the arm
     final double ARM_DEPLOY_POWER = 1;          // speed to run the motor that extends to arm
