@@ -37,6 +37,7 @@ import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.TouchSensor;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
+
 /*
  * This file contains an example of an iterative (Non-Linear) "OpMode".
  * An OpMode is a 'program' that runs in either the autonomous or the teleop period of an FTC match.
@@ -53,12 +54,13 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 
 @TeleOp(name="Test: Hanging Arm", group="Test")
 
+@SuppressWarnings("unused")
 public class HangingArmTest extends OpMode
 {
     // Name from robot configuration file on the driver station
     final String HANGING_ARM_SERVO = "hangingArmServo";
     final String HANGING_ARM_MOTOR = "hangingArmMotor";
-    final String HANDING_ARM_DEPLOY_UP = "hangingArmDeployUp";
+    final String HANDING_ARM_DEPLOY_UP = "hangingArmUp";
 
     final double ARM_EXTEND_SPEED = 1;          // speed to run the servo the deploys the arm
     final double ARM_DEPLOY_POWER = 1;          // speed to run the motor that extends to arm

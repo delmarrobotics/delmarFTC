@@ -83,7 +83,7 @@ import java.util.concurrent.TimeUnit;
  */
 
 @TeleOp(name="Drive Test", group = "Test")
-//@Disabled
+@Disabled
 @SuppressLint("DefaultLocale")
 public class DriveTest extends LinearOpMode
 {
