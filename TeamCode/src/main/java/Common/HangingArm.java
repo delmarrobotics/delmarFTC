@@ -30,7 +30,9 @@
 package common;
 
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
+import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.Gamepad;
+import com.qualcomm.robotcore.util.ElapsedTime;
 
 import common.Hardware;
 
@@ -41,8 +43,13 @@ import common.Hardware;
 
 public class HangingArm
 {
+    static final double     HANGING_ARM_COUNTS_PER_MOTOR_REV    = 384.5 ;  //  GoBilda 5202 435 RPM Motor Encoder
+
+
     public OpMode parent;
-    private Hardware robot;
+    private final Hardware robot;
+
+    private final ElapsedTime runtime = new ElapsedTime();
 
     //constructor
     public HangingArm(OpMode parent, Hardware robot) {
@@ -54,7 +61,58 @@ public class HangingArm
 
         // Tell the driver that initialization is complete.
         parent.telemetry.addData("Status", "Hanging Arm Initialized");
+
+        calibrateArm(.2, 5, 3000);
     }
+
+
+    /**
+     * Calibrate the telescoping part of the arm
+     *
+     *  @param speed        Motor power (-1.0 to 1.0) >0 is up
+     *  @param revolutions  Number of motor revolutions
+     *  @param timeout      Maximum time to run in millisecond
+     */
+    public void calibrateArm(double speed, int revolutions, double timeout) {
+
+        int targetPosition;
+        DcMotor hangingMotor = robot.hangingMotor;
+
+        robot.hangingMotor.setDirection(DcMotor.Direction.FORWARD);
+        robot.hangingMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        robot.hangingMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+
+        // Determine new target position, and pass to motor controller
+        targetPosition = (int)(revolutions * HANGING_ARM_COUNTS_PER_MOTOR_REV);
+        robot.hangingMotor.setTargetPosition(targetPosition);
+
+        robot.hangingMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+
+        // Reset the timeout time and start motion.
+        runtime.reset();
+        robot.hangingMotor.setPower(Math.abs(speed));
+
+        // Keep looping while there is time left, and the motors are running.
+        //while (robot.hangingMotor.isBusy() ) {
+        while (true ) {
+            // Check if timed out
+            if (runtime.milliseconds() >= timeout){
+                parent.telemetry.addData("Stopped", "Timed out after %6.0f millisecond", timeout);
+                parent.telemetry.addData("Currently at",  " at %7d", robot.hangingMotor.getCurrentPosition());
+                break;
+            }
+
+            // Display it for the driver.
+            parent.telemetry.addData("Running to",  " %7d", targetPosition);
+            parent.telemetry.addData("Currently at",  " at %7d", robot.hangingMotor.getCurrentPosition());
+            parent.telemetry.update();
+        }
+
+        // Stop the motion if we timed out
+        robot.hangingMotor.setPower(0);
+        robot.hangingMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+    }
+
 
     /**
      * Manually control the handing arm
@@ -65,24 +123,29 @@ public class HangingArm
 
         // Raise the hanging arm from its stored position
         if (gamepad.dpad_right) {
-            robot.hangingArmOut();
-            while (gamepad.dpad_right){
-                idle();
-            }
-            robot.handingArmStop();
             parent.telemetry.addData("Status", "Hanging Arm Out");
+            robot.hangingArmOut();
+            while (gamepad.dpad_right){ idle(); }
+            robot.handingArmStop();
         }
         // Lower the hanging arm to its stored position
         else if (gamepad.dpad_left) {
             parent.telemetry.addData("Status", "Hanging Arm IN");
+            robot.hangingArmIn();
+            while (gamepad.dpad_left){ idle(); }
+            robot.handingArmStop();
         }
         else if (gamepad.dpad_up) {
             parent.telemetry.addData("Status", "Hanging Arm Up");
-
+            robot.hangingArmUp();
+            while (gamepad.dpad_up){ idle(); }
+            robot.handingArmStop();
         }
         else if (gamepad.dpad_down) {
+            robot.hangingArmDown();
             parent.telemetry.addData("Status", "Hanging Arm Down");
-
+            while (gamepad.dpad_down){ idle(); }
+            robot.handingArmStop();
         }
     }
 
