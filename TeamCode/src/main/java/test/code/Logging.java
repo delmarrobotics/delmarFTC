@@ -11,6 +11,7 @@
 
 package test.code;
 
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.hardware.HardwareDevice;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
@@ -34,6 +35,7 @@ import java.util.logging.Logger;
  * Custom logging class. Configures log system (not console) to write to a disk file.
  * Customize the setup() method for the controller phone you are using.
  */
+@Disabled
 public class Logging
 {
     /**
