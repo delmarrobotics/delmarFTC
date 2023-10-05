@@ -29,6 +29,7 @@
 
 package common;
 
+import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.Gamepad;
@@ -40,7 +41,7 @@ import common.Hardware;
  * This file contains the code to control the the arm of the robot that lifts the robot off
  * the ground
  */
-
+@Autonomous(name="dHanging Arm", group="Main")
 public class HangingArm
 {
     static final double     HANGING_ARM_COUNTS_PER_MOTOR_REV    = 384.5 ;  //  GoBilda 5202 435 RPM Motor Encoder

@@ -14,7 +14,6 @@ import common.Robot;
  */
 
 @TeleOp(name="Main TeleOp", group="Main")
-@Disabled
 public class MainTeleOp extends LinearOpMode {
 
     // Declare OpMode members.

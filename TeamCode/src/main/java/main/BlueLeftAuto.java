@@ -14,8 +14,7 @@ import common.Robot;
  *
  */
 
-@TeleOp(name="Blue Left Start", group="Main")  // ToDo change to @Autonomous when testing is complete
-@Disabled
+@Autonomous(name="Blue Left Start", group="Main")  // ToDo change to @Autonomous when testing is complete
 public class BlueLeftAuto extends LinearOpMode {
 
     // Declare OpMode members.

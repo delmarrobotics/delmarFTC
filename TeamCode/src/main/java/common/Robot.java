@@ -73,7 +73,7 @@ public class Robot {
      * @param  y   Positive is strafe left
      * @param  yaw Positive Yaw is counter-clockwise
      */
-    public void moveRobot ( double x, double y, double yaw){
+    public void moveRobot (double x, double y, double yaw){
         double leftFrontPower    =  x -y -yaw;
         double rightFrontPower   =  x +y +yaw;
         double leftBackPower     =  x +y -yaw;
