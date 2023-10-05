@@ -57,6 +57,9 @@ public class Robot {
     private void initDriveTrain(){
         try {
             leftFrontDrive = hardwareMap.get(DcMotor.class, Config.LEFT_FRONT);
+            rightFrontDrive = hardwareMap.get(DcMotor.class, Config.RIGHT_FRONT);
+            leftBackDrive = hardwareMap.get(DcMotor.class, Config.LEFT_BACK);
+            rightBackDrive = hardwareMap.get(DcMotor.class, Config.RIGHT_BACK);
 
         } catch (Exception e){
             Logger.error(e, "Hardware not found");
@@ -71,7 +74,28 @@ public class Robot {
      * @param  yaw Positive Yaw is counter-clockwise
      */
     public void moveRobot ( double x, double y, double yaw){
-        // ToDo Copy this method form RobotAutoDriveToAprilTagOmni
+        double leftFrontPower    =  x -y -yaw;
+        double rightFrontPower   =  x +y +yaw;
+        double leftBackPower     =  x +y -yaw;
+        double rightBackPower    =  x -y +yaw;
+
+        // Normalize wheel powers to be less than 1.0
+        double max = Math.max(Math.abs(leftFrontPower), Math.abs(rightFrontPower));
+        max = Math.max(max, Math.abs(leftBackPower));
+        max = Math.max(max, Math.abs(rightBackPower));
+
+        if (max > 1.0) {
+            leftFrontPower /= max;
+            rightFrontPower /= max;
+            leftBackPower /= max;
+            rightBackPower /= max;
+        }
+
+        // Send powers to the wheels.
+        leftFrontDrive.setPower(leftFrontPower);
+        rightFrontDrive.setPower(rightFrontPower);
+        leftBackDrive.setPower(leftBackPower);
+        rightBackDrive.setPower(rightBackPower);
     }
 
     /**

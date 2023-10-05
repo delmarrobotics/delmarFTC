@@ -9,7 +9,7 @@ public class Config {
     public static final String LEFT_FRONT       = "leftFront";
     public static final String RIGHT_FRONT      = "rightFront";
     public static final String LEFT_BACK        = "leftBack";
-    public static final String RIGHT_BACH       = "rightBack";
+    public static final String RIGHT_BACK       = "rightBack";
 
     public static final String COLOR_SENSOR     = "colorSensor";
     public static final String WEBCAM           = "Webcam 1";
