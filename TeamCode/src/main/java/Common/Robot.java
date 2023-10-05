@@ -1,0 +1,121 @@
+package common;
+
+/*
+ * This file defines a Java Class that performs all the setup and configuration for the robot's hardware (motors and sensors).
+ * It assumes three motors (left_drive, right_drive and arm) and two servos (left_hand and right_hand)
+ *
+ * This one file/class can be used by ALL of your OpModes without having to cut & paste the code each time.
+ *
+ * Where possible, the actual hardware objects are "abstracted" (or hidden) so the OpMode code just makes calls into the class,
+ * rather than accessing the internal hardware directly. This is why the objects are declared "private".
+ *
+ */
+
+import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
+import com.qualcomm.robotcore.hardware.ColorSensor;
+import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.HardwareMap;
+import com.qualcomm.robotcore.hardware.IMU;
+
+public class Robot {
+    // Define Motor and Servo objects  (Make them private so they can't be accessed externally)
+    public DcMotor leftFrontDrive   = null;  //  Used to control the left front drive wheel
+    public DcMotor rightFrontDrive  = null;  //  Used to control the right front drive wheel
+    public DcMotor leftBackDrive    = null;  //  Used to control the left back drive wheel
+    public DcMotor rightBackDrive   = null;  //  Used to control the right back drive wheel
+
+    public ColorSensor colorSensor = null;
+    public IMU imu = null;
+
+
+    /* Declare OpMode members. */
+    private HardwareMap hardwareMap;
+    public LinearOpMode opMode;
+
+    // Define a constructor that allows the OpMode to pass a reference to itself.
+    public Robot(LinearOpMode opMode){
+        this.opMode = opMode;
+        hardwareMap = opMode.hardwareMap;
+    }
+
+    /**
+     * Initialize the Robot
+     */
+    public void init() {
+
+        initDriveTrain();
+
+        // ToDo Check the the configuration file has the correct color sensor hardware device selected.
+        colorSensor = hardwareMap.get(ColorSensor.class, Config.COLOR_SENSOR);
+
+        imu = hardwareMap.get(IMU.class, Config.IMU);
+    }
+
+    /**
+     * Initialize the drive train motors.
+     */
+    private void initDriveTrain(){
+        try {
+            leftFrontDrive = hardwareMap.get(DcMotor.class, Config.LEFT_FRONT);
+
+        } catch (Exception e){
+            Logger.error(e, "Hardware not found");
+        }
+    }
+
+    /**
+     * Move robot according to desired axes motions
+     *
+     * @param  x   Positive is forward
+     * @param  y   Positive is strafe left
+     * @param  yaw Positive Yaw is counter-clockwise
+     */
+    public void moveRobot ( double x, double y, double yaw){
+        // ToDo Copy this method form RobotAutoDriveToAprilTagOmni
+    }
+
+    /**
+     *  Move the robot forward or backward.
+     *
+     * @param inches distance to move in inches, positive for forward, negative for backward
+     */
+    public void moveByDistance(double inches) {
+        // ToDo Use RobotAutoDriveByEncoder_Linear.java as an example to create this method
+    }
+
+    /**
+     * Move the robot until the specified color is detected.
+     *
+     * @param hue the color to detect
+     */
+    public void moveToColor(double hue){
+
+    }
+
+    /**
+     * Rotate the robot to the specified orientation. The robot is at orientation 0 after initialization.
+     * Orientation range is -180 (counter clockwise) to 180 (clockwise).
+     *
+     * @param orientation position -180 to 180
+     */
+    public void setOrientation(double orientation){
+        // ToDo Use SensorIMUOrthogonal.java as an example to create this method
+    }
+
+    /**
+     *  Return the current orientation of the robot.
+     * @return orientation in a range of -180 to 180
+     */
+    public double getOrientation(){
+        double orientation = 0;
+
+        return orientation;
+    }
+
+    /**
+     * Drop the preload purple pixel at the current location.
+     */
+    public void dropPixel(){
+
+    }
+}
