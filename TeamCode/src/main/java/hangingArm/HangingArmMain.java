@@ -29,6 +29,7 @@
 
 package hangingArm;
 
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.util.ElapsedTime;
@@ -40,6 +41,7 @@ import common.Hardware;
  * Demonstrates an empty iterative OpMode
  */
 @TeleOp(name="Hanging Arm Main", group="Test")
+@Disabled
 @SuppressWarnings("unused")
 public class HangingArmMain extends OpMode {
 
