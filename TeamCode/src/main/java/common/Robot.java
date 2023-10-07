@@ -27,6 +27,7 @@ public class Robot {
     public ColorSensor colorSensor = null;
     public IMU imu = null;
 
+    public HangingArm hangingArm = null;
 
     /* Declare OpMode members. */
     private HardwareMap hardwareMap;
@@ -36,6 +37,8 @@ public class Robot {
     public Robot(LinearOpMode opMode){
         this.opMode = opMode;
         hardwareMap = opMode.hardwareMap;
+        hangingArm = new HangingArm(opMode);
+
     }
 
     /**
@@ -64,6 +67,8 @@ public class Robot {
         } catch (Exception e){
             Logger.error(e, "Hardware not found");
         }
+
+        // ToDo Set motor directions
     }
 
     /**

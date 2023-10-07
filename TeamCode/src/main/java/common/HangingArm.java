@@ -29,41 +29,65 @@
 
 package common;
 
-import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
-import com.qualcomm.robotcore.eventloop.opmode.OpMode;
-import com.qualcomm.robotcore.hardware.DcMotor;
-import com.qualcomm.robotcore.hardware.Gamepad;
-import com.qualcomm.robotcore.util.ElapsedTime;
+import android.util.Log;
 
-import common.Hardware;
+import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
+import com.qualcomm.robotcore.eventloop.opmode.OpMode;
+import com.qualcomm.robotcore.hardware.CRServo;
+import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.DcMotorSimple;
+import com.qualcomm.robotcore.hardware.Gamepad;
+import com.qualcomm.robotcore.hardware.HardwareMap;
+import com.qualcomm.robotcore.hardware.TouchSensor;
+import com.qualcomm.robotcore.util.ElapsedTime;
 
 /*
  * This file contains the code to control the the arm of the robot that lifts the robot off
  * the ground
  */
-@Autonomous(name="dHanging Arm", group="Main")
 public class HangingArm
 {
+    // Define Drive constants.  Make them public so they CAN be used by the calling OpMode
+    static final double     HANGING_SERVO_POWER  = 1;    // speed to run the servo the deploys the arm
+    static final double     HANDING_MOTOR_POWER  = 1;    // speed to run the motor that extends to arm
     static final double     HANGING_ARM_COUNTS_PER_MOTOR_REV    = 384.5 ;  //  GoBilda 5202 435 RPM Motor Encoder
 
-
-    public OpMode parent;
-    private final Hardware robot;
+    public LinearOpMode     opMode;
+    public CRServo          hangingServo = null;
+    public DcMotor          hangingMotor = null;
+    public TouchSensor      hangingTouchSensor = null;
 
     private final ElapsedTime runtime = new ElapsedTime();
 
     //constructor
-    public HangingArm(OpMode parent, Hardware robot) {
-        this.parent = parent;
-        this.robot = robot;
+    public HangingArm(LinearOpMode opMode) {
+        this.opMode = opMode;
     }
+/* ToDo add back in
 
+    public HangingArm(LinearOpMode opMode){
+        this.opMode = opMode;
+    }
+*/
+
+    /**
+     * Initialize the hanging arm hardware
+     */
     public void init(){
 
-        // Tell the driver that initialization is complete.
-        parent.telemetry.addData("Status", "Hanging Arm Initialized");
+        HardwareMap hardwareMap = opMode.hardwareMap;
 
-        calibrateArm(.2, 5, 3000);
+        try {
+            // Initial the hanging arm
+            hangingServo = hardwareMap.get(CRServo.class, "hangingArmServo");
+            hangingMotor = hardwareMap.get(DcMotor.class, "hangingArmMotor");
+            hangingTouchSensor = hardwareMap.get(TouchSensor.class, "hangingArmUp");
+        } catch (Exception e){
+            Logger.error(e, "Hanging hardware not found");
+        }
+
+        // Tell the driver that initialization is complete.
+        opMode.telemetry.addData("Status", "Hanging Arm Initialized");
     }
 
 
@@ -77,78 +101,118 @@ public class HangingArm
     public void calibrateArm(double speed, int revolutions, double timeout) {
 
         int targetPosition;
-        DcMotor hangingMotor = robot.hangingMotor;
 
-        robot.hangingMotor.setDirection(DcMotor.Direction.FORWARD);
-        robot.hangingMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        robot.hangingMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        hangingMotor.setDirection(DcMotor.Direction.FORWARD);
+        hangingMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        hangingMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
         // Determine new target position, and pass to motor controller
         targetPosition = (int)(revolutions * HANGING_ARM_COUNTS_PER_MOTOR_REV);
-        robot.hangingMotor.setTargetPosition(targetPosition);
+        hangingMotor.setTargetPosition(targetPosition);
 
-        robot.hangingMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        hangingMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
 
         // Reset the timeout time and start motion.
         runtime.reset();
-        robot.hangingMotor.setPower(Math.abs(speed));
+        hangingMotor.setPower(Math.abs(speed));
 
         // Keep looping while there is time left, and the motors are running.
-        //while (robot.hangingMotor.isBusy() ) {
+        //while (hangingMotor.isBusy() ) {
         while (true ) {
             // Check if timed out
             if (runtime.milliseconds() >= timeout){
-                parent.telemetry.addData("Stopped", "Timed out after %6.0f millisecond", timeout);
-                parent.telemetry.addData("Currently at",  " at %7d", robot.hangingMotor.getCurrentPosition());
+                opMode.telemetry.addData("Stopped", "Timed out after %6.0f millisecond", timeout);
+                opMode.telemetry.addData("Currently at",  " at %7d", hangingMotor.getCurrentPosition());
                 break;
             }
 
             // Display it for the driver.
-            parent.telemetry.addData("Running to",  " %7d", targetPosition);
-            parent.telemetry.addData("Currently at",  " at %7d", robot.hangingMotor.getCurrentPosition());
-            parent.telemetry.update();
+            opMode.telemetry.addData("Running to",  " %7d", targetPosition);
+            opMode.telemetry.addData("Currently at",  " at %7d", hangingMotor.getCurrentPosition());
+            opMode.telemetry.update();
         }
 
-        // Stop the motion if we timed out
-        robot.hangingMotor.setPower(0);
-        robot.hangingMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        // Stop the motion if we timed outls
+        hangingMotor.setPower(0);
+        hangingMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
     }
-
 
     /**
      * Manually control the handing arm
      */
     public void manualControl() {
 
-        Gamepad gamepad = parent.gamepad1;
+        Gamepad gamepad = opMode.gamepad1;
 
         // Raise the hanging arm from its stored position
         if (gamepad.dpad_right) {
-            parent.telemetry.addData("Status", "Hanging Arm Out");
-            robot.hangingArmOut();
-            while (gamepad.dpad_right){ idle(); }
-            robot.handingArmStop();
+            Logger.message("Hanging Arm Out");
+            hangingServo.setDirection(DcMotor.Direction.FORWARD);
+            hangingServo.setPower(HANGING_SERVO_POWER);
+            while (opMode.gamepad1.dpad_right) {
+                opMode.telemetry.addData("Status", "Hanging Arm Out");
+                opMode.telemetry.update();
+            }
+            hangingServo.setPower(0);
         }
         // Lower the hanging arm to its stored position
         else if (gamepad.dpad_left) {
-            parent.telemetry.addData("Status", "Hanging Arm IN");
-            robot.hangingArmIn();
-            while (gamepad.dpad_left){ idle(); }
-            robot.handingArmStop();
+            Logger.message("Hanging Arm In");
+            hangingServo.setDirection(DcMotor.Direction.REVERSE);
+            hangingServo.setPower(HANGING_SERVO_POWER);
+            while (gamepad.dpad_left){
+                opMode.telemetry.addData("Status", "Hanging Arm IN");
+                opMode.telemetry.update();
+            }
+            hangingServo.setPower(0);
         }
+        // Extend the telescoping part the the arm
         else if (gamepad.dpad_up) {
-            parent.telemetry.addData("Status", "Hanging Arm Up");
-            robot.hangingArmUp();
-            while (gamepad.dpad_up){ idle(); }
-            robot.handingArmStop();
+            Logger.message("Hanging Arm Up");
+            hangingMotor.setDirection(DcMotorSimple.Direction.FORWARD);
+            hangingMotor.setPower(HANDING_MOTOR_POWER);
+            while (gamepad.dpad_up){
+                opMode.telemetry.addData("Status", "Hanging Arm Up");
+                opMode.telemetry.update();
+            }
+            hangingMotor.setPower(0);
         }
+        // Retract the telescoping part the the arm
         else if (gamepad.dpad_down) {
-            robot.hangingArmDown();
-            parent.telemetry.addData("Status", "Hanging Arm Down");
-            while (gamepad.dpad_down){ idle(); }
-            robot.handingArmStop();
+            Logger.message("Hanging Arm Down");
+            hangingMotor.setDirection(DcMotorSimple.Direction.REVERSE);
+            hangingMotor.setPower(HANDING_MOTOR_POWER);
+            while (gamepad.dpad_down){
+                opMode.telemetry.addData("Status", "Hanging Arm Down");
+                opMode.telemetry.update();
+            }
+            hangingMotor.setPower(0);
+        }
+        // Automatically raise the hanging arm to its fully deployed position
+        else if (gamepad.y) {
+            Logger.message("Hanging Arm Automatically raise");
+            armUp();
+        }
+        // Lift the robot off the ground
+        else if (gamepad.a) {
+            Logger.message("Hanging Arm lift");
+            armLift();
+        }
+        // Calibrate the telescoping part of the arm
+        else if (gamepad.b) {
+            Logger.message("Hanging Arm Calibrate");
+            calibrateArm(.2, 2, 300);
         }
     }
+
+
+    /**
+     *  Returns true if the hanging arm is in its full upright position
+     */
+    public Boolean hangingArmIsUp(){
+        return hangingTouchSensor.isPressed();
+    }
+
 
     /**
      * Automatically raise the hanging arm to its fully deployed position
@@ -158,15 +222,12 @@ public class HangingArm
     }
 
     /**
-     * Lift the robot
+     * Lift the robot off the ground
      */
     public void armLift()
     {
     }
 
-    public void idle() {
-        Thread.yield();
-    }
 }
 
 
