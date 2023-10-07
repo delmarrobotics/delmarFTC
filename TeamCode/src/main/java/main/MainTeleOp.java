@@ -38,11 +38,29 @@ public class MainTeleOp extends LinearOpMode {
         // run until the end of the match (driver presses STOP)
         while (opModeIsActive()) {
 
-            // POV Mode uses left stick to go forward, and right stick to turn.
+            // POV Mode uses left stick to go forw ard, and right stick to turn.
             double drive  = -gamepad1.left_stick_y  / 2.0;  // Reduce drive rate to 50%.
             double strafe = -gamepad1.left_stick_x  / 2.0;  // Reduce strafe rate to 50%.
             double turn   = -gamepad1.right_stick_x / 3.0;  // Reduce turn rate to 33%.
             robot.moveRobot(drive, strafe, turn);
+
+            if (gamepad1.left_bumper) {
+
+            } else if (gamepad1.right_bumper) {
+
+            } else {
+                if (gamepad1.a){
+                    //  arm retracting
+                } else if (gamepad1.b) {
+                    // grabbing pixel from intake
+                } else if (gamepad1.y){
+                    // pixel hand opening and closing(2 servos)
+                } else if (gamepad1.x){
+                    // unused
+                }
+
+            }
+
 
             // Show the elapsed game time and wheel power.
             telemetry.addData("Status", "Run Time: " + runtime.toString());
