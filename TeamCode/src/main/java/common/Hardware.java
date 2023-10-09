@@ -67,15 +67,6 @@ public class Hardware {
     private Servo      leftHand = null;
     private Servo      rightHand = null;
 
-    public CRServo     hangingServo = null;
-    public DcMotor     hangingMotor = null;
-    public TouchSensor hangingTouchSensor = null;
-
-
-    // Define Drive constants.  Make them public so they CAN be used by the calling OpMode
-    public static final double HANGING_SERVO_POWER  = 1;    // speed to run the servo the deploys the arm
-    public static final double HANDING_MOTOR_POWER  = 1;    // speed to run the motor that extends to arm
-
     public static final double MID_SERVO       =  0.5 ;
     public static final double HAND_SPEED      =  0.02 ;  // sets rate to move servo
     public static final double ARM_UP_POWER    =  0.45 ;
@@ -123,17 +114,6 @@ public class Hardware {
             Log.e("zzz", e.getMessage());
         }
 
-        // Define and initialize the hanging arm hardware
-        try {
-            // Initial the hanging arm
-            hangingServo = hardwareMap.get(CRServo.class, "hangingArmServo");
-            hangingMotor = hardwareMap.get(DcMotor.class, "hangingArmMotor");
-            hangingTouchSensor = hardwareMap.get(TouchSensor.class, "hangingArmUp");
-        } catch (Exception e){
-            Log.println(Log.ERROR, "zzz", "Hanging arm hardware not found");
-            Log.e("zzz", e.getMessage());
-
-        }
 
         // Define and initialize the pixel arm hardware
 
@@ -204,47 +184,6 @@ public class Hardware {
 
 
 
-    /**
-     * Raises the handing arm from its stored position
-     */
-    public void hangingArmOut() {
-        hangingServo.setDirection(DcMotor.Direction.FORWARD);
-        hangingServo.setPower(HANGING_SERVO_POWER);
-    }
-
-    /**
-     * Lower the hanging arm to its stored position
-     */
-    public void hangingArmIn() {
-
-    }
-
-    /**
-     * Stop the hanging arm
-     */
-    public void handingArmStop() {
-
-    }
-    /**
-     * Extend the hanging arm
-     */
-    public void hangingArmUp() {
-
-    }
-
-    /**
-     * Retract the hanging arm
-     */
-    public void hangingArmDown() {
-
-    }
-
-    /**
-     *  Returns true if the hanging arm is in its full upright position
-     */
-    public Boolean hangingArmIsUp(){
-        return hangingTouchSensor.isPressed();
-    }
 }
 
 

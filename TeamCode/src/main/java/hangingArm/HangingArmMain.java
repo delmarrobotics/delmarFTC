@@ -29,49 +29,41 @@
 
 package hangingArm;
 
-import com.qualcomm.robotcore.eventloop.opmode.Disabled;
-import com.qualcomm.robotcore.eventloop.opmode.OpMode;
+import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 import common.HangingArm;
-import common.Hardware;
 
 /*
- * Demonstrates an empty iterative OpMode
+ * Test code for the hanging arm
  */
 @TeleOp(name="Hanging Arm Main", group="Test")
-@Disabled
 @SuppressWarnings("unused")
-public class HangingArmMain extends OpMode {
+public class HangingArmMain extends LinearOpMode {
 
   private final ElapsedTime runtime = new ElapsedTime();
 
-  Hardware robot = new Hardware();
-  HangingArm hangingArm = new HangingArm(this, robot);
+  HangingArm hangingArm = new HangingArm(this);
 
-
-  /**
-   * This method will be called once, when the INIT button is pressed.
-   */
   @Override
-  public void init() {
+  public void runOpMode() {
+    telemetry.addData("Status", "Initialized");
+    telemetry.update();
 
-    robot.init(hardwareMap);
+    // Wait for the game to start (driver presses PLAY)
+    waitForStart();
+    runtime.reset();
+
     hangingArm.init();
 
-    telemetry.addData("Status", "Initialized");
-  }
+    // run until the end of the match (driver presses STOP)
+    while (opModeIsActive()) {
 
+      hangingArm.manualControl();
 
-  /**
-   * This method will be called repeatedly during the period between when
-   * the play button is pressed and when the OpMode is stopped.
-   */
-  @Override
-  public void loop() {
-
-    hangingArm.manualControl();
-    telemetry.addData("Status", "Run Time: " + runtime);
+      telemetry.addData("Status", "Run Time: " + runtime);
+      telemetry.update();
+      }
   }
 }
