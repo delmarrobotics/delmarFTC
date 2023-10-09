@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode;
+package test.code;
 
 import com.qualcomm.hardware.rev.Rev2mDistanceSensor;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
@@ -13,7 +13,7 @@ import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import java.io.PrintStream;
 
 @Autonomous(name="mainCode")
-public class mainJava extends OpMode
+public class mainJavaCopy extends OpMode
 {
     private DistanceSensor Distance=null ;
 
