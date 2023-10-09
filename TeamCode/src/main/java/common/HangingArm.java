@@ -50,7 +50,7 @@ public class HangingArm
     // Define Drive constants.  Make them public so they CAN be used by the calling OpMode
     static final double     HANGING_SERVO_POWER  = 1;    // speed to run the servo the deploys the arm
     static final double     HANDING_MOTOR_POWER  = 1;    // speed to run the motor that extends to arm
-    static final double     HANGING_ARM_COUNTS_PER_MOTOR_REV    = 384.5 ;  //  GoBilda 5202 435 RPM Motor Encoder
+    static final double     HANGING_ARM_COUNTS_PER_MOTOR_REV    = 1120 ;  //  GoBilda 5202 435 RPM Motor Encoder
 
     public LinearOpMode     opMode;
     public CRServo          hangingServo = null;
@@ -88,6 +88,9 @@ public class HangingArm
 
         // Tell the driver that initialization is complete.
         opMode.telemetry.addData("Status", "Hanging Arm Initialized");
+
+        calibrateArm(.2, 10, 3000);
+
     }
 
 
@@ -123,6 +126,7 @@ public class HangingArm
             if (runtime.milliseconds() >= timeout){
                 opMode.telemetry.addData("Stopped", "Timed out after %6.0f millisecond", timeout);
                 opMode.telemetry.addData("Currently at",  " at %7d", hangingMotor.getCurrentPosition());
+                Logger.message ("timeout");
                 break;
             }
 
