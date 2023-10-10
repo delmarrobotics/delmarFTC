@@ -18,4 +18,8 @@ public final class Logger {
     public static void message(String msg){
         Log.d(TAG, msg);
     }
+
+    public static void message( String format, Object... args){
+        Log.d(TAG, String.format(format, args));
+    }
 }
