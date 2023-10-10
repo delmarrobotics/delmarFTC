@@ -12,7 +12,7 @@ import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 
 import java.io.PrintStream;
 
-@Autonomous(name="mainCode")
+@Autonomous(name="mainCodeCopy")
 public class mainJavaCopy extends OpMode
 {
     private DistanceSensor Distance=null ;
