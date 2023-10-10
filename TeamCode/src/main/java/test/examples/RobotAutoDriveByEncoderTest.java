@@ -83,7 +83,7 @@ public class RobotAutoDriveByEncoderTest extends LinearOpMode {
     // This is gearing DOWN for less speed and more torque.
     // For gearing UP, use a gear ratio less than 1.0. Note this will affect the direction of wheel rotation.
     static final double     COUNTS_PER_MOTOR_REV    = 28 ;      // eg: HD Hex Motor Encoder
-    static final double     DRIVE_GEAR_REDUCTION    = 40 ;      // No External Gearing.
+    static final double     DRIVE_GEAR_REDUCTION    = 20 ;      // No External Gearing.
     static final double     WHEEL_DIAMETER_INCHES   = 4.0 ;     // For figuring circumference
     static final double     COUNTS_PER_INCH         = (COUNTS_PER_MOTOR_REV * DRIVE_GEAR_REDUCTION) /
                                                       (WHEEL_DIAMETER_INCHES * 3.1415);
@@ -109,6 +109,10 @@ public class RobotAutoDriveByEncoderTest extends LinearOpMode {
         rightFrontDrive.setDirection(DcMotor.Direction.REVERSE);
         rightBackDrive.setDirection(DcMotor.Direction.FORWARD);
 
+        leftFrontDrive.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        rightFrontDrive.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        leftBackDrive.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        rightBackDrive.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
 
         leftFrontDrive.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         rightFrontDrive.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
@@ -152,11 +156,6 @@ public class RobotAutoDriveByEncoderTest extends LinearOpMode {
         // Ensure that the OpMode is still active
         if (opModeIsActive()) {
 
-            leftFrontDrive.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-            rightFrontDrive.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-            leftBackDrive.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-            rightBackDrive.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-
             leftFrontDrive.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
             rightFrontDrive.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
             leftBackDrive.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
@@ -165,8 +164,6 @@ public class RobotAutoDriveByEncoderTest extends LinearOpMode {
             // Determine new target position, and pass to motor controller
             newLeftTarget = leftFrontDrive.getCurrentPosition() + (int)(leftInches * COUNTS_PER_INCH);
             newRightTarget = rightFrontDrive.getCurrentPosition() + (int)(rightInches * COUNTS_PER_INCH);
-
-            newLeftTarget = 28 * 40;
 
             leftFrontDrive.setTargetPosition(newLeftTarget);
             rightFrontDrive.setTargetPosition(newRightTarget);
@@ -194,13 +191,11 @@ public class RobotAutoDriveByEncoderTest extends LinearOpMode {
             // onto the next step, use (isBusy() || isBusy()) in the loop test.
             while (opModeIsActive()
                     && leftFrontDrive.isBusy()
-//                    && rightFrontDrive.isBusy()
-                    )
+                    && rightFrontDrive.isBusy())
              {
-
                 if (runtime.seconds() >= timeoutS){
                     Logger.message("encoderDrive timed out");
-                    //break;
+                    break;
                 }
 
                 // Display it for the driver.
@@ -217,10 +212,10 @@ public class RobotAutoDriveByEncoderTest extends LinearOpMode {
             rightBackDrive.setPower(0);
 
             // Turn off RUN_TO_POSITION
-            leftFrontDrive.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-            rightFrontDrive.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-            leftBackDrive.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-            rightBackDrive.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+            leftFrontDrive.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+            rightFrontDrive.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+            leftBackDrive.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+            rightBackDrive.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
             sleep(250);   // optional pause after each move.
         }
