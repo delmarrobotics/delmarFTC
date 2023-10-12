@@ -200,12 +200,28 @@ public class RobotAutoDriveByEncoderTest extends LinearOpMode {
             while (opModeIsActive()) {
 
                 double rampPower = rampSpeed(leftFrontDrive.getCurrentPosition(), leftStart, newLeftTarget, speed);
-                Logger.message("power %f", rampPower);
 
                 leftFrontDrive.setPower(rampPower);
                 rightFrontDrive.setPower(rampPower);
                 leftBackDrive.setPower(rampPower);
                 rightBackDrive.setPower(rampPower);
+
+                Logger.message("power: %4.2f %4.2f %4.2f %4.2f %4.2f     position: %6d %6d %6d %6d     busy: %b  %b  %b  %b",
+                        rampPower,
+                        leftFrontDrive.getPower(),
+                        rightFrontDrive.getPower(),
+                        leftBackDrive.getPower(),
+                        rightBackDrive.getPower(),
+                        leftFrontDrive.getCurrentPosition(),
+                        rightFrontDrive.getCurrentPosition(),
+                        leftBackDrive.getCurrentPosition(),
+                        rightBackDrive.getCurrentPosition(),
+                        leftFrontDrive.isBusy(),
+                        rightFrontDrive.isBusy(),
+                        leftBackDrive.isBusy(),
+                        rightBackDrive.isBusy()
+                        );
+
 
                 if (! leftFrontDrive.isBusy())
                     break;
