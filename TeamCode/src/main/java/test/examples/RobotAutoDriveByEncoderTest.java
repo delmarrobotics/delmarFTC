@@ -35,6 +35,8 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
+import org.opencv.core.Mat;
+
 import common.Logger;
 
 /*
@@ -74,7 +76,7 @@ public class RobotAutoDriveByEncoderTest extends LinearOpMode {
     private DcMotor rightBackDrive   = null;  //  Used to control the right back drive wheel
 
 
-    private ElapsedTime     runtime = new ElapsedTime();
+    private final ElapsedTime     runtime = new ElapsedTime();
 
     // Calculate the COUNTS_PER_INCH for your specific drive train.
     // Go to your motor vendor website to determine your motor's COUNTS_PER_MOTOR_REV
@@ -82,12 +84,14 @@ public class RobotAutoDriveByEncoderTest extends LinearOpMode {
     // For example, use a value of 2.0 for a 12-tooth spur gear driving a 24-tooth spur gear.
     // This is gearing DOWN for less speed and more torque.
     // For gearing UP, use a gear ratio less than 1.0. Note this will affect the direction of wheel rotation.
-    static final double     COUNTS_PER_MOTOR_REV    = 28 ;      // eg: HD Hex Motor Encoder
-    static final double     DRIVE_GEAR_REDUCTION    = 20 ;      // No External Gearing.
-    static final double     WHEEL_DIAMETER_INCHES   = 4.0 ;     // For figuring circumference
+    static final double     COUNTS_PER_MOTOR_REV    = 28 ;              // HD Hex Motor Encoder
+    static final double     DRIVE_GEAR_REDUCTION    = 40 ;              // Gearing  // ToDo verify gearing
+    static final double     WHEEL_DIAMETER_INCHES   = (96 / 25.4) ;     // 96 mm while converted to inches
     static final double     COUNTS_PER_INCH         = (COUNTS_PER_MOTOR_REV * DRIVE_GEAR_REDUCTION) /
-                                                      (WHEEL_DIAMETER_INCHES * 3.1415);
-    static final double     DRIVE_SPEED             = 0.2;
+                                                      (WHEEL_DIAMETER_INCHES * Math.PI);
+    static final double     DRIVE_SPEED             = 0.5;
+    static final double     RAMP_DISTANCE           = WHEEL_DIAMETER_INCHES * 2 * COUNTS_PER_INCH; // Speed ramp up in encoder counts
+    static final double     MIN_SPEED               = .02;
     static final double     TURN_SPEED              = 0.5;
 
     @Override
@@ -152,9 +156,12 @@ public class RobotAutoDriveByEncoderTest extends LinearOpMode {
                              double timeoutS) {
         int newLeftTarget;
         int newRightTarget;
+        int leftStart;
 
         // Ensure that the OpMode is still active
         if (opModeIsActive()) {
+
+            leftStart = leftFrontDrive.getCurrentPosition();
 
             leftFrontDrive.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
             rightFrontDrive.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
@@ -178,10 +185,11 @@ public class RobotAutoDriveByEncoderTest extends LinearOpMode {
 
             // reset the timeout time and start motion.
             runtime.reset();
-            leftFrontDrive.setPower(Math.abs(speed));
-            rightFrontDrive.setPower(Math.abs(speed));
-            leftBackDrive.setPower(Math.abs(speed));
-            rightBackDrive.setPower(Math.abs(speed));
+
+            //leftFrontDrive.setPower(Math.abs(speed));
+            //rightFrontDrive.setPower(Math.abs(speed));
+            //leftBackDrive.setPower(Math.abs(speed));
+            //rightBackDrive.setPower(Math.abs(speed));
 
             // keep looping while we are still active, and there is time left, and both motors are running.
             // Note: We use (isBusy() && isBusy()) in the loop test, which means that when EITHER motor hits
@@ -189,10 +197,22 @@ public class RobotAutoDriveByEncoderTest extends LinearOpMode {
             // always end the motion as soon as possible.
             // However, if you require that BOTH motors have finished their moves before the robot continues
             // onto the next step, use (isBusy() || isBusy()) in the loop test.
-            while (opModeIsActive()
-                    && leftFrontDrive.isBusy()
-                    && rightFrontDrive.isBusy())
-             {
+            while (opModeIsActive()) {
+
+                double rampPower = rampSpeed(leftFrontDrive.getCurrentPosition(), leftStart, newLeftTarget, speed);
+                Logger.message("power %f", rampPower);
+
+                leftFrontDrive.setPower(rampPower);
+                rightFrontDrive.setPower(rampPower);
+                leftBackDrive.setPower(rampPower);
+                rightBackDrive.setPower(rampPower);
+
+                if (! leftFrontDrive.isBusy())
+                    break;
+
+ //             if (!  rightFrontDrive.isBusy())
+//                    break
+
                 if (runtime.seconds() >= timeoutS){
                     Logger.message("encoderDrive timed out");
                     break;
@@ -220,4 +240,31 @@ public class RobotAutoDriveByEncoderTest extends LinearOpMode {
             sleep(250);   // optional pause after each move.
         }
     }
+
+    private double rampSpeed(double current, double start,  double end, double speed) {
+
+       double power1 = ((current - start) / RAMP_DISTANCE) * (speed - MIN_SPEED) + MIN_SPEED;
+       double power2 = ((end - current) / RAMP_DISTANCE) * (speed - MIN_SPEED) + MIN_SPEED;
+
+       double power =  Math.min(Math.min(power1, power2), speed);
+
+       //Logger.message("power %f %f %f", power1, power2, power);
+
+       return power;
+    }
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
