@@ -45,7 +45,7 @@ public class Robot {
 
     public HangingArm hangingArm = null;
 
-    public boolean opModeIsActive
+    public boolean opModeIsActive;
 
     public Telemetry telemetry;
 
