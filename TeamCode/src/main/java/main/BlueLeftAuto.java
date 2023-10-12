@@ -37,7 +37,7 @@ public class BlueLeftAuto extends LinearOpMode {
         // run until the end of the match (driver presses STOP)
         while (opModeIsActive()) {
 
-            robot.moveByDistance(12);    // move forward 12 inches
+            robot.moveByDistance(1, 12,12,10);    // move forward 12 inches
             robot.setOrientation(-90);          //
             robot.moveToColor(240);        // drive to the blue line
             robot.dropPixel();                  // drop the purple pixel
