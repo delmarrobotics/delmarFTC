@@ -29,16 +29,12 @@
 
 package test.code;
 
-import android.util.Log;
-
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
-import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
-import org.firstinspires.ftc.robotcore.internal.camera.delegating.DelegatingCaptureSequence;
 
 import common.Logger;
 
@@ -79,9 +75,12 @@ public class CalibrateEncoder extends LinearOpMode {
     private DcMotor motor   = null;  //  Used to control the left front drive wheel
     private int encoderCount = 1120;
     private int lastCount = 0;
+    private double speed = 0.2;
+
     private Telemetry.Item startMsg;
     private Telemetry.Item encoderMsg;
     private Telemetry.Item positionMsg;
+    private Telemetry.Item speedMsg;
     private Telemetry.Item runningToMsg;
 
 
@@ -93,8 +92,7 @@ public class CalibrateEncoder extends LinearOpMode {
     // For gearing UP, use a gear ratio less than 1.0. Note this will affect the direction of wheel rotation.
     static final double     COUNTS_PER_MOTOR_REV    = 28 ;      // eg: HD Hex Motor Encoder
     static final double     DRIVE_GEAR_REDUCTION    = 40 ;      // No External Gearing.
-    static final double     WHEEL_DIAMETER_INCHES   = 4.0 ;     // For figuring circumference
-    static final double     MOTOR_SPEED             = 0.2;
+    static final double     WHEEL_DIAMETER_INCHES   = (96 / 25.4);     // Circumference of 96 mm wheel in inches
 
     @Override
     public void runOpMode() {
@@ -117,9 +115,11 @@ public class CalibrateEncoder extends LinearOpMode {
 
         encoderMsg = telemetry.addData("Encoder count", 0);
         positionMsg = telemetry.addData("Encoder position", 0);
+        speedMsg = telemetry.addData("Motor speed", 0);
         runningToMsg = telemetry.addData("Running to", 0);
 
         encoderMsg.setValue(" %d ", encoderCount);
+        speedMsg.setValue(" %4.2f", speed);
         positionMsg.setValue( "%7d", motor.getCurrentPosition());
 
         telemetry.update();
@@ -128,7 +128,7 @@ public class CalibrateEncoder extends LinearOpMode {
 
             if (gamepad1.a) {
                 // Run motor to an encoder count
-                runToPosition(MOTOR_SPEED, encoderCount, 5.0);  // 5 second timeout
+                runToPosition(speed, encoderCount, 5.0);  // 5 second timeout
 
             } else if (gamepad1.x) {
                 // zero calibration count
@@ -147,50 +147,43 @@ public class CalibrateEncoder extends LinearOpMode {
             } else if (gamepad1.right_trigger > 0) {
                 // increase calibration count
                 runtime.reset();
-                int sleepTime = 100;
                 while (gamepad1.right_trigger > 0) {
-                    if (runtime.seconds() < 3){
-                        encoderCount += 1;
-                        sleepTime = 500;
-                    }
-                    else if (runtime.seconds() < 6){
-                        encoderCount += 10;
-                        sleepTime = 200;
-                    }
-                    else{
-                        encoderCount += 100;
-                        sleepTime = 100;
-                    }
+                    encoderCount += increment(1, 10, 100);
                     encoderMsg.setValue("%d", encoderCount);
                     telemetry.update();
-                    sleep(sleepTime);
                 }
 
-            }
-            else if (gamepad1.left_trigger > 0) {
+            } else if (gamepad1.left_trigger > 0) {
                 // decrease calibration count
                 runtime.reset();
-                int sleepTime = 100;
                 while (gamepad1.right_trigger > 0) {
-                    if (runtime.seconds() < 3) {
-                        encoderCount -= 1;
-                        sleepTime = 500;
-                    } else if (runtime.seconds() < 6) {
-                        encoderCount -= 10;
-                        sleepTime = 200;
-                    } else {
-                        encoderCount -= 100;
-                        sleepTime = 100;
-                    }
+                    encoderCount -= increment(1, 10, 100);
                     encoderMsg.setValue("%d", encoderCount);
                     telemetry.update();
-                    sleep(sleepTime);
+                }
+
+            } else if (gamepad1.left_bumper) {
+                // decrease the speed
+                runtime.reset();
+                while (gamepad1.left_bumper){
+                    speed -= (double)increment(1, 5, 10) / 100;
+                    speedMsg.setValue(" %4.2f", speed);
+                    telemetry.update();
+                }
+
+            } else if (gamepad1.right_bumper) {
+                // increase the speed
+                runtime.reset();
+                while (gamepad1.left_bumper){
+                    speed += (double)increment(1, 5, 10) / 100;
+                    speedMsg.setValue(" %4.2f", speed);
+                    telemetry.update();
                 }
 
             } else if (gamepad1.left_stick_y > 0) {
                 // manually run the motor forward
                 motor.setDirection(DcMotor.Direction.REVERSE);
-                motor.setPower(MOTOR_SPEED);
+                motor.setPower(speed);
                 while (true) {
                     //Logger.message("y stick %4.2f", gamepad1.left_stick_y );
                     if (gamepad1.left_stick_y <= 0)
@@ -203,7 +196,7 @@ public class CalibrateEncoder extends LinearOpMode {
             } else if (gamepad1.left_stick_y < 0) {
                 // manually run the motor forward
                 motor.setDirection(DcMotor.Direction.FORWARD);
-                motor.setPower(MOTOR_SPEED);
+                motor.setPower(speed);
                 while (true) { if (gamepad1.left_stick_y >= 0) break; }
                 motor.setPower(0);
                 sleep(200);
@@ -272,4 +265,28 @@ public class CalibrateEncoder extends LinearOpMode {
             sleep(250);   // optional pause after each move.
         }
     }
+
+    /**
+     * Based on the elapsed time return a value to increment by
+     * @return value to increment by
+     */
+    public int increment(int v1, int v2, int v3){
+        int sleepTime;
+        int delta;
+        if (runtime.seconds() < 3){
+            delta = v1;
+            sleepTime = 500;
+        }
+        else if (runtime.seconds() < 6){
+            delta = v2;
+            sleepTime = 200;
+        }
+        else{
+            delta = v3;
+            sleepTime = 100;
+        }
+        sleep(sleepTime);
+        return delta;
+    }
 }
+
