@@ -48,7 +48,20 @@ public class MainTeleOp extends LinearOpMode {
                 robot.moveByDistance(0.5,12,12,10);
                 sleep(250);
             } else if (gamepad1.right_bumper) {
-
+                // robot lifter controls
+                if (gamepad1.left_trigger > 0){
+                    while (gamepad1.left_trigger > 0){
+                        robot.lifterUp();
+                    }
+                    robot.lifterStop();
+                } else if (gamepad1.right_trigger > 0) {
+                    while (gamepad1.right_trigger > 0){
+                        robot.lifterDown();
+                    }
+                    robot.lifterStop();
+                } else if (gamepad1.a) {
+                    robot.dropPixel();
+                }
             } else {
                 if (gamepad1.a){
                     //  arm retracting

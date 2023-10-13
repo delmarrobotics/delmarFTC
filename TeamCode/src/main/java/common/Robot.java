@@ -17,6 +17,7 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.IMU;
+import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.robotcore.external.Function;
@@ -52,6 +53,9 @@ public class Robot {
     public ColorSensor colorSensor = null;
     public IMU imu = null;
 
+    public DcMotor lifter = null;       // Motor to lift the robot off the ground
+    public Servo dropper = null;        // Servo to drop the purple pixel
+
     public HangingArm hangingArm = null;
 
     public Telemetry telemetry;
@@ -78,9 +82,11 @@ public class Robot {
         initDriveTrain();
 
         // ToDo Check the the configuration file has the correct color sensor hardware device selected.
-        colorSensor = hardwareMap.get(ColorSensor.class, Config.COLOR_SENSOR);
+ //       colorSensor = hardwareMap.get(ColorSensor.class, Config.COLOR_SENSOR);
 
         imu = hardwareMap.get(IMU.class, Config.IMU);
+
+        lifter = hardwareMap.get(DcMotor.class, Config.LIFTING_WENCH);
     }
 
     /**
@@ -337,5 +343,27 @@ public class Robot {
      */
     public void dropPixel(){
 
+    }
+
+    /**
+     * Turn on the motor that drives the lifting wench
+     */
+    public void lifterUp(){
+
+        lifter.setPower(1);
+    }
+
+    /**
+     * Turn on the motor that drives the lifting wench
+     */
+    public void lifterDown(){
+        lifter.setPower(-1);
+    }
+
+    /**
+     * Turn off the motor that drives the lifting wench
+     */
+    public void lifterStop(){
+        lifter.setPower(0);
     }
 }
