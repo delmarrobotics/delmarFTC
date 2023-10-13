@@ -89,9 +89,9 @@ public class RobotAutoDriveByEncoderTest extends LinearOpMode {
     static final double     WHEEL_DIAMETER_INCHES   = (96 / 25.4) ;     // 96 mm while converted to inches
     static final double     COUNTS_PER_INCH         = (COUNTS_PER_MOTOR_REV * DRIVE_GEAR_REDUCTION) /
                                                       (WHEEL_DIAMETER_INCHES * Math.PI);
-    static final double     DRIVE_SPEED             = 0.1 ;
+    static final double     DRIVE_SPEED             = 0.2 ;
     static final double     RAMP_DISTANCE           = WHEEL_DIAMETER_INCHES * 2 * COUNTS_PER_INCH; // Speed ramp up in encoder counts
-    static final double     MIN_SPEED               = .02;
+    static final double     MIN_SPEED               = .05;
     static final double     TURN_SPEED              = 0.5;
 
     @Override
@@ -134,7 +134,7 @@ public class RobotAutoDriveByEncoderTest extends LinearOpMode {
 
         // Step through each leg of the path,
         // Note: Reverse movement is obtained by setting a negative distance (not speed)
-        encoderDrive(DRIVE_SPEED,  12,  12, 5.0);  // S1: Forward 6 Inches with 5 Sec timeout
+        encoderDrive(DRIVE_SPEED,  72,  72, 10.0);  // S1: Forward 6 Inches with 5 Sec timeout
 //        encoderDrive(TURN_SPEED,   12, -12, 4.0);  // S2: Turn Right 12 Inches with 4 Sec timeout
 //        encoderDrive(DRIVE_SPEED, -24, -24, 4.0);  // S3: Reverse 24 Inches with 4 Sec timeout
 
