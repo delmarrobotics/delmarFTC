@@ -85,11 +85,11 @@ public class RobotAutoDriveByEncoderTest extends LinearOpMode {
     // This is gearing DOWN for less speed and more torque.
     // For gearing UP, use a gear ratio less than 1.0. Note this will affect the direction of wheel rotation.
     static final double     COUNTS_PER_MOTOR_REV    = 28 ;              // HD Hex Motor Encoder
-    static final double     DRIVE_GEAR_REDUCTION    = 40 ;              // Gearing  // ToDo verify gearing
+    static final double     DRIVE_GEAR_REDUCTION    = 20 ;              // Gearing  // ToDo verify gearing
     static final double     WHEEL_DIAMETER_INCHES   = (96 / 25.4) ;     // 96 mm while converted to inches
     static final double     COUNTS_PER_INCH         = (COUNTS_PER_MOTOR_REV * DRIVE_GEAR_REDUCTION) /
                                                       (WHEEL_DIAMETER_INCHES * Math.PI);
-    static final double     DRIVE_SPEED             = 0.5;
+    static final double     DRIVE_SPEED             = 0.1 ;
     static final double     RAMP_DISTANCE           = WHEEL_DIAMETER_INCHES * 2 * COUNTS_PER_INCH; // Speed ramp up in encoder counts
     static final double     MIN_SPEED               = .02;
     static final double     TURN_SPEED              = 0.5;
@@ -107,7 +107,7 @@ public class RobotAutoDriveByEncoderTest extends LinearOpMode {
 
         // To drive forward, most robots need the motor on one side to be reversed, because the axles point in opposite directions.
         // When run, this OpMode should start both motors driving forward. So adjust these two lines based on your first test drive.
-        // Note: The settings here assume direct drive on left and right wheels.  Gear Reduction or 90 Deg drives may require direction flips
+          // Note: The settings here assume direct drive on left and right wheels.  Gear Reduction or 90 Deg drives may require direction flips
         leftFrontDrive.setDirection(DcMotor.Direction.REVERSE);
         leftBackDrive.setDirection(DcMotor.Direction.FORWARD);
         rightFrontDrive.setDirection(DcMotor.Direction.REVERSE);
@@ -183,6 +183,11 @@ public class RobotAutoDriveByEncoderTest extends LinearOpMode {
             leftBackDrive.setMode(DcMotor.RunMode.RUN_TO_POSITION);
             rightBackDrive.setMode(DcMotor.RunMode.RUN_TO_POSITION);
 
+            leftFrontDrive.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+            rightFrontDrive.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+            leftBackDrive.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+            rightFrontDrive.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+
             // reset the timeout time and start motion.
             runtime.reset();
 
@@ -204,7 +209,7 @@ public class RobotAutoDriveByEncoderTest extends LinearOpMode {
                 leftFrontDrive.setPower(rampPower);
                 rightFrontDrive.setPower(rampPower);
                 leftBackDrive.setPower(rampPower);
-                rightBackDrive.setPower(rampPower);
+                 rightBackDrive.setPower(rampPower);
 
                 Logger.message("power: %4.2f %4.2f %4.2f %4.2f %4.2f     position: %6d %6d %6d %6d     busy: %b  %b  %b  %b",
                         rampPower,
@@ -246,6 +251,19 @@ public class RobotAutoDriveByEncoderTest extends LinearOpMode {
             rightFrontDrive.setPower(0);
             leftBackDrive.setPower(0);
             rightBackDrive.setPower(0);
+
+            sleep(1000);
+
+            Logger.message("Target / Position  left: %6d %6d  right: %6d %6d",
+                    newLeftTarget,
+                    leftFrontDrive.getCurrentPosition(),
+                    newRightTarget,
+                    rightFrontDrive.getCurrentPosition());
+
+            leftFrontDrive.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
+            rightFrontDrive.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
+            leftBackDrive.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
+            rightFrontDrive.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
 
             // Turn off RUN_TO_POSITION
             leftFrontDrive.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
