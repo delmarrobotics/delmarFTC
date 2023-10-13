@@ -32,6 +32,7 @@ package test.code;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
@@ -73,7 +74,7 @@ public class CalibrateEncoder extends LinearOpMode {
     private final ElapsedTime     runtime = new ElapsedTime();
 
     private DcMotor motor   = null;  //  Used to control the left front drive wheel
-    private int encoderCount = 1120;
+    private int encoderCount = 0;
     private int lastCount = 0;
     private double speed = 0.2;
 
@@ -128,6 +129,7 @@ public class CalibrateEncoder extends LinearOpMode {
 
             if (gamepad1.a) {
                 // Run motor to an encoder count
+                motor.setDirection(DcMotorSimple.Direction.FORWARD);
                 runToPosition(speed, encoderCount, 5.0);  // 5 second timeout
 
             } else if (gamepad1.x) {
@@ -174,7 +176,7 @@ public class CalibrateEncoder extends LinearOpMode {
             } else if (gamepad1.right_bumper) {
                 // increase the speed
                 runtime.reset();
-                while (gamepad1.left_bumper){
+                while (gamepad1.right_bumper){
                     speed += (double)increment(1, 5, 10) / 100;
                     speedMsg.setValue(" %4.2f", speed);
                     telemetry.update();
@@ -202,6 +204,7 @@ public class CalibrateEncoder extends LinearOpMode {
                 sleep(200);
                 positionMsg.setValue( "%7d", motor.getCurrentPosition());
             }
+            positionMsg.setValue( "%7d", motor.getCurrentPosition());
             telemetry.update();
         }
     }
@@ -211,10 +214,11 @@ public class CalibrateEncoder extends LinearOpMode {
      * Initial the motor to calibrate.
      */
     public void initMotor (){
-        motor  = hardwareMap.get(DcMotor.class, "motorToCalibrate");
+        motor  = hardwareMap.get(DcMotor.class, "pixelArm");
         motor.setDirection(DcMotor.Direction.FORWARD);
         motor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         motor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        motor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
     }
 
     /**
@@ -233,7 +237,8 @@ public class CalibrateEncoder extends LinearOpMode {
 
             // Determine new target position, and pass to motor controller
             currentPosition = motor.getCurrentPosition();
-            newPosition = currentPosition + count;
+//            newPosition = currentPosition + count;
+            newPosition = count;
             motor.setTargetPosition(newPosition);
             motor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
             motor.setPower(Math.abs(speed));
