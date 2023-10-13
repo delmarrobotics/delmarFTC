@@ -13,7 +13,7 @@ import common.Robot;
  *
  */
 
-@TeleOp(name="Main TeleOp", group="Main")
+@TeleOp(name="Main TeleOp Two", group="Main")
 public class MainTeleOp extends LinearOpMode {
 
     // Declare OpMode members.
@@ -45,7 +45,8 @@ public class MainTeleOp extends LinearOpMode {
             robot.moveRobot(drive, strafe, turn);
 
             if (gamepad1.left_bumper) {
-
+                robot.moveByDistance(0.5,12,12,10);
+                sleep(250);
             } else if (gamepad1.right_bumper) {
 
             } else {
