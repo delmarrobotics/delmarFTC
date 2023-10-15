@@ -29,8 +29,9 @@
 
 package test.examples;
 
+import android.icu.util.DateInterval;
+
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
-import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.util.ElapsedTime;
@@ -89,10 +90,20 @@ public class RobotAutoDriveByEncoderTest extends LinearOpMode {
     static final double     WHEEL_DIAMETER_INCHES   = (96 / 25.4) ;     // 96 mm while converted to inches
     static final double     COUNTS_PER_INCH         = (COUNTS_PER_MOTOR_REV * DRIVE_GEAR_REDUCTION) /
                                                       (WHEEL_DIAMETER_INCHES * Math.PI);
-    static final double     DRIVE_SPEED             = 0.2 ;
-    static final double     RAMP_DISTANCE           = WHEEL_DIAMETER_INCHES * 2 * COUNTS_PER_INCH; // Speed ramp up in encoder counts
-    static final double     MIN_SPEED               = .05;
     static final double     TURN_SPEED              = 0.5;
+    static final double     MAX_SPEED               = 0.5 ;
+    static final double     MIN_SPEED               = .1;
+
+    static final int        RAMP_COUNT              = 4;
+    static final double     RAMP_DISTANCE           = WHEEL_DIAMETER_INCHES * 2 * COUNTS_PER_INCH; // Speed ramp up in encoder counts
+
+    // To increase speed in constant increments of time, use a triangle sequence to calculate the encoder values at which each
+    // speed ramp occurs
+    static final double     RAMP_INTERVAL           = COUNTS_PER_INCH * 2;  // encoder count of the first speed ramp up.
+    double rampIntervals[] = { RAMP_INTERVAL, RAMP_INTERVAL * 3, RAMP_INTERVAL * 6, RAMP_INTERVAL * 10, RAMP_INTERVAL * 15 };
+    double speeds[] = { 0.1, 0.2, 0.3, 0.4, 0.5 };
+    int breaking[] = { 0, 0, 0, 0, 500};
+    int currentSpeed = 0;
 
     @Override
     public void runOpMode() {
@@ -134,9 +145,9 @@ public class RobotAutoDriveByEncoderTest extends LinearOpMode {
 
         // Step through each leg of the path,
         // Note: Reverse movement is obtained by setting a negative distance (not speed)
-        encoderDrive(DRIVE_SPEED,  72,  72, 10.0);  // S1: Forward 6 Inches with 5 Sec timeout
+        encoderDrive(MAX_SPEED,  72,  72, 10.0);  // S1: Forward 6 Inches with 5 Sec timeout
 //        encoderDrive(TURN_SPEED,   12, -12, 4.0);  // S2: Turn Right 12 Inches with 4 Sec timeout
-//        encoderDrive(DRIVE_SPEED, -24, -24, 4.0);  // S3: Reverse 24 Inches with 4 Sec timeout
+//        encoderDrive(MAX_SPEED, -24, -24, 4.0);  // S3: Reverse 24 Inches with 4 Sec timeout
 
         telemetry.addData("Path", "Complete");
         telemetry.update();
@@ -204,13 +215,19 @@ public class RobotAutoDriveByEncoderTest extends LinearOpMode {
             // onto the next step, use (isBusy() || isBusy()) in the loop test.
             while (opModeIsActive()) {
 
-                double rampPower = rampSpeed(leftFrontDrive.getCurrentPosition(), leftStart, newLeftTarget, speed);
+                double rampPower = rampSpeed3(leftFrontDrive.getCurrentPosition(), leftStart, newLeftTarget, speed);
 
                 leftFrontDrive.setPower(rampPower);
                 rightFrontDrive.setPower(rampPower);
                 leftBackDrive.setPower(rampPower);
-                 rightBackDrive.setPower(rampPower);
+                rightBackDrive.setPower(rampPower);
 
+                telemetry.addData("Running to",  " %7d :%7d", newLeftTarget,  newRightTarget);
+                telemetry.addData("Currently at",  " at %7d :%7d",
+                        leftFrontDrive.getCurrentPosition(), rightFrontDrive.getCurrentPosition());
+                telemetry.update();
+
+                /*
                 Logger.message("power: %4.2f %4.2f %4.2f %4.2f %4.2f     position: %6d %6d %6d %6d     busy: %b  %b  %b  %b",
                         rampPower,
                         leftFrontDrive.getPower(),
@@ -226,13 +243,11 @@ public class RobotAutoDriveByEncoderTest extends LinearOpMode {
                         leftBackDrive.isBusy(),
                         rightBackDrive.isBusy()
                         );
+                 */
 
-
-                if (! leftFrontDrive.isBusy())
-                    break;
-
- //             if (!  rightFrontDrive.isBusy())
-//                    break
+                if (rampPower == 0) break;
+                if (! leftFrontDrive.isBusy()) break;
+                if (! rightFrontDrive.isBusy()) break;
 
                 if (runtime.seconds() >= timeoutS){
                     Logger.message("encoderDrive timed out");
@@ -240,10 +255,6 @@ public class RobotAutoDriveByEncoderTest extends LinearOpMode {
                 }
 
                 // Display it for the driver.
-                telemetry.addData("Running to",  " %7d :%7d", newLeftTarget,  newRightTarget);
-                telemetry.addData("Currently at",  " at %7d :%7d",
-                                            leftFrontDrive.getCurrentPosition(), rightFrontDrive.getCurrentPosition());
-                telemetry.update();
             }
 
             // Stop all motion;
@@ -252,7 +263,7 @@ public class RobotAutoDriveByEncoderTest extends LinearOpMode {
             leftBackDrive.setPower(0);
             rightBackDrive.setPower(0);
 
-            sleep(1000);
+            sleep(2000);
 
             Logger.message("Target / Position  left: %6d %6d  right: %6d %6d",
                     newLeftTarget,
@@ -275,16 +286,85 @@ public class RobotAutoDriveByEncoderTest extends LinearOpMode {
         }
     }
 
+    /**
+     * Ramp to motor speed up or down based on the current position and the distance
+     * to travel.
+     *
+     * @param current  current encoder position
+     * @param start    start position of the encoder
+     * @param end      ending position of the encoder
+     * @param speed    maximum speed
+     *
+     * @return         motor power (0 to speed)
+     */
     private double rampSpeed(double current, double start,  double end, double speed) {
 
-       double power1 = ((current - start) / RAMP_DISTANCE) * (speed - MIN_SPEED) + MIN_SPEED;
-       double power2 = ((end - current) / RAMP_DISTANCE) * (speed - MIN_SPEED) + MIN_SPEED;
+        double power1 = ((current - start) / RAMP_DISTANCE) * (speed - MIN_SPEED) + MIN_SPEED;
+        double power2 = ((end - current) / RAMP_DISTANCE) * (speed - MIN_SPEED) + MIN_SPEED;
 
-       double power =  Math.min(Math.min(power1, power2), speed);
+        double power =  Math.min(Math.min(power1, power2), speed);
 
-       //Logger.message("power %f %f %f", power1, power2, power);
+        Logger.message("power %f %f %f", power1, power2, power);
 
-       return power;
+        return power;
+    }
+
+    /**
+     * Ramp to motor speed up or down based on the current position and the distance
+     * to travel.
+     *
+     * @param current  current encoder position
+     * @param start    start position of the encoder
+     * @param end      ending position of the encoder
+     * @param speed    maximum speed
+     *
+     * @return         motor power (0 to speed)
+     */
+    private double rampSpeed2(double current, double start,  double end, double speed) {
+
+        double power1 = ((current - start) / RAMP_DISTANCE) * (speed - MIN_SPEED) + MIN_SPEED;
+        double power2 = ((end - current) / RAMP_DISTANCE) * (speed - MIN_SPEED) + MIN_SPEED;
+        double power =  Math.min(power1, power2);
+
+        double interval = (speed - MIN_SPEED) / 4;
+
+        power = power - (power % interval);
+        power = Math.min(power, speed);
+
+        Logger.message("power %f %f %f %f", power1, power2, (Math.min(power1, power2) % interval), power);
+
+        return power;
+    }
+
+    /**
+     * Ramp to motor speed up or down based on the current position and the distance
+     * to travel.
+     *
+     * @param current  current encoder position
+     * @param start    start position of the encoder
+     * @param end      ending position of the encoder
+     * @param speed    maximum speed
+     *
+     * @return         motor power (0 to speed)
+     */
+    private double rampSpeed3(double current, double start,  double end, double speed) {
+        double power;
+
+        if (current - start >= rampIntervals[currentSpeed] ) {
+            if (currentSpeed < rampIntervals.length - 1) {
+                currentSpeed++;
+            }
+        }
+
+        if ((end - current) >  breaking[currentSpeed]){
+            power = speeds[currentSpeed];
+        } else {
+            power = 0;
+        }
+
+        Logger.message("power %f %f %f %d %f", current, start, end, currentSpeed, power);
+
+        return power;
     }
 }
 
