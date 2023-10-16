@@ -129,7 +129,7 @@ public class CalibrateEncoder extends LinearOpMode {
 
             if (gamepad1.a) {
                 // Run motor to an encoder count
-                motor.setDirection(DcMotorSimple.Direction.FORWARD);
+                //motor.setDirection(DcMotorSimple.Direction.FORWARD);
                 runToPosition(speed, encoderCount, 5.0);  // 5 second timeout
 
             } else if (gamepad1.x) {
@@ -184,8 +184,8 @@ public class CalibrateEncoder extends LinearOpMode {
 
             } else if (gamepad1.left_stick_y > 0) {
                 // manually run the motor forward
-                motor.setDirection(DcMotor.Direction.REVERSE);
-                motor.setPower(speed);
+                //motor.setDirection(DcMotor.Direction.REVERSE);
+                motor.setPower(-speed);
                 while (true) {
                     //Logger.message("y stick %4.2f", gamepad1.left_stick_y );
                     if (gamepad1.left_stick_y <= 0)
@@ -197,13 +197,20 @@ public class CalibrateEncoder extends LinearOpMode {
 
             } else if (gamepad1.left_stick_y < 0) {
                 // manually run the motor forward
-                motor.setDirection(DcMotor.Direction.FORWARD);
+                //motor.setDirection(DcMotor.Direction.FORWARD);
                 motor.setPower(speed);
                 while (true) { if (gamepad1.left_stick_y >= 0) break; }
                 motor.setPower(0);
                 sleep(200);
                 positionMsg.setValue( "%7d", motor.getCurrentPosition());
+            } else if (gamepad1.dpad_up) {
+                while (gamepad1.dpad_up) {
+                    Logger.message("%d %d", motor.getCurrentPosition(), motor.getTargetPosition());
+                    runToPosition(0.1, motor.getTargetPosition(), 10);
+
+                }
             }
+
             positionMsg.setValue( "%7d", motor.getCurrentPosition());
             telemetry.update();
         }
@@ -214,8 +221,8 @@ public class CalibrateEncoder extends LinearOpMode {
      * Initial the motor to calibrate.
      */
     public void initMotor (){
-        motor  = hardwareMap.get(DcMotor.class, "pixelArm");
-        motor.setDirection(DcMotor.Direction.FORWARD);
+        motor  = hardwareMap.get(DcMotor.class, "pixelArm ");
+        motor.setDirection(DcMotor.Direction.REVERSE);
         motor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         motor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         motor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
@@ -263,11 +270,11 @@ public class CalibrateEncoder extends LinearOpMode {
             motor.setPower(0);
 
             // Turn off RUN_TO_POSITION
-            motor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+//            motor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
             positionMsg.setValue( "%d", motor.getCurrentPosition());
 
-            sleep(250);   // optional pause after each move.
+            //sleep(250);   // optional pause after each move.
         }
     }
 

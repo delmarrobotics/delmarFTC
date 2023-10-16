@@ -102,7 +102,7 @@ public class RobotAutoDriveByEncoderTest extends LinearOpMode {
     static final double     RAMP_INTERVAL           = COUNTS_PER_INCH * 2;  // encoder count of the first speed ramp up.
     double rampIntervals[] = { RAMP_INTERVAL, RAMP_INTERVAL * 3, RAMP_INTERVAL * 6, RAMP_INTERVAL * 10, RAMP_INTERVAL * 15 };
     double speeds[] = { 0.1, 0.2, 0.3, 0.4, 0.5 };
-    int breaking[] = { 0, 0, 0, 0, 500};
+    int breaking[] = { 0, 0, 0, 0, 650 };
     int currentSpeed = 0;
 
     @Override
@@ -145,7 +145,7 @@ public class RobotAutoDriveByEncoderTest extends LinearOpMode {
 
         // Step through each leg of the path,
         // Note: Reverse movement is obtained by setting a negative distance (not speed)
-        encoderDrive(MAX_SPEED,  72,  72, 10.0);  // S1: Forward 6 Inches with 5 Sec timeout
+        encoderDrive(MAX_SPEED,  96,  96, 10.0);  // S1: Forward 6 Inches with 5 Sec timeout
 //        encoderDrive(TURN_SPEED,   12, -12, 4.0);  // S2: Turn Right 12 Inches with 4 Sec timeout
 //        encoderDrive(MAX_SPEED, -24, -24, 4.0);  // S3: Reverse 24 Inches with 4 Sec timeout
 
@@ -194,10 +194,10 @@ public class RobotAutoDriveByEncoderTest extends LinearOpMode {
             leftBackDrive.setMode(DcMotor.RunMode.RUN_TO_POSITION);
             rightBackDrive.setMode(DcMotor.RunMode.RUN_TO_POSITION);
 
-            leftFrontDrive.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-            rightFrontDrive.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-            leftBackDrive.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-            rightFrontDrive.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+            //leftFrontDrive.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+            //rightFrontDrive.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+            //leftBackDrive.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+            //rightBackDrive.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
             // reset the timeout time and start motion.
             runtime.reset();
@@ -263,7 +263,7 @@ public class RobotAutoDriveByEncoderTest extends LinearOpMode {
             leftBackDrive.setPower(0);
             rightBackDrive.setPower(0);
 
-            sleep(2000);
+            sleep(3000);
 
             Logger.message("Target / Position  left: %6d %6d  right: %6d %6d",
                     newLeftTarget,
@@ -362,7 +362,7 @@ public class RobotAutoDriveByEncoderTest extends LinearOpMode {
             power = 0;
         }
 
-        Logger.message("power %f %f %f %d %f", current, start, end, currentSpeed, power);
+        Logger.message("power %6.0f %6.0f %6.0f %d %4.2f", current, start, end, currentSpeed, power);
 
         return power;
     }
