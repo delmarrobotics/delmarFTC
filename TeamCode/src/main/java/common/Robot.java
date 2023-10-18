@@ -181,7 +181,7 @@ public class Robot {
 
         // Step through each leg of the path,
         // Note: Reverse movement is obtained by setting a negative distance (not speed)
-        encoderDrive(speed, leftInches, rightInches, timeoutS);  // S1: Forward 6 Inches with 5 Sec timeout
+        encoderDrive(speed, leftInches/2, rightInches/2, timeoutS);  // S1: Forward 6 Inches with 5 Sec timeout
 //        encoderDrive(TURN_SPEED,   12, -12, 4.0);  // S2: Turn Right 12 Inches with 4 Sec timeout
 //        encoderDrive(DRIVE_SPEED, -24, -24, 4.0);  // S3: Reverse 24 Inches with 4 Sec timeout
 
