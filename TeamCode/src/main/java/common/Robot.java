@@ -44,10 +44,8 @@ public class Robot {
     static final double WHEEL_DIAMETER_INCHES = (96 / 25.4);     // 96 mm while converted to inches
     static final double COUNTS_PER_INCH = (COUNTS_PER_MOTOR_REV * DRIVE_GEAR_REDUCTION) /
             (WHEEL_DIAMETER_INCHES * Math.PI);
-    static final double DRIVE_SPEED = 0.5;
     static final double RAMP_DISTANCE = WHEEL_DIAMETER_INCHES * 2 * COUNTS_PER_INCH; // Speed ramp up in encoder counts
     static final double MIN_SPEED = .02;
-    static final double TURN_SPEED = 0.5;
 
 
     public ColorSensor colorSensor = null;
@@ -182,8 +180,6 @@ public class Robot {
         // Step through each leg of the path,
         // Note: Reverse movement is obtained by setting a negative distance (not speed)
         encoderDrive(speed, leftInches/2, rightInches/2, timeoutS);  // S1: Forward 6 Inches with 5 Sec timeout
-//        encoderDrive(TURN_SPEED,   12, -12, 4.0);  // S2: Turn Right 12 Inches with 4 Sec timeout
-//        encoderDrive(DRIVE_SPEED, -24, -24, 4.0);  // S3: Reverse 24 Inches with 4 Sec timeout
 
         telemetry.addData("Path", "Complete");
         telemetry.update();
@@ -353,10 +349,7 @@ public class Robot {
     /**
      * Turn on the motor that drives the lifting wench
      */
-    public void lifterUp(){
-
-        lifter.setPower(1);
-    }
+    public void lifterUp() { lifter.setPower(1); }
 
     /**
      * Turn on the motor that drives the lifting wench
