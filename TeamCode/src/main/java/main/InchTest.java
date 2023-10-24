@@ -6,7 +6,7 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 
 import common.Robot;
 
-@TeleOp(name="Main TeleOp Two", group="Main")
+@TeleOp(name="inchTest", group="Main")
 public class InchTest extends LinearOpMode {
     // Declare OpMode members.
     private ElapsedTime runtime = new ElapsedTime();
