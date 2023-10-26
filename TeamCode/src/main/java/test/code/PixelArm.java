@@ -65,10 +65,10 @@ import common.Logger;
  * Remove or comment out the @Disabled line to add this OpMode to the Driver Station OpMode list
  */
 
-@TeleOp(name="Calibrate Encoder", group="Test")
+@TeleOp(name="Pixel Arm Tester", group="Test")
 @SuppressWarnings("unused")
 
-public class CalibrateEncoder extends LinearOpMode {
+public class PixelArm extends LinearOpMode {
 
     /* Declare OpMode members. */
     private final ElapsedTime     runtime = new ElapsedTime();
@@ -79,10 +79,8 @@ public class CalibrateEncoder extends LinearOpMode {
     private double speed = 0.2;
 
     private Telemetry.Item startMsg;
-    private Telemetry.Item encoderMsg;
     private Telemetry.Item positionMsg;
     private Telemetry.Item speedMsg;
-    private Telemetry.Item runningToMsg;
 
 
     // Calculate the COUNTS_PER_INCH for your specific drive train.
@@ -106,112 +104,28 @@ public class CalibrateEncoder extends LinearOpMode {
         waitForStart();
 
         telemetry.setAutoClear(false);
-        startMsg = telemetry.addData("Encoder Calibration\nControls", "\n" +
-                "  left stick - manual motor control\n" +
-                "  left trigger - decrease encoder count\n" +
-                "  right trigger - increase encoder count\n" +
-                "  a - run motor for encoder count\n" +
-                "  x - zero encode count\n" +
-                "  b - set encoder count \n\n");
+        startMsg = telemetry.addData(" Pixel Arm Tool \nControls", "\n" +
+                "  A - go out\n" +
+                "  B - go in\n");
 
-        encoderMsg = telemetry.addData("Encoder count", 0);
-        positionMsg = telemetry.addData("Encoder position", 0);
-        speedMsg = telemetry.addData("Motor speed", 0);
-        runningToMsg = telemetry.addData("Running to", 0);
-
-        encoderMsg.setValue(" %d ", encoderCount);
-        speedMsg.setValue(" %4.2f", speed);
-        positionMsg.setValue( "%7d", motor.getCurrentPosition());
+        speedMsg = telemetry.addData("Speed", speed);
 
         telemetry.update();
 
         while (opModeIsActive()) {
 
             if (gamepad1.a) {
-                // Run motor to an encoder count
-                //motor.setDirection(DcMotorSimple.Direction.FORWARD);
-                runToPosition(speed, encoderCount, 5.0);  // 5 second timeout
-
-            } else if (gamepad1.x) {
-                // zero calibration count
-                encoderCount = 0;
-                motor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-                motor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-                positionMsg.setValue( "%7d", motor.getCurrentPosition());
-                lastCount = motor.getCurrentPosition();
-                encoderMsg.setValue("%d", encoderCount);
-
+                runToPosition(speed, 0, 15.0);  // 15 second timeout
             } else if (gamepad1.b) {
-                // set calibration count
-                encoderCount = motor.getCurrentPosition();
-                encoderMsg.setValue("%d", encoderCount);
-
-            } else if (gamepad1.right_trigger > 0) {
-                // increase calibration count
-                runtime.reset();
-                while (gamepad1.right_trigger > 0) {
-                    encoderCount += increment(1, 10, 100);
-                    encoderMsg.setValue("%d", encoderCount);
-                    telemetry.update();
-                }
-
-            } else if (gamepad1.left_trigger > 0) {
-                // decrease calibration count
-                runtime.reset();
-                while (gamepad1.right_trigger > 0) {
-                    encoderCount -= increment(1, 10, 100);
-                    encoderMsg.setValue("%d", encoderCount);
-                    telemetry.update();
-                }
-
+                runToPosition(speed, 2982, 15.0);  // 15 second timeout
             } else if (gamepad1.left_bumper) {
-                // decrease the speed
-                runtime.reset();
-                while (gamepad1.left_bumper){
-                    speed -= (double)increment(1, 5, 10) / 100;
-                    speedMsg.setValue(" %4.2f", speed);
-                    telemetry.update();
-                }
-
+                speed -= 0.1;
             } else if (gamepad1.right_bumper) {
-                // increase the speed
-                runtime.reset();
-                while (gamepad1.right_bumper){
-                    speed += (double)increment(1, 5, 10) / 100;
-                    speedMsg.setValue(" %4.2f", speed);
-                    telemetry.update();
-                }
-
-            } else if (gamepad1.left_stick_y > 0) {
-                // manually run the motor forward
-                //motor.setDirection(DcMotor.Direction.REVERSE);
-                motor.setPower(-speed);
-                while (true) {
-                    //Logger.message("y stick %4.2f", gamepad1.left_stick_y );
-                    if (gamepad1.left_stick_y <= 0)
-                        break;
-                }
-                motor.setPower(0);
-                sleep(200);
-                positionMsg.setValue( "%7d", motor.getCurrentPosition());
-
-            } else if (gamepad1.left_stick_y < 0) {
-                // manually run the motor forward
-                //motor.setDirection(DcMotor.Direction.FORWARD);
-                motor.setPower(speed);
-                while (true) { if (gamepad1.left_stick_y >= 0) break; }
-                motor.setPower(0);
-                sleep(200);
-                positionMsg.setValue( "%7d", motor.getCurrentPosition());
-            } else if (gamepad1.dpad_up) {
-                while (gamepad1.dpad_up) {
-                    Logger.message("%d %d", motor.getCurrentPosition(), motor.getTargetPosition());
-                    runToPosition(0.1, motor.getTargetPosition(), 10);
-
-                }
+                speed += 0.1;
             }
 
-            positionMsg.setValue( "%7d", motor.getCurrentPosition());
+
+            //positionMsg.setValue("%7d", motor.getCurrentPosition());
             telemetry.update();
         }
     }
@@ -251,55 +165,18 @@ public class CalibrateEncoder extends LinearOpMode {
             motor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
             motor.setPower(Math.abs(speed));
 
-            // Send telemetry message to indicate successful Encoder reset
-            runningToMsg.setValue(" %d", newPosition);
-            telemetry.update();
-
-            runtime.reset();
-
             while (opModeIsActive() && motor.isBusy()) {
-                if (runtime.seconds() >= timeoutS){
+                if (runtime.seconds() >= timeoutS) {
                     Logger.message("encoderDrive timed out");
                     break;
                 }
-                positionMsg.setValue( "%d", motor.getCurrentPosition());
-                //telemetry.addData("Running to",  " %7d, currently at %7d", newPosition, motor.getCurrentPosition());
-                telemetry.update();
             }
 
             // Stop all motion;
             motor.setPower(0);
 
-            // Turn off RUN_TO_POSITION
-//            motor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-
-            positionMsg.setValue( "%d", motor.getCurrentPosition());
-
             //sleep(250);   // optional pause after each move.
         }
-    }
-
-    /**
-     * Based on the elapsed time return a value to increment by
-     * @return value to increment by
-     */
-    public int increment(int v1, int v2, int v3){
-        int sleepTime;
-        int delta;
-        if (runtime.seconds() < 3){
-            delta = v1;
-            sleepTime = 500;
-        }
-        else if (runtime.seconds() < 6){
-            delta = v2;
-            sleepTime = 200;
-        }
-        else{
-            delta = v3;
-            sleepTime = 100;
-        }
-        sleep(sleepTime);
-        return delta;
     }
 }
 
