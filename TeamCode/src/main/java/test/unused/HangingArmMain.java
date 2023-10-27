@@ -27,8 +27,9 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package hangingArm;
+package test.unused;
 
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.util.ElapsedTime;
@@ -39,7 +40,8 @@ import common.HangingArm;
  * Test code for the hanging arm
  */
 @TeleOp(name="Hanging Arm Main", group="Test")
-@SuppressWarnings("unused")
+@Disabled
+@SuppressWarnings("test/unused")
 public class HangingArmMain extends LinearOpMode {
 
   private final ElapsedTime runtime = new ElapsedTime();
