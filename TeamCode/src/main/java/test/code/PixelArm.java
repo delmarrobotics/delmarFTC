@@ -73,7 +73,8 @@ public class PixelArm extends LinearOpMode {
     /* Declare OpMode members. */
     private final ElapsedTime     runtime = new ElapsedTime();
 
-    private DcMotor motor   = null;  //  Used to control the left front drive wheel
+    private DcMotor motor = null;
+    private DcMotor turn = null;
     private int encoderCount = 0;
     private int lastCount = 0;
     private double speed = 0.2;
@@ -136,6 +137,7 @@ public class PixelArm extends LinearOpMode {
      */
     public void initMotor (){
         motor  = hardwareMap.get(DcMotor.class, "pixelLadder");
+        turn = hardwareMap.get(DcMotor.class, "pixelTurn");
         //2982 in extended and 0 at default
         motor.setDirection(DcMotor.Direction.REVERSE);
         motor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
@@ -174,7 +176,6 @@ public class PixelArm extends LinearOpMode {
 
             // Stop all motion;
             motor.setPower(0);
-
             //sleep(250);   // optional pause after each move.
         }
     }
