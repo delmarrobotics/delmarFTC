@@ -84,7 +84,11 @@ public class Robot {
 
         imu = hardwareMap.get(IMU.class, Config.IMU);
 
-        lifter = hardwareMap.get(DcMotor.class, Config.LIFTING_WENCH);
+        try {
+            lifter = hardwareMap.get(DcMotor.class, Config.LIFTING_WENCH);
+        } catch (Exception e) {
+            Logger.error(e, "Lifting wench hardware not found");
+        }
     }
 
     /**
