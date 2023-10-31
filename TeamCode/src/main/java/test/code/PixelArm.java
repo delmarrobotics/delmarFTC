@@ -94,6 +94,8 @@ public class PixelArm extends LinearOpMode {
     static final double     DRIVE_GEAR_REDUCTION    = 40 ;      // No External Gearing.
     static final double     WHEEL_DIAMETER_INCHES   = (96 / 25.4);     // Circumference of 96 mm wheel in inches
 
+    static boolean          pixelArmExtended        = false;
+
     @Override
     public void runOpMode() {
         telemetry.addLine("Press start");
@@ -106,8 +108,10 @@ public class PixelArm extends LinearOpMode {
 
         telemetry.setAutoClear(false);
         startMsg = telemetry.addData(" Pixel Arm Tool \nControls", "\n" +
-                "  A - go out\n" +
-                "  B - go in\n");
+                "  Y - raise arm\n" +
+                "  B - extend arm\n" +
+                "  X - retract arm\n" +
+                "  A - lower arm");
 
         speedMsg = telemetry.addData("Speed", speed);
 
@@ -118,7 +122,7 @@ public class PixelArm extends LinearOpMode {
             if (gamepad1.x) {
                 motorRunToPosition(speed, 0, 15.0);  // 15 second timeout
             } else if (gamepad1.b) {
-                motorRunToPosition(speed, 2500, 15.0);  // 15 second timeout was 2982
+                motorRunToPosition(speed, 2982, 15.0);  // 15 second timeout was 2982
             } else if (gamepad1.y) {
                 turnRunToPosition(speed, -2974, 15);  // 15 second timeout
             } else if (gamepad1.a) {
@@ -158,17 +162,15 @@ public class PixelArm extends LinearOpMode {
      *  Run the motor using the encoder to the specified position.
      *
      * @param speed motor power (0 - 1)
-     * @param count encoder counts to move the motor
+     * @param newPosition encoder counts to move the motor
      * @param timeoutS seconds to run before timing out
      */
-    public void motorRunToPosition(double speed, int count, double timeoutS) {
-        int newPosition;
+    public void motorRunToPosition(double speed, int newPosition, double timeoutS) {
 
         // Ensure that the OpMode is still active
         if (opModeIsActive()) {
 
             // Determine new target position, and pass to motor controller
-            newPosition = count;
             motor.setTargetPosition(newPosition);
             motor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
             motor.setPower(Math.abs(speed));
@@ -176,15 +178,29 @@ public class PixelArm extends LinearOpMode {
             runtime.reset();
             while (opModeIsActive() && motor.isBusy()) {
                 if (runtime.seconds() >= timeoutS) {
-                    Logger.message("encoderDrive timed out");
                     break;
                 }
             }
 
-            // Stop all motion;
-            motor.setPower(0);
+            if (newPosition > 0)
+                pixelArmExtended = true;
+            else {
+                pixelArmExtended = false;
+                // only stop the motor when the arm is lowered
+                motor.setPower(0);
+            }
         }
     }
+
+
+    public void pixelArmAdjustPosition(){
+        if (pixelArmExtended) {
+            if (motor.isBusy()) return;
+            motor.setTargetPosition(motor.getTargetPosition());
+        }
+    }
+
+
     public void turnRunToPosition(double speed, int count, double timeoutS) {
         int newPosition;
         int currentPosition;
