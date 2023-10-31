@@ -13,7 +13,7 @@ import common.Robot;
  *
  */
 
-@TeleOp(name="Main TeleOp Two", group="Main")
+@TeleOp(name="Main TeleOp", group="Main")
 public class MainTeleOp extends LinearOpMode {
 
     // Declare OpMode members.
