@@ -118,7 +118,7 @@ public class PixelArm extends LinearOpMode {
             if (gamepad1.x) {
                 motorRunToPosition(speed, 0, 15.0);  // 15 second timeout
             } else if (gamepad1.b) {
-                motorRunToPosition(speed, 2982, 15.0);  // 15 second timeout
+                motorRunToPosition(speed, 2500, 15.0);  // 15 second timeout was 2982
             } else if (gamepad1.y) {
                 turnRunToPosition(speed, -2974, 15);  // 15 second timeout
             } else if (gamepad1.a) {
@@ -163,19 +163,17 @@ public class PixelArm extends LinearOpMode {
      */
     public void motorRunToPosition(double speed, int count, double timeoutS) {
         int newPosition;
-        int currentPosition;
 
         // Ensure that the OpMode is still active
         if (opModeIsActive()) {
 
             // Determine new target position, and pass to motor controller
-            currentPosition = motor.getCurrentPosition();
-//            newPosition = currentPosition + count;
             newPosition = count;
             motor.setTargetPosition(newPosition);
             motor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
             motor.setPower(Math.abs(speed));
 
+            runtime.reset();
             while (opModeIsActive() && motor.isBusy()) {
                 if (runtime.seconds() >= timeoutS) {
                     Logger.message("encoderDrive timed out");
@@ -185,7 +183,6 @@ public class PixelArm extends LinearOpMode {
 
             // Stop all motion;
             motor.setPower(0);
-            //sleep(250);   // optional pause after each move.
         }
     }
     public void turnRunToPosition(double speed, int count, double timeoutS) {
@@ -194,25 +191,24 @@ public class PixelArm extends LinearOpMode {
 
         // Ensure that the OpMode is still active
         if (opModeIsActive()) {
-
             // Determine new target position, and pass to motor controller
-            currentPosition = turn.getCurrentPosition();
-//            newPosition = currentPosition + count;
             newPosition = count;
             turn.setTargetPosition(newPosition);
             turn.setMode(DcMotor.RunMode.RUN_TO_POSITION);
             turn.setPower(Math.abs(speed));
 
-            while (opModeIsActive() && turn.isBusy()) {
+            runtime.reset();
+            while (turn.isBusy()) {
+                if (! opModeIsActive()) {
+                    break;
+                }
                 if (runtime.seconds() >= timeoutS) {
-                    Logger.message("encoderDrive timed out");
                     break;
                 }
             }
 
             // Stop all motion;
             turn.setPower(0);
-            //sleep(250);   // optional pause after each move.
         }
     }
 }
