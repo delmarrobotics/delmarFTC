@@ -73,7 +73,7 @@ public class PixelArm extends LinearOpMode {
     /* Declare OpMode members. */
     private final ElapsedTime     runtime = new ElapsedTime();
 
-    private DcMotor motor = null;
+    private DcMotor ladder = null;
     private DcMotor turn = null;
     private int encoderCount = 0;
     private int lastCount = 0;
@@ -144,13 +144,13 @@ public class PixelArm extends LinearOpMode {
      * Initial the motor to calibrate.
      */
     public void initMotor (){
-        motor  = hardwareMap.get(DcMotor.class, "pixelLadder");
+        ladder  = hardwareMap.get(DcMotor.class, "pixelLadder");
         turn = hardwareMap.get(DcMotor.class, "pixelTurn");
         //2982 in extended and 0 at default
-        motor.setDirection(DcMotor.Direction.REVERSE);
-        motor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        motor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        motor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        ladder.setDirection(DcMotor.Direction.REVERSE);
+        ladder.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        ladder.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        ladder.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
         turn.setDirection(DcMotor.Direction.REVERSE);
         turn.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
@@ -171,12 +171,12 @@ public class PixelArm extends LinearOpMode {
         if (opModeIsActive()) {
 
             // Determine new target position, and pass to motor controller
-            motor.setTargetPosition(newPosition);
-            motor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-            motor.setPower(Math.abs(speed));
+            ladder.setTargetPosition(newPosition);
+            ladder.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+            ladder.setPower(Math.abs(speed));
 
             runtime.reset();
-            while (opModeIsActive() && motor.isBusy()) {
+            while (opModeIsActive() && ladder.isBusy()) {
                 if (runtime.seconds() >= timeoutS) {
                     break;
                 }
@@ -187,7 +187,7 @@ public class PixelArm extends LinearOpMode {
             else {
                 pixelArmExtended = false;
                 // only stop the motor when the arm is lowered
-                motor.setPower(0);
+                ladder.setPower(0);
             }
         }
     }
@@ -195,8 +195,8 @@ public class PixelArm extends LinearOpMode {
 
     public void pixelArmAdjustPosition(){
         if (pixelArmExtended) {
-            if (motor.isBusy()) return;
-            motor.setTargetPosition(motor.getTargetPosition());
+            if (ladder.isBusy()) return;
+            ladder.setTargetPosition(ladder.getTargetPosition());
         }
     }
 
