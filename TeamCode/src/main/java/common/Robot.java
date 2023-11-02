@@ -25,10 +25,13 @@ import org.firstinspires.ftc.robotcore.external.Telemetry;
 
 public class Robot {
     // Define Motor and Servo objects  (Make them private so they can't be accessed externally)
-    public DcMotor leftFrontDrive = null;  //  Used to control the left front drive wheel
-    public DcMotor rightFrontDrive = null;  //  Used to control the right front drive wheel
-    public DcMotor leftBackDrive = null;  //  Used to control the left back drive wheel
-    public DcMotor rightBackDrive = null;  //  Used to control the right back drive wheel
+    private DcMotor leftFrontDrive = null;  //  Used to control the left front drive wheel
+    private DcMotor rightFrontDrive = null;  //  Used to control the right front drive wheel
+    private DcMotor leftBackDrive = null;  //  Used to control the left back drive wheel
+    private DcMotor rightBackDrive = null;  //  Used to control the right back drive wheel
+
+    private DcMotor ladder = null;
+    private DcMotor turn = null;
 
 
     private final ElapsedTime runtime = new ElapsedTime();
@@ -46,6 +49,10 @@ public class Robot {
             (WHEEL_DIAMETER_INCHES * Math.PI);
     static final double RAMP_DISTANCE = WHEEL_DIAMETER_INCHES * 2 * COUNTS_PER_INCH; // Speed ramp up in encoder counts
     static final double MIN_SPEED = .02;
+
+    private int encoderCount = 0;
+    private int lastCount = 0;
+    private double speed = 0.2;
 
 
     public ColorSensor colorSensor = null;
@@ -100,6 +107,8 @@ public class Robot {
             rightFrontDrive = hardwareMap.get(DcMotor.class, Config.RIGHT_FRONT);
             leftBackDrive = hardwareMap.get(DcMotor.class, Config.LEFT_BACK);
             rightBackDrive = hardwareMap.get(DcMotor.class, Config.RIGHT_BACK);
+            ladder = hardwareMap.get(DcMotor.class, "pixelLadder");
+            turn = hardwareMap.get(DcMotor.class, "pixelTurn");
 
         } catch (Exception e) {
             Logger.error(e, "Hardware not found");
@@ -119,6 +128,16 @@ public class Robot {
         rightFrontDrive.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         leftBackDrive.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         rightBackDrive.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+
+        ladder.setDirection(DcMotor.Direction.REVERSE);
+        ladder.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        ladder.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        ladder.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+
+        turn.setDirection(DcMotor.Direction.REVERSE);
+        turn.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        turn.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        turn.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
     }
 
     /**
