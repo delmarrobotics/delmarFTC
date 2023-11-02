@@ -23,6 +23,6 @@ public class Config {
 
     public static final String IMU             =  "imu";
     public static final String PIXEL_ARM        = "pixelArm";
-    public static final String PIXEL_ARM_EXTEND = "pixelArmExtend";
+    public static final String PIXEL_ELBOW      = "pixelElbow";
     public static final String HAND             = "hand";
 }
