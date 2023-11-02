@@ -24,7 +24,7 @@ public class MainTeleOp extends LinearOpMode {
 
     @Override
     public void runOpMode() {
-        telemetry.addData("Status", "Initialized");
+        telemetry.addLine("Press start");
         telemetry.update();
 
         // Initialize the robot hardware.
