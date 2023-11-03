@@ -46,6 +46,10 @@ public class Robot {
     static final double PIXEL_ELBOW_SPEED = .2;
     static final int    PIXEL_ELBOW_DOWN = 0;
     static final int    PIXEL_ELBOW_UP = -2974;
+    static final double PIXEL_ARM_SPEED = .2;
+    static final int    PIXEL_ARM_IN = 0;
+    static final int    PIXEL_ARM_OUT = 2982;
+
 
     // Define Motor and Servo objects  (Make them private so they can't be accessed externally)
     public DcMotor leftFrontDrive = null;  //  Used to control the left front drive wheel
@@ -120,10 +124,10 @@ public class Robot {
             leftBackDrive.setDirection(DcMotorSimple.Direction.FORWARD);
             rightBackDrive.setDirection(DcMotorSimple.Direction.FORWARD);
         } else {
-            leftFrontDrive.setDirection(DcMotorSimple.Direction.REVERSE);
+            leftFrontDrive.setDirection(DcMotorSimple.Direction.FORWARD);
             rightFrontDrive.setDirection(DcMotorSimple.Direction.FORWARD);
             leftBackDrive.setDirection(DcMotorSimple.Direction.REVERSE);
-            rightBackDrive.setDirection(DcMotorSimple.Direction.FORWARD);
+            rightBackDrive.setDirection(DcMotorSimple.Direction.REVERSE);
         }
 
         leftFrontDrive.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
@@ -429,6 +433,29 @@ public class Robot {
             }
         }
         pixelElbow.setPower(0);
+    }
+
+    /**
+     * Extend or retract the pixel arm to the specified position. The home position is zero.
+     *
+     * @param newPosition
+     */
+    public  void pixelArmMove(int newPosition){
+
+        pixelArm.setTargetPosition(newPosition);
+        pixelArm.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        pixelArm.setPower(Math.abs(speed));
+
+        while (pixelArm.isBusy()) {
+            if (! opMode.opModeIsActive()) {
+                break;
+            }
+        }
+
+        if (newPosition == 0) {
+            // only stop the motor when the arm is lowered
+            pixelArm.setPower(0);
+        }
     }
 }
 
