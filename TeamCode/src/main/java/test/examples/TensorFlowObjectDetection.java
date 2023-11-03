@@ -55,6 +55,8 @@ import java.util.concurrent.TimeUnit;
 //@Disabled
 public class TensorFlowObjectDetection extends LinearOpMode {
 
+    private int gain = 16;
+
     private static final boolean USE_WEBCAM = true;  // true for webcam, false for phone camera
 
     // TFOD_MODEL_ASSET points to a model file stored in the project Asset location,
@@ -65,7 +67,7 @@ public class TensorFlowObjectDetection extends LinearOpMode {
     private static final String TFOD_MODEL_FILE = "team_prop_1.tflite";
     // Define the labels recognized in the model for TFOD (must be in training order!)
     private static final String[] LABELS = {
-       "Pixelx",
+       "Team Element",
     };
 
     /**
@@ -90,17 +92,14 @@ public class TensorFlowObjectDetection extends LinearOpMode {
         sleep(2000);
         ExposureControl exposureControl = visionPortal.getCameraControl(ExposureControl.class);
         GainControl gainControl = visionPortal.getCameraControl(GainControl.class);
-        exposureControl.setExposure(16, TimeUnit.MILLISECONDS);
-        sleep(50);
         if (exposureControl.getMode() != ExposureControl.Mode.Manual) {
             exposureControl.setMode(ExposureControl.Mode.Manual);
             sleep(50);
         }
-
-        gainControl.setGain(250);
-        telemetry.addData("exposure", " %d", exposureControl.getExposure(TimeUnit.MILLISECONDS));
-        telemetry.addData("gain", gainControl.getGain());
-        telemetry.update();
+        exposureControl.setExposure(16, TimeUnit.MILLISECONDS);
+        sleep(50);
+        gainControl.setGain(gain);
+        sleep(50);
 
         waitForStart();
 
@@ -110,6 +109,8 @@ public class TensorFlowObjectDetection extends LinearOpMode {
                 telemetryTfod();
 
                 // Push telemetry to the Driver Station.
+                telemetry.addData("exposure", " %d", exposureControl.getExposure(TimeUnit.MILLISECONDS));
+                telemetry.addData("gain", gainControl.getGain());
                 telemetry.update();
 
                 // Save CPU resources; can resume streaming when needed.
@@ -169,7 +170,7 @@ public class TensorFlowObjectDetection extends LinearOpMode {
         //builder.setCameraResolution(new Size(640, 480));
 
         // Enable the RC preview (LiveView).  Set "false" to omit camera monitoring.
-        //builder.enableLiveView(true);
+        builder.enableLiveView(true);
 
         // Set the stream format; MJPEG uses less bandwidth than default YUY2.
         //builder.setStreamFormat(VisionPortal.StreamFormat.YUY2);
@@ -213,12 +214,11 @@ public class TensorFlowObjectDetection extends LinearOpMode {
             telemetry.addData("Image", "%s (%.0f %% Conf.)", recognition.getLabel(), recognition.getConfidence() * 100);
             telemetry.addData("- Position", "%.0f / %.0f", x, y);
             telemetry.addData("- Size", "%.0f x %.0f", recognition.getWidth(), recognition.getHeight());
-            telemetry.addData("- Lable", "%s", recognition.getLabel());
+            telemetry.addData("- Label", "%s", recognition.getLabel());
             telemetry.addData("- Angle ", "%f  %f",
                     recognition.estimateAngleToObject(AngleUnit.DEGREES),
                     recognition.estimateAngleToObject(AngleUnit.RADIANS));
-
-        }   // end for() loop
+        }
 
     }   // end method telemetryTfod()
 
