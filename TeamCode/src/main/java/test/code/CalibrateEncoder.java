@@ -32,7 +32,6 @@ package test.code;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
-import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
@@ -66,7 +65,7 @@ import common.Logger;
  */
 
 @TeleOp(name="Calibrate Encoder", group="Test")
-@SuppressWarnings("unused")
+@SuppressWarnings("test/unused")
 
 public class CalibrateEncoder extends LinearOpMode {
 
@@ -203,11 +202,11 @@ public class CalibrateEncoder extends LinearOpMode {
                 motor.setPower(0);
                 sleep(200);
                 positionMsg.setValue( "%7d", motor.getCurrentPosition());
+
             } else if (gamepad1.dpad_up) {
                 while (gamepad1.dpad_up) {
                     Logger.message("%d %d", motor.getCurrentPosition(), motor.getTargetPosition());
                     runToPosition(0.1, motor.getTargetPosition(), 10);
-
                 }
             }
 
