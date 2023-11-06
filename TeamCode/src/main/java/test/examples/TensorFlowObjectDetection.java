@@ -55,7 +55,8 @@ import java.util.concurrent.TimeUnit;
 //@Disabled
 public class TensorFlowObjectDetection extends LinearOpMode {
 
-    private int gain = 16;
+
+    private int gain = 12;
 
     private static final boolean USE_WEBCAM = true;  // true for webcam, false for phone camera
 
@@ -89,7 +90,7 @@ public class TensorFlowObjectDetection extends LinearOpMode {
         telemetry.addData("DS preview on/off", "3 dots, Camera Stream");
         telemetry.addData(">", "Touch Play to start OpMode");
 
-        sleep(2000);
+        sleep(2500);
         ExposureControl exposureControl = visionPortal.getCameraControl(ExposureControl.class);
         GainControl gainControl = visionPortal.getCameraControl(GainControl.class);
         if (exposureControl.getMode() != ExposureControl.Mode.Manual) {

@@ -166,7 +166,7 @@ public class Vision {
             opMode.sleep(50);
         }
 
-        for (exposure = 0; exposure < 60; exposure += 4) {
+        for (exposure = 0; exposure < 30 ; exposure += 4) {
             exposureControl.setExposure(16, TimeUnit.MILLISECONDS);
             opMode.sleep(50);
 
@@ -175,8 +175,8 @@ public class Vision {
                 opMode.sleep(500);
 
                 if (findTeamElement()) {
-                   Logger.message("found - exposure: %d gain: %d  Confidence: %.0f", exposure, gain, element.getConfidence());
-                   if (element.getConfidence() > confidence) {
+                   Logger.message("found - exposure: %d gain: %d  Confidence: %.2f", exposure, gain, element.getConfidence());
+                   if (element.getConfidence() < confidence) {
                        bestExposure = exposure;
                        bestGain = gain;
                    }
