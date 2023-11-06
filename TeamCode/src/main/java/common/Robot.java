@@ -24,45 +24,56 @@ import org.firstinspires.ftc.robotcore.external.Function;
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 
 public class Robot {
+
+    // ToDo   The wheel on the competition robot and the practice robot do not rotate in the same directions. Set the "true"
+    // ToDo   to build for the competition robot and the "false" to build for the practice robot.
+    static final boolean COMP_ROBOT = false;
+
+    // Calculate the COUNTS_PER_INCH for the drive train.
+    static final double COUNTS_PER_MOTOR_REV = 28;              // HD Hex Motor Encoder
+    static final double DRIVE_GEAR_REDUCTION = 20;              // Gearing
+    static final double WHEEL_DIAMETER_INCHES = (96 / 25.4);     // 96 mm while converted to inches
+    static final double COUNTS_PER_INCH =
+            (COUNTS_PER_MOTOR_REV * DRIVE_GEAR_REDUCTION) / (WHEEL_DIAMETER_INCHES * Math.PI);
+    static final double RAMP_DISTANCE = WHEEL_DIAMETER_INCHES * 2 * COUNTS_PER_INCH; // Speed ramp up in encoder counts
+    static final double MIN_SPEED = .02;
+
+    private int encoderCount = 0;
+    private int lastCount = 0;
+    private double speed = 0.2;
+
+
+    static final double PIXEL_ELBOW_SPEED = .2;
+    static final int    PIXEL_ELBOW_DOWN = 0;
+    static final int    PIXEL_ELBOW_UP = -2974;
+    static final double PIXEL_ARM_SPEED = .2;
+    static final int    PIXEL_ARM_IN = 0;
+    static final int    PIXEL_ARM_OUT = 2982;
+
+
     // Define Motor and Servo objects  (Make them private so they can't be accessed externally)
     public DcMotor leftFrontDrive = null;  //  Used to control the left front drive wheel
     public DcMotor rightFrontDrive = null;  //  Used to control the right front drive wheel
     public DcMotor leftBackDrive = null;  //  Used to control the left back drive wheel
     public DcMotor rightBackDrive = null;  //  Used to control the right back drive wheel
 
+    private DcMotor pixelElbow = null;
+    private DcMotor pixelArm = null;
+    private DcMotor lifter = null;           // Motor to lift the robot off the ground
 
-    private final ElapsedTime runtime = new ElapsedTime();
+    private ColorSensor colorSensor = null;
+    private IMU imu = null;
 
-    // Calculate the COUNTS_PER_INCH for your specific drive train.
-    // Go to your motor vendor website to determine your motor's COUNTS_PER_MOTOR_REV
-    // For external drive gearing, set DRIVE_GEAR_REDUCTION as needed.
-    // For example, use a value of 2.0 for a 12-tooth spur gear driving a 24-tooth spur gear.
-    // This is gearing DOWN for less speed and more torque.
-    // For gearing UP, use a gear ratio less than 1.0. Note this will affect the direction of wheel rotation.
-    static final double COUNTS_PER_MOTOR_REV = 28;              // HD Hex Motor Encoder
-    static final double DRIVE_GEAR_REDUCTION = 40;              // Gearing  // ToDo verify gearing
-    static final double WHEEL_DIAMETER_INCHES = (96 / 25.4);     // 96 mm while converted to inches
-    static final double COUNTS_PER_INCH = (COUNTS_PER_MOTOR_REV * DRIVE_GEAR_REDUCTION) /
-            (WHEEL_DIAMETER_INCHES * Math.PI);
-    static final double DRIVE_SPEED = 0.5;
-    static final double RAMP_DISTANCE = WHEEL_DIAMETER_INCHES * 2 * COUNTS_PER_INCH; // Speed ramp up in encoder counts
-    static final double MIN_SPEED = .02;
-    static final double TURN_SPEED = 0.5;
-
-
-    public ColorSensor colorSensor = null;
-    public IMU imu = null;
-
-    public DcMotor lifter = null;       // Motor to lift the robot off the ground
-    public Servo dropper = null;        // Servo to drop the purple pixel
+    private Servo dropper = null;        // Servo to drop the purple pixel
 
     public HangingArm hangingArm = null;
 
-    public Telemetry telemetry;
+    private final ElapsedTime runtime = new ElapsedTime();
 
     /* Declare OpMode members. */
     private HardwareMap hardwareMap;
-    public LinearOpMode opMode;
+    private LinearOpMode opMode;
+    private Telemetry telemetry;
 
     // Define a constructor that allows the OpMode to pass a reference to itself.
     public Robot(LinearOpMode opMode) {
@@ -80,13 +91,18 @@ public class Robot {
     public void init() {
 
         initDriveTrain();
+        pixelArmInit();
 
         // ToDo Check the the configuration file has the correct color sensor hardware device selected.
- //       colorSensor = hardwareMap.get(ColorSensor.class, Config.COLOR_SENSOR);
+        //colorSensor = hardwareMap.get(ColorSensor.class, Config.COLOR_SENSOR);
 
         imu = hardwareMap.get(IMU.class, Config.IMU);
 
-        lifter = hardwareMap.get(DcMotor.class, Config.LIFTING_WENCH);
+        try {
+            lifter = hardwareMap.get(DcMotor.class, Config.LIFTING_WENCH);
+        } catch (Exception e) {
+            Logger.error(e, "Lifting wench hardware not found");
+        }
     }
 
     /**
@@ -98,15 +114,21 @@ public class Robot {
             rightFrontDrive = hardwareMap.get(DcMotor.class, Config.RIGHT_FRONT);
             leftBackDrive = hardwareMap.get(DcMotor.class, Config.LEFT_BACK);
             rightBackDrive = hardwareMap.get(DcMotor.class, Config.RIGHT_BACK);
-
         } catch (Exception e) {
             Logger.error(e, "Hardware not found");
         }
 
-        leftFrontDrive.setDirection(DcMotorSimple.Direction.REVERSE);
-        rightFrontDrive.setDirection(DcMotorSimple.Direction.REVERSE);
-        leftBackDrive.setDirection(DcMotorSimple.Direction.FORWARD);
-        rightBackDrive.setDirection(DcMotorSimple.Direction.FORWARD);
+        if (COMP_ROBOT) {
+            leftFrontDrive.setDirection(DcMotorSimple.Direction.REVERSE);
+            rightFrontDrive.setDirection(DcMotorSimple.Direction.REVERSE);
+            leftBackDrive.setDirection(DcMotorSimple.Direction.FORWARD);
+            rightBackDrive.setDirection(DcMotorSimple.Direction.FORWARD);
+        } else {
+            leftFrontDrive.setDirection(DcMotorSimple.Direction.FORWARD);
+            rightFrontDrive.setDirection(DcMotorSimple.Direction.FORWARD);
+            leftBackDrive.setDirection(DcMotorSimple.Direction.REVERSE);
+            rightBackDrive.setDirection(DcMotorSimple.Direction.REVERSE);
+        }
 
         leftFrontDrive.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         rightFrontDrive.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
@@ -117,6 +139,31 @@ public class Robot {
         rightFrontDrive.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         leftBackDrive.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         rightBackDrive.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+    }
+
+    /**
+     * Initialize the pixel arm hardware
+     */
+    private void pixelArmInit(){
+
+        try {
+            pixelArm  = hardwareMap.get(DcMotor.class, Config.PIXEL_ARM);
+            pixelElbow = hardwareMap.get(DcMotor.class, Config.PIXEL_ELBOW);
+
+            //2982 in extended and 0 at default
+            pixelArm.setDirection(DcMotor.Direction.REVERSE);
+            pixelArm.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+            pixelArm.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+            pixelArm.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+
+            pixelElbow.setDirection(DcMotor.Direction.REVERSE);
+            pixelElbow.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+            pixelElbow.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+            pixelElbow.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+
+        } catch (Exception  e) {
+            Logger.error(e, "Pixel arm hardware not found");
+        }
     }
 
     /**
@@ -182,8 +229,6 @@ public class Robot {
         // Step through each leg of the path,
         // Note: Reverse movement is obtained by setting a negative distance (not speed)
         encoderDrive(speed, leftInches/2, rightInches/2, timeoutS);  // S1: Forward 6 Inches with 5 Sec timeout
-//        encoderDrive(TURN_SPEED,   12, -12, 4.0);  // S2: Turn Right 12 Inches with 4 Sec timeout
-//        encoderDrive(DRIVE_SPEED, -24, -24, 4.0);  // S3: Reverse 24 Inches with 4 Sec timeout
 
         telemetry.addData("Path", "Complete");
         telemetry.update();
@@ -353,10 +398,7 @@ public class Robot {
     /**
      * Turn on the motor that drives the lifting wench
      */
-    public void lifterUp(){
-
-        lifter.setPower(1);
-    }
+    public void lifterUp() { lifter.setPower(1); }
 
     /**
      * Turn on the motor that drives the lifting wench
@@ -371,4 +413,49 @@ public class Robot {
     public void lifterStop(){
         lifter.setPower(0);
     }
+
+    /**
+     * Move the pixel arm elbow to the specified position
+     *
+     * @param newPosition position to move to
+     */
+    public void pixelElbowMove(int newPosition) {
+
+        // Determine new target position, and pass to motor controller
+        pixelElbow.setTargetPosition(newPosition);
+        pixelElbow.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        pixelElbow.setPower(Math.abs(PIXEL_ELBOW_SPEED));
+
+        runtime.reset();
+        while (pixelElbow.isBusy()) {
+            if (! opMode.opModeIsActive()) {
+                break;
+            }
+        }
+        pixelElbow.setPower(0);
+    }
+
+    /**
+     * Extend or retract the pixel arm to the specified position. The home position is zero.
+     *
+     * @param newPosition
+     */
+    public  void pixelArmMove(int newPosition){
+
+        pixelArm.setTargetPosition(newPosition);
+        pixelArm.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        pixelArm.setPower(Math.abs(speed));
+
+        while (pixelArm.isBusy()) {
+            if (! opMode.opModeIsActive()) {
+                break;
+            }
+        }
+
+        if (newPosition == 0) {
+            // only stop the motor when the arm is lowered
+            pixelArm.setPower(0);
+        }
+    }
 }
+
