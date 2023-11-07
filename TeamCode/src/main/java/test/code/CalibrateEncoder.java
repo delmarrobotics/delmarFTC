@@ -220,7 +220,7 @@ public class CalibrateEncoder extends LinearOpMode {
      * Initial the motor to calibrate.
      */
     public void initMotor (){
-        motor  = hardwareMap.get(DcMotor.class, "pixelTurn");
+        motor  = hardwareMap.get(DcMotor.class, "pixelElbow");
         //2982 in extended and 0 at default
         motor.setDirection(DcMotor.Direction.REVERSE);
         motor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
