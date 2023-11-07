@@ -64,7 +64,8 @@ public class MainTeleOp extends LinearOpMode {
                 }
             } else {
                 if (gamepad1.a){
-                    //  arm retracting
+                    //  arm elbow down
+
                 } else if (gamepad1.b) {
                     // grabbing pixel from intake
                 } else if (gamepad1.y){
