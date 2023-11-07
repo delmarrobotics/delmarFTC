@@ -1,11 +1,12 @@
 package main;
 
+import com.acmerobotics.roadrunner.geometry.Pose2d;
+import com.acmerobotics.roadrunner.trajectory.Trajectory;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
-import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
-import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
-import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.util.ElapsedTime;
+
+import org.firstinspires.ftc.teamcode.drive.SampleMecanumDrive;
 
 import common.Robot;
 
@@ -14,12 +15,13 @@ import common.Robot;
  *
  */
 
-@Autonomous(name="Blue Left Start", group="Main")  // ToDo change to @Autonomous when testing is complete
-public class BlueLeftAuto extends LinearOpMode {
+@Autonomous(name="Red Left Start", group="Main")  // ToDo change to @Autonomous when testing is complete
+public class RedLeftAuto extends LinearOpMode {
 
     // Declare OpMode members.
     private ElapsedTime runtime = new ElapsedTime();
     private Robot robot = null;
+    private SampleMecanumDrive drive = null;
 
     @Override
     public void runOpMode() {
@@ -30,17 +32,31 @@ public class BlueLeftAuto extends LinearOpMode {
         robot = new Robot(this);
         robot.init();
 
+         drive = new SampleMecanumDrive(hardwareMap);
+
         // Wait for the game to start (driver presses PLAY)
         waitForStart();
         runtime.reset();
 
+        if (robot.vision.findTeamElement() == false) {
+            Trajectory leftPath = drive.trajectoryBuilder(new Pose2d())
+                    .forward(27)
+                    .strafeLeft(12.25)
+                    .build();
+            drive.followTrajectory(leftPath);
+            //Todo save position of object
+        } else {
+            double angle = robot.vision.findTeamElementAngle();
+            if (angle > 5) {
+
+            } else {
+
+            }
+        }
+
         // run until the end of the match (driver presses STOP)
         while (opModeIsActive()) {
 
-            robot.moveByDistance(1, 12,12,10);    // move forward 12 inches
-            robot.setOrientation(-90);          //
-            robot.moveToColor(240);        // drive to the blue line
-            robot.dropPixel();                  // drop the purple pixel
 
             // Show the elapsed game time and wheel power.
             telemetry.addData("Status", "Run Time: " + runtime.toString());

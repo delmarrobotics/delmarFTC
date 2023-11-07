@@ -143,6 +143,13 @@ public class Vision {
         return true;
     }
 
+    public double findTeamElementAngle() {
+        if (element != null) {
+            return element.estimateAngleToObject(AngleUnit.DEGREES);
+        }
+        return 0;
+    }
+
     /**
      * Return the accuracy confidence of the recognized object.
      */

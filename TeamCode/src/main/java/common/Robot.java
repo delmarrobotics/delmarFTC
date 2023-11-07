@@ -68,6 +68,8 @@ public class Robot {
 
     public HangingArm hangingArm = null;
 
+    public Vision vision;
+
     private final ElapsedTime runtime = new ElapsedTime();
 
     /* Declare OpMode members. */
@@ -82,7 +84,7 @@ public class Robot {
         hangingArm = new HangingArm(opMode);
         telemetry = opMode.telemetry;
 
-
+        vision = new Vision(opMode);
     }
 
     /**
