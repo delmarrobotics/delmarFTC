@@ -1,5 +1,7 @@
 package common;
 
+import static java.lang.String.valueOf;
+
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
 import org.firstinspires.ftc.robotcore.external.hardware.camera.BuiltinCameraDirection;
@@ -25,7 +27,7 @@ public class Vision {
 
     private TfodProcessor tfod;             // TensorFlow Object Detection processor.
 
-    private AprilTagProcessor aprilTag; //AprilTag Detecction processor
+    private AprilTagProcessor aprilTag;     //AprilTag Detecction processor
     private VisionPortal visionPortal;      // Instance of the vision portal.
 
     private int gain = 16;                 // camera gain
@@ -33,7 +35,7 @@ public class Vision {
 
     Recognition element = null;            // recognized team element
 
-    public LinearOpMode     opMode;
+    public LinearOpMode opMode;
 
     // Constructor
     public Vision (LinearOpMode opMode) {
@@ -67,6 +69,7 @@ public class Vision {
         aprilTag = new AprilTagProcessor.Builder()
                 .build();
 
+
         // Create the vision portal by using a builder.
         VisionPortal.Builder builder = new VisionPortal.Builder();
 
@@ -87,7 +90,7 @@ public class Vision {
         //builder.setAutoStopLiveView(false);
 
         // Set and enable the processor.
-        builder.addProcessor(tfod);
+        builder.addProcessors(tfod, aprilTag);
 
         // Build the Vision Portal, using the above settings.
         visionPortal = builder.build();
@@ -153,6 +156,13 @@ public class Vision {
     public void enableAprilTag() {
         visionPortal.setProcessorEnabled(tfod, false);
         visionPortal.setProcessorEnabled(aprilTag, true);
+    }
+
+    public void enableBothVision() {
+        visionPortal.setProcessorEnabled(tfod, true);
+        visionPortal.setProcessorEnabled(aprilTag, true);
+        String active = String.valueOf(visionPortal.getProcessorEnabled(tfod)) + String.valueOf(visionPortal.getProcessorEnabled(aprilTag));
+        opMode.telemetry.addData("activeVisionPortal", active);
     }
 
 
