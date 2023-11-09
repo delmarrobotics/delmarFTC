@@ -154,7 +154,7 @@ public class CalibrateEncoder extends LinearOpMode {
                     telemetry.update();
                 }
 
-            } else if (gamepad1.left_trigger > 0) {
+            } else if (gamepad1.right_trigger > 0) {
                 // decrease calibration count
                 runtime.reset();
                 while (gamepad1.right_trigger > 0) {
