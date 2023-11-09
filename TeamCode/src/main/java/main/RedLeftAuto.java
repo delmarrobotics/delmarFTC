@@ -23,6 +23,9 @@ public class RedLeftAuto extends LinearOpMode {
     private Robot robot = null;
     private SampleMecanumDrive drive = null;
 
+    private Trajectory traj1;
+    private Trajectory traj2;
+
     @Override
     public void runOpMode() {
         telemetry.addData("Status", "Initialized");
@@ -39,11 +42,15 @@ public class RedLeftAuto extends LinearOpMode {
         runtime.reset();
 
         if (robot.vision.findTeamElement() == false) {
-            Trajectory leftPath = drive.trajectoryBuilder(new Pose2d())
+            traj1 = drive.trajectoryBuilder(new Pose2d())
                     .forward(27)
+                    .build();
+            traj2 = drive.trajectoryBuilder(traj1.end())
                     .strafeLeft(12.25)
                     .build();
-            drive.followTrajectory(leftPath);
+            drive.followTrajectory(traj1);
+            drive.followTrajectory(traj2);
+
             //Todo save position of object
         } else {
             double angle = robot.vision.findTeamElementAngle();

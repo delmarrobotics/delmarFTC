@@ -6,10 +6,10 @@ package common;
  */
 
 public class Config {
-    public static final String LEFT_FRONT       = "frontLeft";      // port 0
-    public static final String RIGHT_FRONT      = "frontRight";     // port 1
-    public static final String LEFT_BACK        = "backLeft";       // port 2
-    public static final String RIGHT_BACK       = "backRight";      // port 3
+    public static final String LEFT_FRONT       = "leftFront";      // port 0
+    public static final String RIGHT_FRONT      = "rightFront";     // port 1
+    public static final String LEFT_BACK        = "leftRear";       // port 2
+    public static final String RIGHT_BACK       = "rightRear";      // port 3
 
     public static final String COLOR_SENSOR     = "colorSensor";
     public static final String WEBCAM           = "Webcam 1";
