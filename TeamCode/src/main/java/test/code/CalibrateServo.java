@@ -77,7 +77,6 @@ public class CalibrateServo extends LinearOpMode {
     private Servo servo   = null;
     private double position = 0;
     private double target = 0;
-    private int lastCount = 0;
 
     private Telemetry.Item startMsg;
     private Telemetry.Item positionMsg;
@@ -90,83 +89,80 @@ public class CalibrateServo extends LinearOpMode {
         telemetry.update();
 
         servo = hardwareMap.get(Servo.class, Config.HAND_LOWER);
+        servo.setPosition(0);
+
         // Wait for the game to start (driver presses PLAY)
         waitForStart();
 
         telemetry.setAutoClear(false);
-        startMsg = telemetry.addData("Encoder Calibration\nControls", "\n" +
+        startMsg = telemetry.addData("Servo Calibration\nControls", "\n" +
                 "  left stick - manual servo control\n" +
-                "  left trigger - decrease encoder count\n" +
-                "  right trigger - increase encoder count\n" +
-                "  a - run motor for encoder count\n" +
-                "  x - zero encode count\n" +
-                "  b - set encoder count \n\n");
+                "  left trigger - decrease target position\n" +
+                "  right trigger - increase target position\n" +
+                "  a - set target position\n" +
+                "  x - run to zero position\n" +
+                "  b - run servo to target position\n\n");
 
         positionMsg = telemetry.addData("Servo position", 0);
         directionMsg = telemetry.addData("Servo direction", 0);
         targetMsg = telemetry.addData("Target position", 0);
 
-        positionMsg.setValue( "%.0f", servo.getPosition());
-        directionMsg.setValue("%s", servo.getDirection());
+        positionMsg.setValue( "%f", servo.getPosition());
         targetMsg.setValue("%f", target);
+        directionMsg.setValue("%s", servo.getDirection());
 
         telemetry.update();
 
         while (opModeIsActive()) {
 
             if (gamepad1.a) {
-                // Run servo to an target position
-                servo.setPosition(target);
-                //motor.setDirection(DcMotorSimple.Direction.FORWARD);
-
-            } else if (gamepad1.x) {
-                position = 0;
-                servo.setPosition(position);
-                // zero calibration count
-
-
-            } else if (gamepad1.b) {
-                // set target position
+                // set target position to currnt position
                 target = servo.getPosition();
 
+            } else if (gamepad1.x) {
+                // run to zero position
+                servo.setPosition(0);
+
+            } else if (gamepad1.b) {
+                // Run servo to an target position
+                servo.setPosition(target);
+
             } else if (gamepad1.right_trigger > 0) {
-                // increase calibration count
+                // increase target position
                 runtime.reset();
                 while (gamepad1.right_trigger > 0) {
-                    target += increment(1, 2, 4);
+                    target += increment(.01, .02, .04);
                     targetMsg.setValue("%f", target);
                     telemetry.update();
                 }
 
             } else if (gamepad1.left_trigger > 0) {
-                // decrease calibration count
+                // decrease the target position
                 runtime.reset();
-                while (gamepad1.right_trigger > 0) {
-                    target -= increment(1, 2, 4);
+                while (gamepad1.left_trigger > 0) {
+                    target -= increment(.01, .02, .04);
                     targetMsg.setValue("%f", target);
                     telemetry.update();
                 }
 
             } else if (gamepad1.left_stick_y > 0) {
                 // manually run the servo
-                //motor.setDirection(DcMotor.Direction.REVERSE);
-                while (true) {
+                while (gamepad1.left_stick_y > 0) {
                     //Logger.message("y stick %4.2f", gamepad1.left_stick_y );
-                    if (gamepad1.left_stick_y <= 0)  break;
                     position = servo.getPosition() + .01 ;
                     servo.setPosition(position);
                     positionMsg.setValue( "%f", position);
+                    telemetry.update();
                     sleep(200);
                 }
 
             } else if (gamepad1.left_stick_y < 0) {
                 // manually run the motor forward
-                //motor.setDirection(DcMotor.Direction.FORWARD);
-                while (true) {
-                    if (gamepad1.left_stick_y >= 0) break;
+                while (gamepad1.left_stick_y < 0) {
                     position = servo.getPosition() - .01;
                     servo.setPosition(position);
                     positionMsg.setValue( "%f", position);
+                    telemetry.update();
                     sleep(200);
                 }
 
@@ -177,6 +173,7 @@ public class CalibrateServo extends LinearOpMode {
             }
 
             positionMsg.setValue( "%f", servo.getPosition());
+            targetMsg.setValue("%f", target);
             telemetry.update();
         }
     }
@@ -187,9 +184,9 @@ public class CalibrateServo extends LinearOpMode {
      * Based on the elapsed time return a value to increment by
      * @return value to increment by
      */
-    public int increment(int v1, int v2, int v3){
+    public double increment(double v1, double v2, double v3){
         int sleepTime;
-        int delta;
+        double delta;
         if (runtime.seconds() < 3){
             delta = v1;
             sleepTime = 500;
