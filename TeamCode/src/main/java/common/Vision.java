@@ -25,9 +25,8 @@ public class Vision {
     private static final String TFOD_MODEL_FILE = "team_prop_1.tflite";
     private static final String[] LABELS = { "Team Element" };
 
-    private TfodProcessor tfod;             // TensorFlow Object Detection processor.
-
-    private AprilTagProcessor aprilTag;     //AprilTag Detecction processor
+    private TfodProcessor tfod;             // TensorFlow Object Detection processor
+    private AprilTagProcessor aprilTag;     // AprilTag Detecction processor
     private VisionPortal visionPortal;      // Instance of the vision portal.
 
     private int gain = 16;                 // camera gain
@@ -101,12 +100,16 @@ public class Vision {
         // Disable or re-enable the TFOD processor at any time.
         //visionPortal.setProcessorEnabled(tfod, true);
 
+        opMode.telemetry.addData("TensorFlow processor enabled ", visionPortal.getProcessorEnabled(tfod));
+        opMode.telemetry.addData("AprilTag processor enabled ", visionPortal.getProcessorEnabled(aprilTag));
+        opMode.telemetry.update();
+
     }   // end method initTfod()
 
     /**
      * Add telemetry about TensorFlow Object Detection (TFOD) recognitions.
      */
-    private void telemetryTfod() {
+    public void telemetryTfod() {
 
         List<Recognition> currentRecognitions = tfod.getRecognitions();
         opMode.telemetry.addData("# Objects Detected", currentRecognitions.size());
@@ -129,7 +132,7 @@ public class Vision {
         }
     }   // end method telemetryTfod()
 
-    private void telemetryAprilTag() {
+    public void telemetryAprilTag() {
         List<AprilTagDetection> currentDetections = aprilTag.getDetections();
         opMode.telemetry.addData("# AprilTags Detected", currentDetections.size());
 
