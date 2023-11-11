@@ -1,7 +1,8 @@
-package test.code;
+package test.unused;
 
 import com.qualcomm.hardware.rev.Rev2mDistanceSensor;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.hardware.ColorSensor;
 import com.qualcomm.robotcore.hardware.DcMotor;
@@ -13,6 +14,7 @@ import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import java.io.PrintStream;
 
 @Autonomous(name="mainCodeCopy")
+@Disabled
 public class mainJavaCopy extends OpMode
 {
     private DistanceSensor Distance=null ;
