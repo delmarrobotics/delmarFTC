@@ -27,17 +27,15 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package test.code;
+package test.unused;
 
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
-import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
-
-import common.Logger;
 
 /*
  * This OpMode illustrates the concept of driving a path based on encoder counts.
@@ -66,9 +64,10 @@ import common.Logger;
  */
 
 @TeleOp(name="Pixel Arm Tester", group="Test")
+@Disabled
 @SuppressWarnings("unused")
 
-public class PixelArm extends LinearOpMode {
+public class CalibratePixelArm extends LinearOpMode {
 
     /* Declare OpMode members. */
     private final ElapsedTime     runtime = new ElapsedTime();

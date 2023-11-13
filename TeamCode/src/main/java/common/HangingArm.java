@@ -38,6 +38,7 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.Gamepad;
 import com.qualcomm.robotcore.hardware.HardwareMap;
+import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.hardware.TouchSensor;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
@@ -47,28 +48,32 @@ import com.qualcomm.robotcore.util.ElapsedTime;
  */
 public class HangingArm
 {
-    // Define Drive constants.  Make them public so they CAN be used by the calling OpMode
-    static final double     HANGING_SERVO_POWER  = 1;    // speed to run the servo the deploys the arm
-    static final double     HANDING_MOTOR_POWER  = 1;    // speed to run the motor that extends to arm
-    static final double     HANGING_ARM_COUNTS_PER_MOTOR_REV    = 1120 ;  //  GoBilda 5202 435 RPM Motor Encoder
+    // Servo positions
+    private static final double ELBOW_HOME_POSITION = 0.97;
+    private static final double ELBOW_TARGET_POSITION = 0.48;
+    private static final double WRIST_HOME_POSITION = 0.70;
+    private static final double WRIST_TARGET_POSITION = 0.96;
+    private static final double THUMB_OPEN = 0.5;
+    private static final double THUMB_CLOSE = 1;
 
-    public LinearOpMode     opMode;
-    public CRServo          hangingServo = null;
-    public DcMotor          hangingMotor = null;
-    public TouchSensor      hangingTouchSensor = null;
+    private Servo elbow;
+    private Servo wrist;
+    private Servo thumb;
 
     private final ElapsedTime runtime = new ElapsedTime();
+
+    public LinearOpMode     opMode;
 
     //constructor
     public HangingArm(LinearOpMode opMode) {
         this.opMode = opMode;
+        init();
     }
-/* ToDo add back in
 
-    public HangingArm(LinearOpMode opMode){
-        this.opMode = opMode;
+    private class Buttons {
+        boolean yPressed = false;
     }
-*/
+    Buttons buttons;
 
     /**
      * Initialize the hanging arm hardware
@@ -79,159 +84,90 @@ public class HangingArm
 
         try {
             // Initial the hanging arm
-            hangingServo = hardwareMap.get(CRServo.class, "hangingArmServo");
-            hangingMotor = hardwareMap.get(DcMotor.class, "hangingArmMotor");
-            hangingTouchSensor = hardwareMap.get(TouchSensor.class, "hangingArmUp");
+            elbow = hardwareMap.get(Servo.class, Config.HANGING_ELBOW);
+            wrist = hardwareMap.get(Servo.class, Config.HANGING_WRIST);
+            thumb = hardwareMap.get(Servo.class, Config.HANDING_THUMB);
+            thumb.setPosition(THUMB_CLOSE);
         } catch (Exception e){
-            Logger.error(e, "Hanging hardware not found");
+            Logger.error(e, "Hanging arm hardware not found");
         }
-
-        // Tell the driver that initialization is complete.
-        opMode.telemetry.addData("Status", "Hanging Arm Initialized");
-
-        calibrateArm(.2, 10, 3000);
-
     }
 
-
     /**
-     * Calibrate the telescoping part of the arm
-     *
-     *  @param speed        Motor power (-1.0 to 1.0) >0 is up
-     *  @param revolutions  Number of motor revolutions
-     *  @param timeout      Maximum time to run in millisecond
+     * Automatically raise the hanging arm to its fully deployed position
      */
-    public void calibrateArm(double speed, int revolutions, double timeout) {
+    public void elbowUp(){
+        elbow.setPosition(ELBOW_TARGET_POSITION);
+    }
 
-        int targetPosition;
+    public void elbowDown(){
+        elbow.setPosition(ELBOW_HOME_POSITION);
+    }
 
-        hangingMotor.setDirection(DcMotor.Direction.FORWARD);
-        hangingMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        hangingMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+    public void wristUp() {
+        wrist.setPosition(WRIST_HOME_POSITION);
+    }
 
-        // Determine new target position, and pass to motor controller
-        targetPosition = (int)(revolutions * HANGING_ARM_COUNTS_PER_MOTOR_REV);
-        hangingMotor.setTargetPosition(targetPosition);
+    public void wristDown() {
+        wrist.setPosition(WRIST_TARGET_POSITION);
+    }
 
-        hangingMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+    public void thumbOpen() {
+        thumb.setPosition(THUMB_OPEN);
+    }
 
-        // Reset the timeout time and start motion.
-        runtime.reset();
-        hangingMotor.setPower(Math.abs(speed));
-
-        // Keep looping while there is time left, and the motors are running.
-        //while (hangingMotor.isBusy() ) {
-        while (true ) {
-            // Check if timed out
-            if (runtime.milliseconds() >= timeout){
-                opMode.telemetry.addData("Stopped", "Timed out after %6.0f millisecond", timeout);
-                opMode.telemetry.addData("Currently at",  " at %7d", hangingMotor.getCurrentPosition());
-                Logger.message ("timeout");
-                break;
-            }
-
-            // Display it for the driver.
-            opMode.telemetry.addData("Running to",  " %7d", targetPosition);
-            opMode.telemetry.addData("Currently at",  " at %7d", hangingMotor.getCurrentPosition());
-            opMode.telemetry.update();
-        }
-
-        // Stop the motion if we timed outls
-        hangingMotor.setPower(0);
-        hangingMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+    public void thumbClose() {
+        thumb.setPosition(THUMB_CLOSE);
     }
 
     /**
      * Manually control the handing arm
      */
-    public void manualControl() {
+    public void control() {
 
         Gamepad gamepad = opMode.gamepad1;
 
         // Raise the hanging arm from its stored position
         if (gamepad.dpad_right) {
-            Logger.message("Hanging Arm Out");
-            hangingServo.setDirection(DcMotor.Direction.FORWARD);
-            hangingServo.setPower(HANGING_SERVO_POWER);
-            while (opMode.gamepad1.dpad_right) {
-                opMode.telemetry.addData("Status", "Hanging Arm Out");
-                opMode.telemetry.update();
-            }
-            hangingServo.setPower(0);
+            wristUp();
+            Logger.message("Hanging Wrist up");
         }
         // Lower the hanging arm to its stored position
         else if (gamepad.dpad_left) {
-            Logger.message("Hanging Arm In");
-            hangingServo.setDirection(DcMotor.Direction.REVERSE);
-            hangingServo.setPower(HANGING_SERVO_POWER);
-            while (gamepad.dpad_left){
-                opMode.telemetry.addData("Status", "Hanging Arm IN");
-                opMode.telemetry.update();
-            }
-            hangingServo.setPower(0);
+            wristDown();
+            Logger.message("Hanging Wrist In");
         }
         // Extend the telescoping part the the arm
         else if (gamepad.dpad_up) {
+            elbowUp();
             Logger.message("Hanging Arm Up");
-            hangingMotor.setDirection(DcMotorSimple.Direction.FORWARD);
-            hangingMotor.setPower(HANDING_MOTOR_POWER);
-            while (gamepad.dpad_up){
-                opMode.telemetry.addData("Status", "Hanging Arm Up");
-                opMode.telemetry.update();
-            }
-            hangingMotor.setPower(0);
         }
         // Retract the telescoping part the the arm
         else if (gamepad.dpad_down) {
+            elbowDown();
             Logger.message("Hanging Arm Down");
-            hangingMotor.setDirection(DcMotorSimple.Direction.REVERSE);
-            hangingMotor.setPower(HANDING_MOTOR_POWER);
-            while (gamepad.dpad_down){
-                opMode.telemetry.addData("Status", "Hanging Arm Down");
-                opMode.telemetry.update();
-            }
-            hangingMotor.setPower(0);
         }
-        // Automatically raise the hanging arm to its fully deployed position
+
+        else if (gamepad.a) {
+            thumbOpen();
+            Logger.message("Hanging Arm open hook release");
+        }
+        else if (gamepad.b) {
+            thumbClose();
+            Logger.message("Hanging Arm close hook release");
+        }
+
+        // Open or close the hook release
         else if (gamepad.y) {
-            Logger.message("Hanging Arm Automatically raise");
-            armUp();
+            if (thumb.getPosition() == THUMB_CLOSE){
+            } else {
+            }
         }
         // Lift the robot off the ground
-        else if (gamepad.a) {
+        else if (gamepad.x) {
             Logger.message("Hanging Arm lift");
-            armLift();
-        }
-        // Calibrate the telescoping part of the arm
-        else if (gamepad.b) {
-            Logger.message("Hanging Arm Calibrate");
-            calibrateArm(.2, 2, 300);
         }
     }
-
-
-    /**
-     *  Returns true if the hanging arm is in its full upright position
-     */
-    public Boolean hangingArmIsUp(){
-        return hangingTouchSensor.isPressed();
-    }
-
-
-    /**
-     * Automatically raise the hanging arm to its fully deployed position
-     */
-    public void armUp(){
-
-    }
-
-    /**
-     * Lift the robot off the ground
-     */
-    public void armLift()
-    {
-    }
-
 }
 
 
