@@ -50,10 +50,10 @@ public class HangingArm
 {
     // Servo positions
     private static final double ELBOW_HOME_POSITION = 0.97;
-    private static final double ELBOW_TARGET_POSITION = 0.48;
+    private static final double ELBOW_TARGET_POSITION = 0.52;
     private static final double WRIST_HOME_POSITION = 0.70;
     private static final double WRIST_TARGET_POSITION = 0.96;
-    private static final double THUMB_OPEN = 0.5;
+    private static final double THUMB_OPEN = 0.55;
     private static final double THUMB_CLOSE = 1;
 
     private Servo elbow;

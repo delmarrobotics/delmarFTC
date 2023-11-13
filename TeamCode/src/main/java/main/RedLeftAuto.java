@@ -32,8 +32,8 @@ public class RedLeftAuto extends LinearOpMode {
         telemetry.update();
 
         // Initialize the robot hardware.
-        robot = new Robot(this);
-        robot.init();
+        //robot = new Robot(this);
+        //robot.init();
 
          drive = new SampleMecanumDrive(hardwareMap);
 
