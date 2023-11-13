@@ -60,7 +60,7 @@ public class CalibrateServo extends LinearOpMode {
         String  name;
         Servo   servo;
     }
-    ServoInfo[] servos = new ServoInfo[5];
+    ServoInfo[] servos = new ServoInfo[12];
     int servoCount;
     int currentServo;
 

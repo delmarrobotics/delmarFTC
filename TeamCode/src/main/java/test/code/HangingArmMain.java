@@ -1,4 +1,4 @@
-package test.unused;
+package test.code;
 
 import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
@@ -11,18 +11,19 @@ import common.HangingArm;
  * Test code for the hanging arm
  */
 @TeleOp(name="Hanging Arm Test", group="Test")
-@Disabled
-@SuppressWarnings("test/unused")
+@SuppressWarnings("unused")
 public class HangingArmMain extends LinearOpMode {
 
   private final ElapsedTime runtime = new ElapsedTime();
 
-  HangingArm hangingArm = new HangingArm(this);
+  HangingArm hangingArm = null;
 
   @Override
   public void runOpMode() {
     telemetry.addData("Status", "Initialized");
     telemetry.update();
+
+    hangingArm = new HangingArm(this);
 
     // Wait for the game to start (driver presses PLAY)
     waitForStart();

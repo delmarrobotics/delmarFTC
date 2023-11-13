@@ -70,6 +70,11 @@ public class HangingArm
         init();
     }
 
+    private class Buttons {
+        boolean yPressed = false;
+    }
+    Buttons buttons;
+
     /**
      * Initialize the hanging arm hardware
      */
@@ -82,6 +87,7 @@ public class HangingArm
             elbow = hardwareMap.get(Servo.class, Config.HANGING_ELBOW);
             wrist = hardwareMap.get(Servo.class, Config.HANGING_WRIST);
             thumb = hardwareMap.get(Servo.class, Config.HANDING_THUMB);
+            thumb.setPosition(THUMB_CLOSE);
         } catch (Exception e){
             Logger.error(e, "Hanging arm hardware not found");
         }
@@ -123,30 +129,42 @@ public class HangingArm
 
         // Raise the hanging arm from its stored position
         if (gamepad.dpad_right) {
-            Logger.message("Hanging Arm Out");
+            wristUp();
+            Logger.message("Hanging Wrist up");
         }
         // Lower the hanging arm to its stored position
         else if (gamepad.dpad_left) {
-            Logger.message("Hanging Arm In");
+            wristDown();
+            Logger.message("Hanging Wrist In");
         }
         // Extend the telescoping part the the arm
         else if (gamepad.dpad_up) {
+            elbowUp();
             Logger.message("Hanging Arm Up");
         }
         // Retract the telescoping part the the arm
         else if (gamepad.dpad_down) {
+            elbowDown();
             Logger.message("Hanging Arm Down");
         }
+
+        else if (gamepad.a) {
+            thumbOpen();
+            Logger.message("Hanging Arm open hook release");
+        }
+        else if (gamepad.b) {
+            thumbClose();
+            Logger.message("Hanging Arm close hook release");
+        }
+
         // Open or close the hook release
         else if (gamepad.y) {
             if (thumb.getPosition() == THUMB_CLOSE){
-                Logger.message("Hanging Arm open hook release");
             } else {
-                Logger.message("Hanging Arm close hook release");
             }
         }
         // Lift the robot off the ground
-        else if (gamepad.a) {
+        else if (gamepad.x) {
             Logger.message("Hanging Arm lift");
         }
     }
