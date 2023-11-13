@@ -24,6 +24,7 @@ public class Config {
 
     public static final String PIXEL_ARM        = "pixelArm";
     public static final String PIXEL_ELBOW      = "pixelElbow";
+    public static final String PIXEL_WRIST      = "pixelWrist";
     public static final String HAND_UPPER       = "handUpper";
     public static final String HAND_LOWER       = "handLower";
 
