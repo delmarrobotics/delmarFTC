@@ -29,6 +29,7 @@
 
 package test.unused;
 
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
@@ -63,6 +64,7 @@ import org.firstinspires.ftc.robotcore.external.Telemetry;
  */
 
 @TeleOp(name="Pixel Arm Tester", group="Test")
+@Disabled
 @SuppressWarnings("unused")
 
 public class CalibratePixelArm extends LinearOpMode {
