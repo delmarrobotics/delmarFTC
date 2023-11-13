@@ -12,11 +12,13 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 public class PixelArm {
 
     static final double PIXEL_ELBOW_SPEED = .2;
-    static final int PIXEL_ELBOW_DOWN = 0;
-    static final int PIXEL_ELBOW_UP = -2974;
     static final double PIXEL_ARM_SPEED = .2;
-    static final int PIXEL_ARM_IN = 0;
-    static final int PIXEL_ARM_OUT = 2982;
+    static final int    PIXEL_ELBOW_DOWN = 0;
+    static final int    PIXEL_ELBOW_UP = -2974;
+    static final int    PIXEL_ARM_IN = 0;
+    static final int    PIXEL_ARM_OUT = 2982;
+    static final double PIXEL_WRIST_HOME = 0.44;
+    static final double PIXEL_WRIST_TARGET = 0.50;
     static final double HAND_UPPER_CLOSED = 0.66 ;
     static final double HAND_UPPER_OPENED = 0.63;
     static final double HAND_LOWER_CLOSED = 0.445;
@@ -25,6 +27,7 @@ public class PixelArm {
 
     private DcMotor pixelElbow = null;
     private DcMotor pixelArm = null;
+    private Servo pixelWrist = null;
     private Servo handUpper = null;
     private Servo handLower = null;
 
@@ -41,6 +44,7 @@ public class PixelArm {
         try {
             pixelArm = opMode.hardwareMap.get(DcMotor.class, Config.PIXEL_ARM);
             pixelElbow = opMode.hardwareMap.get(DcMotor.class, Config.PIXEL_ELBOW);
+            pixelWrist = opMode.hardwareMap.get(Servo.class, Config.PIXEL_WRIST);
             handUpper = opMode.hardwareMap.get(Servo.class, Config.HAND_UPPER);
             handLower = opMode.hardwareMap.get(Servo.class, Config.HAND_LOWER);
 
@@ -70,7 +74,8 @@ public class PixelArm {
      */
     public void pixelElbowMove(int newPosition) {
 
-        // Determine new target position, and pass to motor controller
+        int from = pixelElbow.getCurrentPosition();
+        pixelElbow.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         pixelElbow.setTargetPosition(newPosition);
         pixelElbow.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         pixelElbow.setPower(Math.abs(PIXEL_ELBOW_SPEED));
@@ -82,6 +87,8 @@ public class PixelArm {
             }
         }
         pixelElbow.setPower(0);
+        int to = pixelElbow.getCurrentPosition();
+        Logger.message("move elbow from %d to %d, new position %d", from, to, newPosition);
     }
 
     /**
@@ -105,6 +112,10 @@ public class PixelArm {
             // only stop the motor when the arm is lowered
             pixelArm.setPower(0);
         }
+    }
+
+    public void pixelWristMove(double position) {
+        pixelWrist.setPosition(position);
     }
 
     public void openUpperHand() {
@@ -161,15 +172,20 @@ public class PixelArm {
             Logger.message("Upper hand closed");
             closeUpperHand();
         }
-        // Open the upper hand
+        // Open the lower hand
         else if (gamepad.x) {
             openLowerHand();
         }
-        // Close the upper hand
+        // Close the lower hand
         else if (gamepad.y) {
             closeLowerHand();
         }
-        else {
+        else if (gamepad.left_bumper) {
+            pixelWristMove(PIXEL_WRIST_HOME);
+        }
+        else if (gamepad.right_bumper) {
+            pixelWristMove(PIXEL_WRIST_TARGET);
+        } else {
             handled = false;
         }
         return handled;

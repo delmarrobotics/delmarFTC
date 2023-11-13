@@ -183,7 +183,7 @@ public class CalibrateEncoder extends LinearOpMode {
 
             } else if (gamepad1.left_stick_y > 0) {
                 // manually run the motor forward
-                //motor.setDirection(DcMotor.Direction.REVERSE);
+                motor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
                 motor.setPower(-speed);
                 while (true) {
                     //Logger.message("y stick %4.2f", gamepad1.left_stick_y );
@@ -196,7 +196,7 @@ public class CalibrateEncoder extends LinearOpMode {
 
             } else if (gamepad1.left_stick_y < 0) {
                 // manually run the motor forward
-                //motor.setDirection(DcMotor.Direction.FORWARD);
+                motor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
                 motor.setPower(speed);
                 while (true) { if (gamepad1.left_stick_y >= 0) break; }
                 motor.setPower(0);

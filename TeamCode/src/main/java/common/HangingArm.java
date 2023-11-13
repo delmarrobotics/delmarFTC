@@ -50,7 +50,8 @@ public class HangingArm
 {
     // Servo positions
     private static final double ELBOW_HOME_POSITION = 0.97;
-    private static final double ELBOW_TARGET_POSITION = 0.48;
+    private static final double ELBOW_TARGET_POSITION = 0.64;
+    private static final double ELBOW_LOCK_POSITION = 0.69;
     private static final double WRIST_HOME_POSITION = 0.70;
     private static final double WRIST_TARGET_POSITION = 0.96;
     private static final double THUMB_OPEN = 0.5;
@@ -155,6 +156,8 @@ public class HangingArm
         else if (gamepad.b) {
             thumbClose();
             Logger.message("Hanging Arm close hook release");
+        } else if (gamepad.x) {
+            elbow.setPosition(ELBOW_LOCK_POSITION);
         }
 
         // Open or close the hook release
