@@ -46,7 +46,7 @@ import org.firstinspires.ftc.teamcode.drive.SampleMecanumDrive;
  */
 
 @TeleOp(name="RoadRunner Test", group="Test")
-//@Disabled
+@Disabled
 public class RoadRunnerTest extends LinearOpMode {
 
     private ElapsedTime runtime = new ElapsedTime();
