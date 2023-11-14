@@ -185,7 +185,29 @@ public class PixelArm {
         }
         else if (gamepad.right_bumper) {
             pixelWristMove(PIXEL_WRIST_TARGET);
-        } else {
+        }
+        // manually move pixel arm
+        else if (gamepad.left_stick_y > 0) {
+            pixelElbow.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+            pixelElbow.setPower(-PIXEL_ELBOW_SPEED);
+            while (true) {
+                if (gamepad.left_stick_y <= 0)
+                    break;
+            }
+                pixelElbow.setPower(0);
+            opMode.sleep(200);
+            Logger.message( "elbow position %7d", pixelElbow.getCurrentPosition());
+        }
+        // manually move pixel arm
+        else if (gamepad.left_stick_y < 0) {
+            pixelElbow.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+            pixelElbow.setPower(PIXEL_ELBOW_SPEED);
+            while (true) { if (gamepad.left_stick_y >= 0) break; }
+            pixelElbow.setPower(0);
+            opMode.sleep(200);
+            Logger.message( "elbow position %7d", pixelElbow.getCurrentPosition());
+        }
+        else {
             handled = false;
         }
         return handled;

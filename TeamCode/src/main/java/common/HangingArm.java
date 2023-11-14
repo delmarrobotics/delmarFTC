@@ -139,9 +139,10 @@ public class HangingArm
     /**
      * Manually control the handing arm
      */
-    public void control() {
+    public boolean control() {
 
-        Gamepad gamepad = opMode.gamepad2;
+        Gamepad gamepad = opMode.gamepad1;
+        boolean handled = true;
 
         // Raise the hanging arm from its stored position
         if (gamepad.dpad_right) {
@@ -163,6 +164,7 @@ public class HangingArm
             elbowDown();
             Logger.message("Hanging Arm Down");
         }
+
         else if (gamepad.a) {
             thumbOpen();
             Logger.message("Hanging Arm open hook release");
@@ -210,11 +212,14 @@ public class HangingArm
                 opMode.sleep(100);
             }
         }
-
         // Lift the robot off the ground
         else if (gamepad.y) {
             Logger.message("Hanging Arm lift");
         }
+        else{
+            handled = false;
+        }
+        return handled;
     }
 }
 

@@ -44,6 +44,10 @@ public class MainTeleOp extends LinearOpMode {
             double turn   = -gamepad1.right_stick_x / 3.0;  // Reduce turn rate to 33%.
             robot.moveRobot(drive, strafe, turn);
 
+            if (robot.hangingArm.control()){
+
+            }
+
             if (gamepad1.left_bumper) {
                 robot.moveByDistance(0.5,12,12,10);
                 sleep(250);
