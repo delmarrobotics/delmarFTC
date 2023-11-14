@@ -32,8 +32,8 @@ public class RedLeftAuto extends LinearOpMode {
         telemetry.update();
 
         // Initialize the robot hardware.
-        //robot = new Robot(this);
-        //robot.init();
+        robot = new Robot(this);
+        robot.init();
 
          drive = new SampleMecanumDrive(hardwareMap);
 
@@ -43,10 +43,10 @@ public class RedLeftAuto extends LinearOpMode {
 
         if (robot.vision.findTeamElement() == false) {
             traj1 = drive.trajectoryBuilder(new Pose2d())
-                    .forward(27)
+                    .forward(30)
                     .build();
             traj2 = drive.trajectoryBuilder(traj1.end())
-                    .strafeLeft(12.25)
+                    .strafeLeft(20)
                     .build();
             drive.followTrajectory(traj1);
             drive.followTrajectory(traj2);
