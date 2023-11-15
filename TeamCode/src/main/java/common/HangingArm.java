@@ -139,12 +139,12 @@ public class HangingArm
             elbowDown();
             Logger.message("Hanging Arm Down");
 
-        } else if (gamepad.dpad_right) {
+        } else if (gamepad.dpad_left) {
             // Turn the hook to it hanging position
             wristUp();
             Logger.message("Hanging Wrist up");
         }
-        else if (gamepad.dpad_left) {
+        else if (gamepad.dpad_right) {
             // Move the hook to its stored position
             wristDown();
             Logger.message("Hanging Wrist In");
@@ -184,7 +184,7 @@ public class HangingArm
         } else if (gamepad.right_stick_y > 0) {
             // manually move the wrist
             while (gamepad.right_stick_y > 0) {
-                double position = wrist.getPosition() + .01 ;
+                double position = wrist.getPosition() + .005 ;
                 wrist.setPosition(position);
                 Logger.message("wrist position %f", position);
                 opMode.sleep(100);
@@ -193,7 +193,7 @@ public class HangingArm
         } else if (gamepad.right_stick_y < 0) {
             // manually move the wrist
             while (gamepad.right_stick_y < 0) {
-                double position = wrist.getPosition() - .01;
+                double position = wrist.getPosition() - .005;
                 wrist.setPosition(position);
                 Logger.message("wrist position %f", position);
                 opMode.sleep(100);
