@@ -16,6 +16,9 @@ import common.Robot;
 @TeleOp(name="Main TeleOp", group="Main")
 public class MainTeleOp extends LinearOpMode {
 
+    public enum GamepadMode { PIXEL, HANGING };
+    GamepadMode mode;
+
     // Declare OpMode members.
     private ElapsedTime runtime = new ElapsedTime();
 
@@ -35,22 +38,27 @@ public class MainTeleOp extends LinearOpMode {
         waitForStart();
         runtime.reset();
 
+        mode = GamepadMode.HANGING;
+        robot.hangingArm.displayControls();
+
         // run until the end of the match (driver presses STOP)
         while (opModeIsActive()) {
 
-            // POV Mode uses left stick to go forw ard, and right stick to turn.
-            double drive  = -gamepad1.left_stick_y  / 2.0;  // Reduce drive rate to 50%.
-            double strafe = -gamepad1.left_stick_x  / 2.0;  // Reduce strafe rate to 50%.
-            double turn   = -gamepad1.right_stick_x / 3.0;  // Reduce turn rate to 33%.
-            robot.moveRobot(drive, strafe, turn);
+            if (! gamepad1.atRest())
+            {
+                // POV Mode uses left stick to go forward, and right stick to turn.
+                double drive  = -gamepad1.left_stick_y  / 2.0;  // Reduce drive rate to 50%.
+                double strafe = -gamepad1.left_stick_x  / 2.0;  // Reduce strafe rate to 50%.
+                double turn   = -gamepad1.right_stick_x / 3.0;  // Reduce turn rate to 33%.
+                robot.moveRobot(drive, strafe, turn);
+            }
 
-            if (robot.hangingArm.control()){
-
+            if (robot.hangingArm.control()) {
+                continue;
             }
 
             if (gamepad1.left_bumper) {
-                robot.moveByDistance(0.5,12,12,10);
-                sleep(250);
+
             } else if (gamepad1.right_bumper) {
                 // robot lifter controls
                 if (gamepad1.left_trigger > 0){
@@ -80,9 +88,8 @@ public class MainTeleOp extends LinearOpMode {
 
             }
 
-
             // Show the elapsed game time and wheel power.
-            telemetry.addData("Status", "Run Time: " + runtime.toString());
+            //telemetry.addData("Status", "Run Time: " + runtime.toString());
             telemetry.update();
         }
     }
