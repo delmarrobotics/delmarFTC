@@ -30,6 +30,8 @@ public class PixelArmTest extends LinearOpMode {
     waitForStart();
     runtime.reset();
 
+    pixelArm.displayControls();
+
     // run until the end of the match (driver presses STOP)
     while (opModeIsActive()) {
 

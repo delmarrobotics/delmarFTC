@@ -13,6 +13,8 @@ public class PixelArm {
 
     static final double PIXEL_ELBOW_SPEED = .2;
     static final double PIXEL_ARM_SPEED = .2;
+
+    // Position for all the pixel arm servos and motor encoders
     static final int    PIXEL_ELBOW_DOWN = 0;
     static final int    PIXEL_ELBOW_UP = -2974;
     static final int    PIXEL_ARM_IN = 0;
@@ -23,7 +25,6 @@ public class PixelArm {
     static final double HAND_UPPER_OPENED = 0.63;
     static final double HAND_LOWER_CLOSED = 0.445;
     static final double HAND_LOWER_OPENED = 0.41;
-
 
     private DcMotor pixelElbow = null;
     private DcMotor pixelArm = null;
@@ -94,7 +95,7 @@ public class PixelArm {
     /**
      * Extend or retract the pixel arm to the specified position. The home position is zero.
      *
-     * @param newPosition
+     * @param newPosition position to move to
      */
     public void pixelArmMove(int newPosition) {
 
@@ -134,6 +135,22 @@ public class PixelArm {
         handLower.setPosition(HAND_LOWER_CLOSED);
     }
 
+    public void displayControls(){
+        opMode.telemetry.addData("Pixel Arm Controls (Gamepad 2)", "\n" +
+                "  dpad up - arm up\n" +
+                "  dpad down - arm down\n" +
+                "  dpad left - rotate hands up\n" +
+                "  dpad right - rotate hands down\n" +
+                "  left bumper - extend arm\n" +
+                "  right bumper - retract arm\n" +
+                "  left stick - manual move the elbow\n" +
+                "  right stick - manual rotate the hands\n" +
+                "  a - open upper hand\n" +
+                "  b - close upper hand\n" +
+                "  x - open lower hand\n" +
+                "  y - close lower hand" +
+                "\n");
+    }
     /**
      * Manually control the pixel arm
      */
@@ -142,74 +159,98 @@ public class PixelArm {
         Gamepad gamepad = opMode.gamepad1;
         boolean handled = true;
 
-        // Raise the hanging arm from its stored position
-        if (gamepad.dpad_right) {
+        if (gamepad.dpad_up) {
+            // Raise the pixel arm from its stored position
             Logger.message("Pixel Elbow Up");
             pixelElbowMove(PIXEL_ELBOW_UP);
-        }
-        // Lower the hanging arm to its stored position
-        else if (gamepad.dpad_left) {
+
+        } else if (gamepad.dpad_down) {
+            // Lower the pixel arm to its stored position
             Logger.message("Pixel Elbow Down");
             pixelElbowMove(PIXEL_ELBOW_DOWN);
-        }
-        // Extend the telescoping part the the arm
-        else if (gamepad.dpad_up) {
-            Logger.message("Pixel Arm Out");
-            pixelArmMove(PIXEL_ARM_OUT);
-        }
-        // Retract the telescoping part the the arm
-        else if (gamepad.dpad_down) {
+
+        } else if (gamepad.dpad_left) {
+            // Retract the telescoping part the the arm
             Logger.message("Pixel Arm In");
             pixelArmMove(PIXEL_ARM_IN);
-        }
-        // Open the upper hand
-        else if (gamepad.a) {
-            Logger.message("Upper hand open");
+
+        } else if (gamepad.dpad_right) {
+            // Extend the telescoping part the the arm
+            Logger.message("Pixel Arm Out");
+            pixelArmMove(PIXEL_ARM_OUT);
+
+        } else if (gamepad.left_bumper) {
+            // Rotate the hands up
+            Logger.message("Rotate hands up");
+            pixelWristMove(PIXEL_WRIST_HOME);
+
+        }  else if (gamepad.right_bumper) {
+            // rotate the hands down
+            Logger.message("Rotate hands down");
+            pixelWristMove(PIXEL_WRIST_TARGET);
+
+        } else if (gamepad.a) {
+            // Open the upper hand
+            Logger.message("Upper hand opened");
             openUpperHand();
-        }
-        // Close the upper hand
-        else if (gamepad.b) {
+
+        } else if (gamepad.b) {
+            // Close the upper hand
             Logger.message("Upper hand closed");
             closeUpperHand();
-        }
-        // Open the lower hand
-        else if (gamepad.x) {
+
+        } else if (gamepad.x) {
+            Logger.message("Lower hand opened");
+            // Open the lower hand
             openLowerHand();
-        }
-        // Close the lower hand
-        else if (gamepad.y) {
+
+        } else if (gamepad.y) {
+            // Close the lower hand
+            Logger.message("Lower hand closed");
             closeLowerHand();
-        }
-        else if (gamepad.left_bumper) {
-            pixelWristMove(PIXEL_WRIST_HOME);
-        }
-        else if (gamepad.right_bumper) {
-            pixelWristMove(PIXEL_WRIST_TARGET);
-        }
-        // manually move pixel arm
-        else if (gamepad.left_stick_y > 0) {
+
+        } else if (gamepad.left_stick_y > 0) {
+            // manually move the pixel arm elbow
+            Logger.message( "elbow position %7d", pixelElbow.getCurrentPosition());
             pixelElbow.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
             pixelElbow.setPower(-PIXEL_ELBOW_SPEED);
             while (true) {
                 if (gamepad.left_stick_y <= 0)
                     break;
             }
-                pixelElbow.setPower(0);
+            pixelElbow.setPower(0);
             opMode.sleep(200);
+
+        } else if (gamepad.left_stick_y < 0) {
+            // manually move the pixel arm elbow
             Logger.message( "elbow position %7d", pixelElbow.getCurrentPosition());
-        }
-        // manually move pixel arm
-        else if (gamepad.left_stick_y < 0) {
             pixelElbow.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
             pixelElbow.setPower(PIXEL_ELBOW_SPEED);
             while (true) { if (gamepad.left_stick_y >= 0) break; }
             pixelElbow.setPower(0);
             opMode.sleep(200);
-            Logger.message( "elbow position %7d", pixelElbow.getCurrentPosition());
-        }
-        else {
+
+        } else if (gamepad.right_stick_y > 0) {
+            // manually rotate the hands
+            while (gamepad.right_stick_y > 0) {
+                double position = pixelWrist.getPosition() + .01 ;
+                pixelWrist.setPosition(position);
+                Logger.message("wrist position %f", position);
+                opMode.sleep(100);
+            }
+
+        } else if (gamepad.right_stick_y < 0) {
+            while (gamepad.right_stick_y < 0) {
+                double position = pixelWrist.getPosition() - .01;
+                pixelWrist.setPosition(position);
+                Logger.message("wrist position %f", position);
+                opMode.sleep(100);
+            }
+
+        } else {
             handled = false;
         }
+
         return handled;
     }
 }
