@@ -6,6 +6,8 @@ import com.qualcomm.robotcore.hardware.Gamepad;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
+import java.util.Optional;
+
 /*
 *
 */
@@ -60,6 +62,7 @@ public class PixelArm {
             pixelElbow.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
             pixelElbow.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
+            pixelWrist.setPosition(PIXEL_WRIST_HOME);
             handUpper.setPosition(HAND_UPPER_CLOSED);
             handLower.setPosition(HAND_LOWER_CLOSED);
 
@@ -149,6 +152,7 @@ public class PixelArm {
                 "  b - close upper hand\n" +
                 "  x - open lower hand\n" +
                 "  y - close lower hand" +
+                "  left trigger - pixel pickup test" +
                 "\n");
     }
     /**
@@ -169,25 +173,25 @@ public class PixelArm {
             Logger.message("Pixel Elbow Down");
             pixelElbowMove(PIXEL_ELBOW_DOWN);
 
-        } else if (gamepad.dpad_left) {
+        } else if (gamepad.dpad_right) {
+            // Rotate the hands up
+            Logger.message("Rotate hands up");
+            pixelWristMove(PIXEL_WRIST_TARGET);
+
+        }  else if (gamepad.dpad_left) {
+            // rotate the hands down
+            Logger.message("Rotate hands down");
+            pixelWristMove(PIXEL_WRIST_HOME);
+
+        } else if (gamepad.left_bumper) {
             // Retract the telescoping part the the arm
             Logger.message("Pixel Arm In");
             pixelArmMove(PIXEL_ARM_IN);
 
-        } else if (gamepad.dpad_right) {
+        } else if (gamepad.right_bumper) {
             // Extend the telescoping part the the arm
             Logger.message("Pixel Arm Out");
             pixelArmMove(PIXEL_ARM_OUT);
-
-        } else if (gamepad.left_bumper) {
-            // Rotate the hands up
-            Logger.message("Rotate hands up");
-            pixelWristMove(PIXEL_WRIST_HOME);
-
-        }  else if (gamepad.right_bumper) {
-            // rotate the hands down
-            Logger.message("Rotate hands down");
-            pixelWristMove(PIXEL_WRIST_TARGET);
 
         } else if (gamepad.a) {
             // Open the upper hand
@@ -233,7 +237,7 @@ public class PixelArm {
         } else if (gamepad.right_stick_y > 0) {
             // manually rotate the hands
             while (gamepad.right_stick_y > 0) {
-                double position = pixelWrist.getPosition() + .01 ;
+                double position = pixelWrist.getPosition() + .005;
                 pixelWrist.setPosition(position);
                 Logger.message("wrist position %f", position);
                 opMode.sleep(100);
@@ -241,7 +245,7 @@ public class PixelArm {
 
         } else if (gamepad.right_stick_y < 0) {
             while (gamepad.right_stick_y < 0) {
-                double position = pixelWrist.getPosition() - .01;
+                double position = pixelWrist.getPosition() - .005;
                 pixelWrist.setPosition(position);
                 Logger.message("wrist position %f", position);
                 opMode.sleep(100);
@@ -251,6 +255,13 @@ public class PixelArm {
             handled = false;
         }
 
+        if (gamepad.left_trigger != 0 ){
+            openUpperHand();
+            openLowerHand();
+            opMode.sleep(100);
+            pixelElbowMove(PIXEL_ELBOW_UP);
+            closeUpperHand();
+        }
         return handled;
     }
 }

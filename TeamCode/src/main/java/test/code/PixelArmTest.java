@@ -37,7 +37,7 @@ public class PixelArmTest extends LinearOpMode {
 
       pixelArm.control();
 
-      telemetry.addData("Status", "Run Time: " + runtime);
+//      telemetry.addData("Status", "Run Time: " + runtime);
       telemetry.update();
       }
   }
