@@ -4,12 +4,9 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.Gamepad;
 import com.qualcomm.robotcore.hardware.Servo;
-import com.qualcomm.robotcore.util.ElapsedTime;
-
-import java.util.Optional;
 
 /*
-*
+* This file contains the code for the pixel arm.
 */
 public class PixelArm {
 
@@ -34,8 +31,6 @@ public class PixelArm {
     private Servo handUpper = null;
     private Servo handLower = null;
 
-
-    private final ElapsedTime runtime = new ElapsedTime();
     public LinearOpMode opMode;
 
     public PixelArm(LinearOpMode opMode) {
@@ -84,7 +79,6 @@ public class PixelArm {
         pixelElbow.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         pixelElbow.setPower(Math.abs(PIXEL_ELBOW_SPEED));
 
-        runtime.reset();
         while (pixelElbow.isBusy()) {
             if (!opMode.opModeIsActive()) {
                 break;
@@ -155,6 +149,7 @@ public class PixelArm {
                 "  left trigger - pixel pickup test" +
                 "\n");
     }
+
     /**
      * Manually control the pixel arm
      */
