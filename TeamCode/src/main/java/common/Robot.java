@@ -57,8 +57,6 @@ public class Robot {
     public DcMotor leftBackDrive = null;  //  Used to control the left back drive wheel
     public DcMotor rightBackDrive = null;  //  Used to control the right back drive wheel
 
-    private DcMotor pixelElbow = null;
-    private DcMotor pixelArm = null;
     private DcMotor lifter = null;           // Motor to lift the robot off the ground
 
     private ColorSensor colorSensor = null;
@@ -81,10 +79,7 @@ public class Robot {
     public Robot(LinearOpMode opMode) {
         this.opMode = opMode;
         hardwareMap = opMode.hardwareMap;
-        hangingArm = new HangingArm(opMode);
         telemetry = opMode.telemetry;
-
-        vision = new Vision(opMode);
     }
 
     /**
@@ -92,8 +87,9 @@ public class Robot {
      */
     public void init() {
 
+        hangingArm = new HangingArm(opMode);
+        vision = new Vision(opMode);
         initDriveTrain();
-        pixelArmInit();
 
         // ToDo Check the the configuration file has the correct color sensor hardware device selected.
         //colorSensor = hardwareMap.get(ColorSensor.class, Config.COLOR_SENSOR);
@@ -143,30 +139,6 @@ public class Robot {
         rightBackDrive.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
     }
 
-    /**
-     * Initialize the pixel arm hardware
-     */
-    private void pixelArmInit(){
-
-        try {
-            pixelArm  = hardwareMap.get(DcMotor.class, Config.PIXEL_ARM);
-            pixelElbow = hardwareMap.get(DcMotor.class, Config.PIXEL_ELBOW);
-
-            //2982 in extended and 0 at default
-            pixelArm.setDirection(DcMotor.Direction.REVERSE);
-            pixelArm.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-            pixelArm.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-            pixelArm.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-
-            pixelElbow.setDirection(DcMotor.Direction.REVERSE);
-            pixelElbow.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-            pixelElbow.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-            pixelElbow.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-
-        } catch (Exception  e) {
-            Logger.error(e, "Pixel arm hardware not found");
-        }
-    }
 
     /**
      * Move robot according to desired axes motions
@@ -416,48 +388,6 @@ public class Robot {
         lifter.setPower(0);
     }
 
-    /**
-     * Move the pixel arm elbow to the specified position
-     *
-     * @param newPosition position to move to
-     */
-    public void pixelElbowMove(int newPosition) {
 
-        // Determine new target position, and pass to motor controller
-        pixelElbow.setTargetPosition(newPosition);
-        pixelElbow.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        pixelElbow.setPower(Math.abs(PIXEL_ELBOW_SPEED));
-
-        runtime.reset();
-        while (pixelElbow.isBusy()) {
-            if (! opMode.opModeIsActive()) {
-                break;
-            }
-        }
-        pixelElbow.setPower(0);
-    }
-
-    /**
-     * Extend or retract the pixel arm to the specified position. The home position is zero.
-     *
-     * @param newPosition
-     */
-    public  void pixelArmMove(int newPosition){
-
-        pixelArm.setTargetPosition(newPosition);
-        pixelArm.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        pixelArm.setPower(Math.abs(speed));
-
-        while (pixelArm.isBusy()) {
-            if (! opMode.opModeIsActive()) {
-                break;
-            }
-        }
-
-        if (newPosition == 0) {
-            // only stop the motor when the arm is lowered
-            pixelArm.setPower(0);
-        }
-    }
 }
 
