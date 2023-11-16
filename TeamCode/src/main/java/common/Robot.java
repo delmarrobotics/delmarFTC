@@ -27,7 +27,7 @@ public class Robot {
 
     // ToDo   The wheel on the competition robot and the practice robot do not rotate in the same directions. Set the "true"
     // ToDo   to build for the competition robot and the "false" to build for the practice robot.
-    static final boolean COMP_ROBOT = true;
+    static final boolean COMP_ROBOT = false;
 
     // Calculate the COUNTS_PER_INCH for the drive train.
     static final double COUNTS_PER_MOTOR_REV = 28;              // HD Hex Motor Encoder
@@ -42,14 +42,10 @@ public class Robot {
     private int lastCount = 0;
     private double speed = 0.2;
 
-
-    static final double PIXEL_ELBOW_SPEED = .2;
-    static final int    PIXEL_ELBOW_DOWN = 0;
-    static final int    PIXEL_ELBOW_UP = -2974;
-    static final double PIXEL_ARM_SPEED = .2;
-    static final int    PIXEL_ARM_IN = 0;
-    static final int    PIXEL_ARM_OUT = 2982;
-
+    static final double  DRONE_ANGLE_DOWN = 0.5;
+    static final double  DRONE_ANGLE_UP = 0.5;
+    static final double  DRONE_FIRE_DOWN = 0.5;
+    static final double DRONE_FIRE_UP = 0.5;
 
     // Define Motor and Servo objects  (Make them private so they can't be accessed externally)
     public DcMotor leftFrontDrive = null;  //  Used to control the left front drive wheel
@@ -58,6 +54,8 @@ public class Robot {
     public DcMotor rightBackDrive = null;  //  Used to control the right back drive wheel
 
     private DcMotor lifter = null;           // Motor to lift the robot off the ground
+    private Servo droneAngle = null;
+    private Servo droneFire = null;
 
     private ColorSensor colorSensor = null;
     private IMU imu = null;
@@ -98,6 +96,9 @@ public class Robot {
 
         try {
             lifter = hardwareMap.get(DcMotor.class, Config.LIFTING_WENCH);
+            droneAngle = hardwareMap.get(Servo.class, Config.DRONE_ANGLE);
+            droneFire = hardwareMap.get(Servo.class, Config.DRONE_FIRE);
+
         } catch (Exception e) {
             Logger.error(e, "Lifting wench hardware not found");
         }
@@ -388,6 +389,13 @@ public class Robot {
         lifter.setPower(0);
     }
 
+    public void launchDrone() {
+        droneAngle.setPosition(DRONE_ANGLE_UP);
+        opMode.sleep(200);
+        droneFire.setPosition(DRONE_FIRE_UP);
+        opMode.sleep(200);
+        droneAngle.setPosition(DRONE_ANGLE_DOWN);
+    }
 
 }
 

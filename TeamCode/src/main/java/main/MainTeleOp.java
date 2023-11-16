@@ -57,6 +57,10 @@ public class MainTeleOp extends LinearOpMode {
                 continue;
             }
 
+            if (gamepad1.right_trigger > 0) {
+                robot.launchDrone();
+            }
+
             if (gamepad1.left_bumper) {
 
             } else if (gamepad1.right_bumper) {

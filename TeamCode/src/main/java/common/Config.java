@@ -27,5 +27,8 @@ public class Config {
     public static final String HAND_UPPER       = "handUpper";
     public static final String HAND_LOWER       = "handLower";
 
+    public static final String DRONE_ANGLE      = "droneAngle";
+    public static final String DRONE_FIRE       = "droneFire";
+
     public static final String CAMERA           = "Webcam 1";
 }
