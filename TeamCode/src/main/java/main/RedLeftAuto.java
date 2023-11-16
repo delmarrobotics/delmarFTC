@@ -41,7 +41,7 @@ public class RedLeftAuto extends LinearOpMode {
         waitForStart();
         runtime.reset();
 
-        if (robot.vision.findTeamElement() == false) {
+        if (!robot.vision.findTeamElement()) {
             traj1 = drive.trajectoryBuilder(new Pose2d())
                     .forward(30)
                     .build();

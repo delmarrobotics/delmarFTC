@@ -47,6 +47,8 @@ public class Robot {
     static final double  DRONE_FIRE_DOWN = 0.5;
     static final double DRONE_FIRE_UP = 0.5;
 
+    public boolean intakeOn = false;
+
     // Define Motor and Servo objects  (Make them private so they can't be accessed externally)
     public DcMotor leftFrontDrive = null;  //  Used to control the left front drive wheel
     public DcMotor rightFrontDrive = null;  //  Used to control the right front drive wheel
@@ -56,6 +58,8 @@ public class Robot {
     private DcMotor lifter = null;           // Motor to lift the robot off the ground
     private Servo droneAngle = null;
     private Servo droneFire = null;
+
+    private DcMotor pixelIntake = null;
 
     private ColorSensor colorSensor = null;
     private IMU imu = null;
@@ -331,6 +335,17 @@ public class Robot {
         //Logger.message("power %f %f %f", power1, power2, power);
 
         return power;
+    }
+
+    public void toggleIntake()
+    {
+        if(intakeOn) {
+            pixelIntake.setPower(0);
+            intakeOn = false;
+        } else {
+            pixelIntake.setPower(1);
+            intakeOn = true;
+        }
     }
 
 
