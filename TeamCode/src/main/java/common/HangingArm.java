@@ -73,7 +73,10 @@ public class HangingArm
             elbow = hardwareMap.get(Servo.class, Config.HANGING_ELBOW);
             wrist = hardwareMap.get(Servo.class, Config.HANGING_WRIST);
             thumb = hardwareMap.get(Servo.class, Config.HANDING_THUMB);
+
+            elbow.setPosition(ELBOW_HOME_POSITION);
             thumb.setPosition(THUMB_CLOSE);
+
         } catch (Exception e){
             Logger.error(e, "Hanging arm hardware not found");
         }
@@ -185,18 +188,24 @@ public class HangingArm
             // manually move the wrist
             while (gamepad.right_stick_y > 0) {
                 double position = wrist.getPosition() + .005 ;
-                wrist.setPosition(position);
-                Logger.message("wrist position %f", position);
-                opMode.sleep(100);
+                // Check the the position is defined, getPosition previously called.
+                if (! Double.isNaN(position)) {
+                    wrist.setPosition(position);
+                    Logger.message("wrist position %f", position);
+                    opMode.sleep(100);
+                }
             }
 
         } else if (gamepad.right_stick_y < 0) {
             // manually move the wrist
             while (gamepad.right_stick_y < 0) {
                 double position = wrist.getPosition() - .005;
-                wrist.setPosition(position);
-                Logger.message("wrist position %f", position);
-                opMode.sleep(100);
+                // Check the the position is defined, getPosition previously called.
+                if (! Double.isNaN(position)) {
+                    wrist.setPosition(position);
+                    Logger.message("wrist position %f", position);
+                    opMode.sleep(100);
+                }
             }
 
         } else if (gamepad.y) {
