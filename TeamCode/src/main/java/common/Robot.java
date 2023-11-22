@@ -20,6 +20,7 @@ import com.qualcomm.robotcore.hardware.IMU;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
+import org.checkerframework.checker.units.qual.C;
 import org.firstinspires.ftc.robotcore.external.Function;
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 
@@ -50,8 +51,17 @@ public class Robot {
     static final int    PIXEL_ARM_IN = 0;
     static final int    PIXEL_ARM_OUT = 2982;
 
-    public boolean intakeOn = false;
+    // drone launcher servo position
+    static final double DRONE_ANGLE_DOWN = 0.48;
+    static final double DRONE_ANGLE_UP   = 0.40;
+    static final double DRONE_FIRE_DOWN  = 0.063;
+    static final double DRONE_FIRE_UP    = 0.16;
 
+    // pixel dropper servo positions
+    static final double DROPPER_OPEN     = 0.51;
+    static final double DROPPER_CLOSE    = 0.67;
+
+    public boolean intakeOn = false;
 
     // Define Motor and Servo objects  (Make them private so they can't be accessed externally)
     public DcMotor leftFrontDrive = null;  //  Used to control the left front drive wheel
@@ -67,6 +77,8 @@ public class Robot {
     private IMU imu = null;
 
     private Servo dropper = null;        // Servo to drop the purple pixel
+    private Servo droneAngle = null;
+    private Servo droneFire = null;
 
     public HangingArm hangingArm = null;
 
@@ -102,8 +114,10 @@ public class Robot {
 
         try {
             lifter = hardwareMap.get(DcMotor.class, Config.LIFTING_WENCH);
+            droneAngle = hardwareMap.get(Servo.class, Config.DRONE_ANGLE);
+            droneFire = hardwareMap.get(Servo.class, Config.DRONE_FIRE);
         } catch (Exception e) {
-            Logger.error(e, "Lifting wench hardware not found");
+            Logger.error(e, "hardware not found");
         }
     }
 
@@ -403,6 +417,16 @@ public class Robot {
         lifter.setPower(0);
     }
 
-
+    /**
+     * Launch the dronw
+     */
+    public void launchDrone(){
+        droneAngle.setPosition(DRONE_ANGLE_UP);
+        opMode.sleep(200);
+        droneFire.setPosition(DRONE_FIRE_UP);
+        opMode.sleep(1000);
+        droneFire.setPosition(DRONE_FIRE_DOWN);
+        droneAngle.setPosition(DRONE_ANGLE_DOWN);
+    }
 }
 
