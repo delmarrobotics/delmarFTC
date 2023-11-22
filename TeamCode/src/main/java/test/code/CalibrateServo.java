@@ -31,9 +31,13 @@ package test.code;
 
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
+import com.qualcomm.robotcore.hardware.ServoController;
 import com.qualcomm.robotcore.util.ElapsedTime;
 import com.qualcomm.robotcore.hardware.Servo;
 import org.firstinspires.ftc.robotcore.external.Telemetry;
+
+import java.io.PipedOutputStream;
+import java.util.Objects;
 import java.util.SortedSet;
 
 import common.Config;
@@ -44,7 +48,7 @@ import common.Logger;
  */
 
 @TeleOp(name="Calibrate Servo", group="Test")
-@SuppressWarnings("test/unused")
+@SuppressWarnings("unused")
 
 public class CalibrateServo extends LinearOpMode {
 
@@ -53,21 +57,43 @@ public class CalibrateServo extends LinearOpMode {
 
     private Servo servo   = null;
     private double position = 0;
-    private double home = .5;
-    private double target = 1;
+    private double home = 0.5;
+    private double target = 0.5;
 
-    class ServoInfo {
+    private static class ServoInfo {
         String  name;
         Servo   servo;
+        double  home;
+        double  target;
+
     }
     ServoInfo[] servos = new ServoInfo[12];
     int servoCount;
     int currentServo;
 
+     class ServoPositions {
+        String name;
+        double home;
+        double target;
+
+         public  ServoPositions (String name, Double home, Double target ){
+             this.name = name;
+             this.home = home;
+             this.target = target;
+         }
+    }
+    ServoPositions[] positions = new ServoPositions[12];
 
 
     @Override
     public void runOpMode() {
+
+        // default position
+        positions[0] = new ServoPositions("droneAngle", 0.48, 0.4);
+        positions[1] = new ServoPositions("droneFire", 0.063, 0.16);
+        positions[2] = new ServoPositions(Config.PIXEL_DROPPER, 0.67, 0.51);
+        positions[3] = new ServoPositions(Config.HANGING_ELBOW, 0.97, 0.64);
+        positions[4] = new ServoPositions(Config.HANGING_WRIST, 0.70, 0.96);
 
         getServos();
 
@@ -79,7 +105,7 @@ public class CalibrateServo extends LinearOpMode {
         waitForStart();
 
         telemetry.addData("Servo Calibration Controls", "\n" +
-                "  dpad up - select next servo\n" +
+                "  back - select next servo\n" +
                 "  left stick - manual control servo position\n" +
                 "  left trigger - decrease target position\n" +
                 "  right trigger - increase target position\n" +
@@ -92,15 +118,13 @@ public class CalibrateServo extends LinearOpMode {
                 "\n");
 
         Telemetry.Item servoNameMsg =  telemetry.addData("Servo name", 0);
-//        Telemetry.Item servoPortMsg = telemetry.addData("Servo port", 0);
-        Telemetry.Item directionMsg = telemetry.addData("Servo direction", 0);
+//        Telemetry.Item directionMsg = telemetry.addData("Servo direction", 0);
         Telemetry.Item positionMsg = telemetry.addData("Servo position", 0);
         Telemetry.Item homeMsg = telemetry.addData("Home position", 0);
         Telemetry.Item targetMsg = telemetry.addData("Target position", 0);
 
         servoNameMsg.setValue("%s", servos[currentServo].name);
-//        servoPortMsg.setValue("%d", servos[currentServo].servo.getPortNumber());
-        directionMsg.setValue("%s", servo.getDirection());
+//        directionMsg.setValue("%s", servo.getDirection());
         positionMsg.setValue( "%f", servo.getPosition());
         homeMsg.setValue("%f", home);
         targetMsg.setValue("%f", target);
@@ -166,33 +190,69 @@ public class CalibrateServo extends LinearOpMode {
             } else if (gamepad1.left_stick_y > 0) {
                 // manually run the servo
                 while (gamepad1.left_stick_y > 0) {
-                    //Logger.message("y stick %4.2f", gamepad1.left_stick_y );
-                    position = servo.getPosition() + .01 ;
+                    position = servo.getPosition();
+                    if (Double.isNaN(position)) {
+                        position = home;
+                    } else {
+                        position += 0.001;
+                    }
                     servo.setPosition(position);
-                    positionMsg.setValue( "%f", position);
-                    telemetry.update();
+//                    positionMsg.setValue( "%f", position);
+//                    telemetry.update();
                     sleep(100);
                 }
 
             } else if (gamepad1.left_stick_y < 0) {
                 // manually run the motor forward
                 while (gamepad1.left_stick_y < 0) {
-                    position = servo.getPosition() - .01;
+                    position = servo.getPosition();
+                    if (Double.isNaN(position)) {
+                        position = home;
+                    } else {
+                        position -= 0.001;
+                    }
                     servo.setPosition(position);
-                    positionMsg.setValue( "%f", position);
-                    telemetry.update();
+//                    positionMsg.setValue( "%f", position);
+//                    telemetry.update();
                     sleep(100);
                 }
 
-            } else if (gamepad1.dpad_up) {
+            } else if (gamepad1.back) {
                 nextServo();
-                while (gamepad1.dpad_up) {
+                while (gamepad1.back) {
                     sleep(10);
                 }
                 servoNameMsg.setValue("%s", servos[currentServo].name);
-//                servoPortMsg.setValue("%d", servos[currentServo].servo.getPortNumber());
+
+            } else if (gamepad1.dpad_up) {
+                position = servo.getPosition();
+                if (Double.isNaN(position)) {
+                    position = home;
+                } else {
+                    position -= 0.001;
+                }
+                servo.setPosition(position);
+
+                while (gamepad1.dpad_up){
+                    sleep(100);
+                }
 
             } else if (gamepad1.dpad_down) {
+                position = servo.getPosition();
+                if (Double.isNaN(position)) {
+                    position = home;
+                } else {
+                    position += 0.001;
+                }
+                servo.setPosition(position);
+
+                while (gamepad1.dpad_down){
+                    sleep(100);
+                }
+            }
+
+
+            /*else if (gamepad1.dpad_left) {
                 // change the direction of the servo
                 if (servo.getDirection() == Servo.Direction.FORWARD)
                     servo.setDirection(Servo.Direction.REVERSE);
@@ -200,9 +260,11 @@ public class CalibrateServo extends LinearOpMode {
                     servo.setDirection(Servo.Direction.FORWARD);
                 directionMsg.setValue("%s", servo.getDirection());
                 while (gamepad1.dpad_down) sleep(10);
-            }
+            }  */
 
             positionMsg.setValue( "%f", servo.getPosition());
+            homeMsg.setValue("%f", home);
+            targetMsg.setValue("%f", target);
             telemetry.update();
         }
     }
@@ -239,17 +301,29 @@ public class CalibrateServo extends LinearOpMode {
         SortedSet<String> names = hardwareMap.getAllNames(Servo.class);
         for (String name: names){
             Servo s = hardwareMap.get(Servo.class, name);
-            int port = s.getPortNumber();
-            servos[port] = new ServoInfo();
-            servos[port].name = name;
-            servos[port].servo = s;
-            servoCount++;
+            ServoController controller = s.getController();
+            servos[servoCount] = new ServoInfo();
+            servos[servoCount].name = name;
+            servos[servoCount].servo = s;
+            servos[servoCount].home = 0.5;
+            servos[servoCount].target = 0.5;
+
+            for (ServoPositions p : positions) {
+                if (p != null && Objects.equals(p.name, name)) {
+                    servos[servoCount].home = p.home;
+                    servos[servoCount].target = p.target;
+                    break;
+                }
+            }
+        servoCount++;
         }
 
         for (int i = 0; i < servos.length; i++) {
             if (servos[i] != null) {
                 if (servo == null) {
                     servo = servos[i].servo;
+                    home = servos[i].home;
+                    target = servos[i].target;
                     currentServo = i;
                 }
                 Logger.message("servo name %s port %d", servos[i].name, servos[i].servo.getPortNumber());
@@ -264,6 +338,8 @@ public class CalibrateServo extends LinearOpMode {
             index = i %  servos.length;
             if (servos[index] != null){
                 servo = servos[index].servo;
+                home = servos[index].home;
+                target = servos[index].target;
                 currentServo = index;
                 break;
             }
