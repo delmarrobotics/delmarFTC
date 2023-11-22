@@ -2,7 +2,6 @@ package common;
 
 /*
  * This file defines a Java Class that performs all the setup and configuration for the robot's hardware (motors and sensors).
- * It assumes three motors (left_drive, right_drive and arm) and two servos (left_hand and right_hand)
  *
  * This one file/class can be used by ALL of your OpModes without having to cut & paste the code each time.
  *
@@ -39,18 +38,6 @@ public class Robot {
     static final double RAMP_DISTANCE = WHEEL_DIAMETER_INCHES * 2 * COUNTS_PER_INCH; // Speed ramp up in encoder counts
     static final double MIN_SPEED = .02;
 
-    private int encoderCount = 0;
-    private int lastCount = 0;
-    private double speed = 0.2;
-
-
-    static final double PIXEL_ELBOW_SPEED = .2;
-    static final int    PIXEL_ELBOW_DOWN = 0;
-    static final int    PIXEL_ELBOW_UP = -2974;
-    static final double PIXEL_ARM_SPEED = .2;
-    static final int    PIXEL_ARM_IN = 0;
-    static final int    PIXEL_ARM_OUT = 2982;
-
     // drone launcher servo position
     static final double DRONE_ANGLE_DOWN = 0.48;
     static final double DRONE_ANGLE_UP   = 0.40;
@@ -64,10 +51,10 @@ public class Robot {
     public boolean intakeOn = false;
 
     // Define Motor and Servo objects  (Make them private so they can't be accessed externally)
-    public DcMotor leftFrontDrive = null;  //  Used to control the left front drive wheel
+    public DcMotor leftFrontDrive = null;   //  Used to control the left front drive wheel
     public DcMotor rightFrontDrive = null;  //  Used to control the right front drive wheel
-    public DcMotor leftBackDrive = null;  //  Used to control the left back drive wheel
-    public DcMotor rightBackDrive = null;  //  Used to control the right back drive wheel
+    public DcMotor leftBackDrive = null;    //  Used to control the left back drive wheel
+    public DcMotor rightBackDrive = null;   //  Used to control the right back drive wheel
 
     private DcMotor lifter = null;           // Motor to lift the robot off the ground
 
@@ -82,19 +69,17 @@ public class Robot {
 
     public HangingArm hangingArm = null;
 
-    public Vision vision;
+    public Vision vision = null;
 
     private final ElapsedTime runtime = new ElapsedTime();
 
     /* Declare OpMode members. */
-    private HardwareMap hardwareMap;
     private LinearOpMode opMode;
     private Telemetry telemetry;
 
     // Define a constructor that allows the OpMode to pass a reference to itself.
     public Robot(LinearOpMode opMode) {
         this.opMode = opMode;
-        hardwareMap = opMode.hardwareMap;
         telemetry = opMode.telemetry;
     }
 
@@ -108,14 +93,16 @@ public class Robot {
         initDriveTrain();
 
         // ToDo Check the the configuration file has the correct color sensor hardware device selected.
-        //colorSensor = hardwareMap.get(ColorSensor.class, Config.COLOR_SENSOR);
+        //colorSensor = opMode.hardwareMap.get(ColorSensor.class, Config.COLOR_SENSOR);
 
-        imu = hardwareMap.get(IMU.class, Config.IMU);
+        imu = opMode.hardwareMap.get(IMU.class, Config.IMU);
 
         try {
-            lifter = hardwareMap.get(DcMotor.class, Config.LIFTING_WENCH);
-            droneAngle = hardwareMap.get(Servo.class, Config.DRONE_ANGLE);
-            droneFire = hardwareMap.get(Servo.class, Config.DRONE_FIRE);
+            lifter = opMode.hardwareMap.get(DcMotor.class, Config.LIFTING_WENCH);
+            droneAngle = opMode.hardwareMap.get(Servo.class, Config.DRONE_ANGLE);
+            droneFire = opMode.hardwareMap.get(Servo.class, Config.DRONE_FIRE);
+            pixelIntake = opMode.hardwareMap.get(DcMotor.class, Config.PIXEL_INTAKE);
+
         } catch (Exception e) {
             Logger.error(e, "hardware not found");
         }
@@ -126,10 +113,10 @@ public class Robot {
      */
     private void initDriveTrain() {
         try {
-            leftFrontDrive = hardwareMap.get(DcMotor.class, Config.LEFT_FRONT);
-            rightFrontDrive = hardwareMap.get(DcMotor.class, Config.RIGHT_FRONT);
-            leftBackDrive = hardwareMap.get(DcMotor.class, Config.LEFT_BACK);
-            rightBackDrive = hardwareMap.get(DcMotor.class, Config.RIGHT_BACK);
+            leftFrontDrive = opMode.hardwareMap.get(DcMotor.class, Config.LEFT_FRONT);
+            rightFrontDrive = opMode.hardwareMap.get(DcMotor.class, Config.RIGHT_FRONT);
+            leftBackDrive = opMode.hardwareMap.get(DcMotor.class, Config.LEFT_BACK);
+            rightBackDrive = opMode.hardwareMap.get(DcMotor.class, Config.RIGHT_BACK);
         } catch (Exception e) {
             Logger.error(e, "Hardware not found");
         }
@@ -345,22 +332,8 @@ public class Robot {
 
         double power = Math.min(Math.min(power1, power2), speed);
 
-        //Logger.message("power %f %f %f", power1, power2, power);
-
         return power;
     }
-
-    public void toggleIntake()
-    {
-        if(intakeOn) {
-            pixelIntake.setPower(0);
-            intakeOn = false;
-        } else {
-            pixelIntake.setPower(1);
-            intakeOn = true;
-        }
-    }
-
 
     /**
      * Move the robot until the specified color is detected.
@@ -392,16 +365,35 @@ public class Robot {
     }
 
     /**
+     * Toggle the pixel intake on or off.
+     *
+     */
+    public void toggleIntake()
+    {
+        if(intakeOn) {
+            pixelIntake.setPower(0);
+            intakeOn = false;
+        } else {
+            pixelIntake.setPower(1);
+            intakeOn = true;
+        }
+    }
+
+    /**
      * Drop the preload purple pixel at the current location.
      */
     public void dropPixel(){
-
+        dropper.setPosition(DROPPER_OPEN);
+        opMode.sleep(500);
+        dropper.setPosition(DROPPER_CLOSE);
     }
 
     /**
      * Turn on the motor that drives the lifting wench
      */
-    public void lifterUp() { lifter.setPower(1); }
+    public void lifterUp() {
+        lifter.setPower(1);
+    }
 
     /**
      * Turn on the motor that drives the lifting wench
