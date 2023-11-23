@@ -109,6 +109,16 @@ public class HangingArm
         thumb.setPosition(THUMB_CLOSE);
     }
 
+    public void lockInHook () {
+        double position;
+        for (int i = 0; i < 5; i++) {
+            position = elbow.getPosition() + 0.01;
+            elbow.setPosition(position);
+            position = wrist.getPosition() + 0.0075;
+            wrist.setPosition(position);
+        }
+    }
+
     public void displayControls(){
         opMode.telemetry.addData("Hanging Arm Controls (Gamepad 2)", "\n" +
                 "  dpad up - arm up\n" +
@@ -164,7 +174,7 @@ public class HangingArm
 
         } else if (gamepad.x) {
             // Move the hook to its lock position
-            elbow.setPosition(ELBOW_LOCK_POSITION);
+            lockInHook();
 
         } else if (gamepad.left_stick_y > 0) {
             // manually move the elbow
