@@ -17,7 +17,7 @@ public class PixelArm {
     static final int    PIXEL_ELBOW_DOWN = 0;
     static final int    PIXEL_ELBOW_UP = -2974;
     static final int    PIXEL_ARM_IN = 0;
-    static final int    PIXEL_ARM_OUT = 2982;
+    static final int    PIXEL_ARM_OUT = 1000; // ToDo fully extended 2982;
     static final double PIXEL_WRIST_HOME = 0.44;
     static final double PIXEL_WRIST_TARGET = 0.50;
     static final double HAND_UPPER_CLOSED = 0.66 ;
