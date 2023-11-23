@@ -111,11 +111,12 @@ public class HangingArm
 
     public void lockInHook () {
         double position;
-        for (int i = 0; i < 5; i++) {
+        for (int i = 0; i < 1; i++) {
             position = elbow.getPosition() + 0.01;
             elbow.setPosition(position);
             position = wrist.getPosition() + 0.0075;
             wrist.setPosition(position);
+            opMode.sleep(100);
         }
     }
 

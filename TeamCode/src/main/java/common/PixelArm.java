@@ -10,16 +10,18 @@ import com.qualcomm.robotcore.hardware.Servo;
 */
 public class PixelArm {
 
-    static final double PIXEL_ELBOW_SPEED = .2;
-    static final double PIXEL_ARM_SPEED = .2;
+    static final double PIXEL_ELBOW_SPEED = .3;
+    static final double PIXEL_ARM_SPEED = .3;
 
     // Position for all the pixel arm servos and motor encoders
     static final int    PIXEL_ELBOW_DOWN = 0;
-    static final int    PIXEL_ELBOW_UP = -2974;
+    static final int    PIXEL_ELBOW_UP = -2000;
     static final int    PIXEL_ARM_IN = 0;
-    static final int    PIXEL_ARM_OUT = 1000; // ToDo fully extended 2982;
-    static final double PIXEL_WRIST_HOME = 0.44;
-    static final double PIXEL_WRIST_TARGET = 0.50;
+    static final int    PIXEL_ARM_OUT = 1200; // ToDo fully extended 2982;
+    static final double PIXEL_WRIST_HOME = 0.445;
+    static final double PIXEL_WRIST_TARGET = 0.52;
+    static final double PixEL_WRIST_DROP_1 = 0.34;
+    static final double PixEL_WRIST_DROP_2 = 0.39;
     static final double HAND_UPPER_CLOSED = 0.66 ;
     static final double HAND_UPPER_OPENED = 0.63;
     static final double HAND_LOWER_CLOSED = 0.445;
@@ -142,10 +144,10 @@ public class PixelArm {
                 "  right bumper - retract arm\n" +
                 "  left stick - manual move the elbow\n" +
                 "  right stick - manual rotate the hands\n" +
-                "  a - open upper hand\n" +
-                "  b - close upper hand\n" +
-                "  x - open lower hand\n" +
-                "  y - close lower hand" +
+                "  a - close lower hand\n" +
+                "  b - open lower hand\n" +
+                "  x - close upper hand\n" +
+                "  y - open upper hand\n" +
                 "  left trigger - pixel pickup test" +
                 "\n");
     }
@@ -188,22 +190,22 @@ public class PixelArm {
             Logger.message("Pixel Arm Out");
             pixelArmMove(PIXEL_ARM_OUT);
 
-        } else if (gamepad.a) {
+        } else if (gamepad.y) {
             // Open the upper hand
             Logger.message("Upper hand opened");
             openUpperHand();
 
-        } else if (gamepad.b) {
+        } else if (gamepad.x) {
             // Close the upper hand
             Logger.message("Upper hand closed");
             closeUpperHand();
 
-        } else if (gamepad.x) {
+        } else if (gamepad.b) {
             Logger.message("Lower hand opened");
             // Open the lower hand
             openLowerHand();
 
-        } else if (gamepad.y) {
+        } else if (gamepad.a) {
             // Close the lower hand
             Logger.message("Lower hand closed");
             closeLowerHand();
@@ -212,7 +214,7 @@ public class PixelArm {
             // manually move the pixel arm elbow
             Logger.message( "elbow position %7d", pixelElbow.getCurrentPosition());
             pixelElbow.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-            pixelElbow.setPower(-PIXEL_ELBOW_SPEED);
+            pixelElbow.setPower(PIXEL_ELBOW_SPEED);
             while (true) {
                 if (gamepad.left_stick_y <= 0)
                     break;
@@ -224,7 +226,7 @@ public class PixelArm {
             // manually move the pixel arm elbow
             Logger.message( "elbow position %7d", pixelElbow.getCurrentPosition());
             pixelElbow.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-            pixelElbow.setPower(PIXEL_ELBOW_SPEED);
+            pixelElbow.setPower(-PIXEL_ELBOW_SPEED);
             while (true) { if (gamepad.left_stick_y >= 0) break; }
             pixelElbow.setPower(0);
             opMode.sleep(200);
@@ -255,7 +257,19 @@ public class PixelArm {
             openLowerHand();
             opMode.sleep(100);
             pixelElbowMove(PIXEL_ELBOW_UP);
+            pixelArmMove((PIXEL_ARM_OUT));
+            pixelWristMove(PixEL_WRIST_DROP_1);
+            opMode.sleep(500);
+            closeLowerHand();
+            opMode.sleep(500);
+            pixelWristMove(PixEL_WRIST_DROP_2);
             closeUpperHand();
+        }
+
+
+        if (gamepad.right_trigger != 0) {
+            pixelWristMove(PIXEL_WRIST_HOME);
+            pixelArmMove(PIXEL_ARM_IN);
         }
         return handled;
     }
