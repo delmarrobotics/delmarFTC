@@ -11,6 +11,7 @@ package common;
  */
 
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
+import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.ColorSensor;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
@@ -59,6 +60,9 @@ public class Robot {
     private DcMotor lifter = null;           // Motor to lift the robot off the ground
 
     private DcMotor pixelIntake = null;
+    private Servo   intake_Rotate = null;
+    private CRServo spinnerGray = null;
+    private CRServo spinnerBlack = null;
 
     private ColorSensor colorSensor = null;
     private IMU imu = null;
@@ -99,9 +103,14 @@ public class Robot {
 
         try {
             lifter = opMode.hardwareMap.get(DcMotor.class, Config.LIFTING_WENCH);
+
             droneAngle = opMode.hardwareMap.get(Servo.class, Config.DRONE_ANGLE);
             droneFire = opMode.hardwareMap.get(Servo.class, Config.DRONE_FIRE);
+
             pixelIntake = opMode.hardwareMap.get(DcMotor.class, Config.PIXEL_INTAKE);
+            intake_Rotate = opMode.hardwareMap.get(Servo.class, Config.INTAKE_ROTATE);
+            spinnerGray = opMode.hardwareMap.get(CRServo.class, Config.SPINNER_GRAY);
+            spinnerBlack = opMode.hardwareMap.get(CRServo.class, Config.SPINNER_BLACK);
 
         } catch (Exception e) {
             Logger.error(e, "hardware not found");

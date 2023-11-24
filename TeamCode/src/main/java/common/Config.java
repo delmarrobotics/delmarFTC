@@ -11,7 +11,7 @@ public class Config {
     public static final String LEFT_BACK        = "leftRear";       // control hub port 2
     public static final String RIGHT_BACK       = "rightRear";      // control hub port 3
 
-    public static final String IMU             =  "imu";
+    public static final String IMU              =  "imu";
     public static final String COLOR_SENSOR     = "colorSensor";
 
     public static final String LIFTING_WENCH    = "lifter";
@@ -27,9 +27,13 @@ public class Config {
     public static final String HAND_UPPER       = "handUpper";
     public static final String HAND_LOWER       = "handLower";
 
-    public static final String DRONE_ANGLE     = "droneAngle";
-    public static final String DRONE_FIRE      = "droneFire";
+    public static final String DRONE_ANGLE      = "droneAngle";
+    public static final String DRONE_FIRE       = "droneFire";
 
-    public static final String PIXEL_INTAKE    = "intake";
+    public static final String PIXEL_INTAKE     = "intakePickup";
+    public static final String INTAKE_ROTATE    = "intakeRotate";
+    public static final String SPINNER_GRAY     = "spinnerGray";
+    public static final String SPINNER_BLACK    = "spinnerBlack";
+
     public static final String CAMERA           = "Webcam 1";
 }
