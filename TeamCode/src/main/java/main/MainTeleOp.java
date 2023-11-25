@@ -56,10 +56,20 @@ public class MainTeleOp extends LinearOpMode {
 
             if (gamepad1.left_bumper) {
                 if (gamepad1.left_trigger > 0) {
+                    // Launch the drone
                     robot.launchDrone();
                     while (gamepad1.left_trigger  > 0) {
                         sleep(100);
                     }
+
+                } else if (gamepad1.a) {
+                    // Lock in the hanging arm hook.
+                    robot.hangingArm.wristUp();
+                    sleep(2000);
+                    robot.hangingArm.lockInHook();
+                    robot.moveRobot(.1, 0, 0);
+                    sleep(500);
+                    robot.stopRobot();
                 }
 
             } else if (gamepad1.right_bumper) {
@@ -69,14 +79,17 @@ public class MainTeleOp extends LinearOpMode {
                         robot.lifterUp();
                     }
                     robot.lifterStop();
+
                 } else if (gamepad1.right_trigger > 0) {
                     while (gamepad1.right_trigger > 0){
                         robot.lifterDown();
                     }
                     robot.lifterStop();
+
                 } else if (gamepad1.a) {
                     robot.dropPixel();
                 }
+
             } else {
                 if (gamepad1.a){
                     //  arm elbow down
