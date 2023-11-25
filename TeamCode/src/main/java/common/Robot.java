@@ -188,6 +188,16 @@ public class Robot {
     }
 
     /**
+     * Stop all the drive train motors.
+     */
+    public void stopRobot() {
+        leftFrontDrive.setPower(0);
+        rightFrontDrive.setPower(0);
+        leftBackDrive.setPower(0);
+        rightBackDrive.setPower(0);
+    }
+
+    /**
      * Move the robot forward or backward.
      *
      * @param leftInches  distance to move in inches, positive for forward, negative for backward
