@@ -41,7 +41,7 @@ public class Robot {
 
     // drone launcher servo position
     static final double DRONE_ANGLE_DOWN = 0.48;
-    static final double DRONE_ANGLE_UP   = 0.40;
+    static final double DRONE_ANGLE_UP   = 0.31;
     static final double DRONE_FIRE_DOWN  = 0.063;
     static final double DRONE_FIRE_UP    = 0.16;
 
@@ -429,13 +429,13 @@ public class Robot {
     }
 
     /**
-     * Launch the dronw
+     * Launch the drone
      */
     public void launchDrone(){
         droneAngle.setPosition(DRONE_ANGLE_UP);
-        opMode.sleep(200);
+        opMode.sleep(750);
         droneFire.setPosition(DRONE_FIRE_UP);
-        opMode.sleep(1000);
+        opMode.sleep(750);
         droneFire.setPosition(DRONE_FIRE_DOWN);
         droneAngle.setPosition(DRONE_ANGLE_DOWN);
     }

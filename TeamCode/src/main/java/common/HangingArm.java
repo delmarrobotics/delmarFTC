@@ -43,9 +43,9 @@ public class HangingArm
     // Servo positions
     private static final double ELBOW_HOME_POSITION = 0.97;
     private static final double ELBOW_TARGET_POSITION = 0.64;
-    private static final double ELBOW_LOCK_POSITION = 0.69;
-    private static final double WRIST_HOME_POSITION = 0.70;
-    private static final double WRIST_TARGET_POSITION = 0.96;
+    private static final double ELBOW_RELEASE_POSITION = 0.59;
+    private static final double WRIST_HOME_POSITION = 0.96;
+    private static final double WRIST_TARGET_POSITION = 0.70;
     private static final double THUMB_OPEN = 0.5;
     private static final double THUMB_CLOSE = 1;
 
@@ -74,8 +74,9 @@ public class HangingArm
             wrist = hardwareMap.get(Servo.class, Config.HANGING_WRIST);
             thumb = hardwareMap.get(Servo.class, Config.HANDING_THUMB);
 
-            elbow.setPosition(ELBOW_HOME_POSITION);
-            thumb.setPosition(THUMB_CLOSE);
+
+            //thumb.setPosition(THUMB_CLOSE);
+            //elbow.setPosition(ELBOW_HOME_POSITION);
 
         } catch (Exception e){
             Logger.error(e, "Hanging arm hardware not found");
@@ -92,6 +93,8 @@ public class HangingArm
     public void elbowDown(){
         elbow.setPosition(ELBOW_HOME_POSITION);
     }
+
+    public void elbowRelease() { elbow.setPosition(ELBOW_RELEASE_POSITION); }
 
     public void wristUp() {
         wrist.setPosition(WRIST_HOME_POSITION);
@@ -111,10 +114,10 @@ public class HangingArm
 
     public void lockInHook () {
         double position;
-        for (int i = 0; i < 1; i++) {
-            position = elbow.getPosition() + 0.01;
+        for (int i = 0; i < 2; i++) {
+            position = elbow.getPosition() + 0.0125;
             elbow.setPosition(position);
-            position = wrist.getPosition() + 0.0075;
+            position = wrist.getPosition() + 0.015;
             wrist.setPosition(position);
             opMode.sleep(100);
         }
@@ -154,14 +157,14 @@ public class HangingArm
             Logger.message("Hanging Arm Down");
 
         } else if (gamepad.dpad_left) {
-            // Turn the hook to it hanging position
-            wristUp();
-            Logger.message("Hanging Wrist up");
-        }
-        else if (gamepad.dpad_right) {
             // Move the hook to its stored position
             wristDown();
-            Logger.message("Hanging Wrist In");
+            Logger.message("Hanging wrist to stored position");
+        }
+        else if (gamepad.dpad_right) {
+            // Turn the hook to it hanging position
+            wristUp();
+            Logger.message("Hanging wrist to hook position");
 
         } else if (gamepad.a) {
             // Release to hook

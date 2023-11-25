@@ -70,6 +70,15 @@ public class MainTeleOp extends LinearOpMode {
                     robot.moveRobot(.1, 0, 0);
                     sleep(500);
                     robot.stopRobot();
+                    robot.hangingArm.thumbOpen();
+                    robot.hangingArm.elbowRelease();
+                    sleep(500);
+                    robot.hangingArm.thumbClose();
+                    robot.hangingArm.wristDown();
+                    robot.hangingArm.elbowDown();
+                    while (gamepad1.a) {
+                        sleep(250);
+                    }
                 }
 
             } else if (gamepad1.right_bumper) {
