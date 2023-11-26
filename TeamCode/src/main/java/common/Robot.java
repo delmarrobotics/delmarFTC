@@ -363,25 +363,6 @@ public class Robot {
 
     }
 
-    /**
-     * Rotate the robot to the specified orientation. The robot is at orientation 0 after initialization.
-     * Orientation range is -180 (counter clockwise) to 180 (clockwise).
-     *
-     * @param orientation position -180 to 180
-     */
-    public void setOrientation(double orientation){
-        // ToDo Use SensorIMUOrthogonal.java as an example to create this method
-    }
-
-    /**
-     *  Return the current orientation of the robot.
-     * @return orientation in a range of -180 to 180
-     */
-    public double getOrientation(){
-        double orientation = 0;
-
-        return orientation;
-    }
 
     /**
      * Toggle the pixel intake on or off.
