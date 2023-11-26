@@ -49,6 +49,9 @@ public class Robot {
     static final double DROPPER_OPEN     = 0.51;
     static final double DROPPER_CLOSE    = 0.67;
 
+    // Intake
+    static final double SPINNER_SPEED    = 0.2;
+
     public boolean intakeOn = false;
 
     // Define Motor and Servo objects  (Make them private so they can't be accessed externally)
@@ -147,10 +150,12 @@ public class Robot {
         leftBackDrive.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         rightBackDrive.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
+        /*
         leftFrontDrive.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         rightFrontDrive.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         leftBackDrive.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         rightBackDrive.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+         */
     }
 
 
@@ -372,9 +377,13 @@ public class Robot {
     {
         if(intakeOn) {
             pixelIntake.setPower(0);
+            spinnerGray.setPower(0);
+            spinnerBlack.setPower(0);
             intakeOn = false;
         } else {
             pixelIntake.setPower(1);
+            spinnerGray.setPower(SPINNER_SPEED);
+            spinnerBlack.setPower(SPINNER_SPEED);
             intakeOn = true;
         }
     }
