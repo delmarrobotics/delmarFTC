@@ -44,11 +44,11 @@ public class MainTeleOp extends LinearOpMode {
         // run until the end of the match (driver presses STOP)
         while (opModeIsActive()) {
 
-            // POV Mode uses left stick to go forward, and right stick to turn.
+            // POV Mode uses left stick to go forward, and right stick to rotate.
             double drive  = -gamepad1.left_stick_y  / 2.0;  // Reduce drive rate to 50%.
             double strafe = -gamepad1.left_stick_x  / 2.0;  // Reduce strafe rate to 50%.
-            double turn   = -gamepad1.right_stick_x / 3.0;  // Reduce turn rate to 33%.
-            robot.moveRobot(drive, strafe, turn);
+            double yaw   = -gamepad1.right_stick_x / 3.0;  // Reduce rotate rate to 33%.
+            robot.moveRobot(drive, strafe, yaw);
 
             if (robot.hangingArm.control()) {
                 continue;
@@ -63,39 +63,24 @@ public class MainTeleOp extends LinearOpMode {
                     }
 
                 } else if (gamepad1.a) {
-                    // Lock in the hanging arm hook.
-                    robot.hangingArm.wristUp();
-                    sleep(2000);
-                    robot.hangingArm.lockInHook();
-                    robot.moveRobot(.1, 0, 0);
-                    sleep(500);
-                    robot.stopRobot();
-                    robot.hangingArm.thumbOpen();
-                    robot.hangingArm.elbowRelease();
-                    sleep(500);
-                    robot.hangingArm.thumbClose();
-                    robot.hangingArm.wristDown();
-                    robot.hangingArm.elbowDown();
-                    while (gamepad1.a) {
-                        sleep(250);
-                    }
-                }
+                    hangRobot();
 
-            } else if (gamepad1.right_bumper) {
-                // robot lifter controls
-                if (gamepad1.left_trigger > 0){
-                    while (gamepad1.left_trigger > 0){
+                } else if (gamepad1.dpad_up){
+                    while (gamepad1.dpad_up){
                         robot.lifterUp();
                     }
                     robot.lifterStop();
 
-                } else if (gamepad1.right_trigger > 0) {
-                    while (gamepad1.right_trigger > 0){
+                } else if (gamepad1.dpad_down) {
+                    while (gamepad1.dpad_down) {
                         robot.lifterDown();
                     }
                     robot.lifterStop();
+                }
 
-                } else if (gamepad1.a) {
+            } else if (gamepad1.right_bumper) {
+                // robot lifter controls
+                if (gamepad1.a) {
                     robot.dropPixel();
                 }
 
@@ -118,6 +103,24 @@ public class MainTeleOp extends LinearOpMode {
             // Show the elapsed game time and wheel power.
             //telemetry.addData("Status", "Run Time: " + runtime.toString());
             telemetry.update();
+        }
+    }
+
+    private void hangRobot() {
+        robot.hangingArm.wristUp();
+        sleep(2000);
+        robot.hangingArm.lockInHook();
+        robot.moveRobot(.1, 0, 0);
+        sleep(500);
+        robot.stopRobot();
+        robot.hangingArm.thumbOpen();
+        robot.hangingArm.elbowRelease();
+        sleep(500);
+        robot.hangingArm.thumbClose();
+        robot.hangingArm.wristDown();
+        robot.hangingArm.elbowDown();
+        while (gamepad1.a) {
+            sleep(250);
         }
     }
 }
