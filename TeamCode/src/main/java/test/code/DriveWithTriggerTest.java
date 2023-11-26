@@ -15,8 +15,8 @@ import common.Robot;
 @SuppressWarnings("unused")
 public class DriveWithTriggerTest extends LinearOpMode {
 
-  private static final double MAX_SPEED = 0.5;
-  private static final double MIN_SPEED = 0.1;
+  private static final double MAX_SPEED = 0.70;
+  private static final double MIN_SPEED = 0.20;
 
   private final ElapsedTime runtime = new ElapsedTime();
 
