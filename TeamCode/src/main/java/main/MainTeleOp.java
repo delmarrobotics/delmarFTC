@@ -16,7 +16,7 @@ import common.Robot;
 @TeleOp(name="Main TeleOp", group="Main")
 public class MainTeleOp extends LinearOpMode {
 
-    public enum GamepadMode { NONE, PIXEL, HANGING };
+    public enum GamepadMode { PIXEL, HANGING };
     GamepadMode mode;
 
     // Declare OpMode members.
@@ -58,6 +58,11 @@ public class MainTeleOp extends LinearOpMode {
                 if (robot.pixelArm.control()) {
                     continue;
                 }
+            }
+
+            if (gamepad1.back) {
+                changeGamepadMode();
+                while (gamepad1.back) sleep(100);
             }
 
             if (gamepad1.left_bumper) {
@@ -126,6 +131,16 @@ public class MainTeleOp extends LinearOpMode {
         robot.hangingArm.elbowDown();
         while (gamepad1.a) {
             sleep(250);
+        }
+    }
+
+    private void changeGamepadMode () {
+        if (mode == GamepadMode.PIXEL) {
+            mode = GamepadMode.HANGING;
+            robot.hangingArm.displayControls();
+        } else if (mode == GamepadMode.HANGING) {
+            mode = GamepadMode.PIXEL;
+            robot.pixelArm.displayControls();
         }
     }
 }
