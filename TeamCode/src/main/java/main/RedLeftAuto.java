@@ -46,7 +46,7 @@ public class RedLeftAuto extends LinearOpMode {
         if (!robot.vision.findTeamElement()) {
             telemetry.addData("dir", "Left");
             traj1 = drive.trajectoryBuilder(new Pose2d())
-                    .forward(35)
+                    .forward(30)
                     .build();
             traj4 = drive.trajectoryBuilder(traj1.end())
                     .strafeLeft(21)
