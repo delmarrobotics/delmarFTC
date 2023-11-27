@@ -104,7 +104,8 @@ public class MainTeleOp extends LinearOpMode {
                     robot.toggleIntake();
                     while (gamepad1.a) sleep(100);
                 } else if (gamepad1.b) {
-                    // grabbing pixel from intake
+                    robot.toggleIntakeRotate();
+                    while (gamepad1.b) sleep(100);
                 } else if (gamepad1.y){
                     // pixel hand opening and closing(2 servos)
                 } else if (gamepad1.x){
