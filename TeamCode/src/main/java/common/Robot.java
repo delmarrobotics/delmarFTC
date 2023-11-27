@@ -28,7 +28,7 @@ public class Robot {
 
     // ToDo   The wheel on the competition robot and the practice robot do not rotate in the same directions. Set the "true"
     // ToDo   to build for the competition robot and the "false" to build for the practice robot.
-    static final boolean COMP_ROBOT = true;
+    static final boolean COMP_ROBOT = false;
 
     // Calculate the COUNTS_PER_INCH for the drive train.
     static final double COUNTS_PER_MOTOR_REV = 28;              // HD Hex Motor Encoder
@@ -50,6 +50,8 @@ public class Robot {
     static final double DROPPER_CLOSE    = 0.67;
 
     // Intake
+    static final double INTAKE_HOME      = 0.09;
+    static final double INTAKE_TARGET    = 0.8;
     static final double SPINNER_SPEED    = 0.2;
 
     public boolean intakeOn = false;
@@ -63,7 +65,7 @@ public class Robot {
     private DcMotor lifter = null;           // Motor to lift the robot off the ground
 
     private DcMotor pixelIntake = null;
-    private Servo   intake_Rotate = null;
+    private Servo   intakeRotate = null;
     private CRServo spinnerGray = null;
     private CRServo spinnerBlack = null;
 
@@ -111,7 +113,7 @@ public class Robot {
             droneFire = opMode.hardwareMap.get(Servo.class, Config.DRONE_FIRE);
 
             pixelIntake = opMode.hardwareMap.get(DcMotor.class, Config.PIXEL_INTAKE);
-            intake_Rotate = opMode.hardwareMap.get(Servo.class, Config.INTAKE_ROTATE);
+            intakeRotate = opMode.hardwareMap.get(Servo.class, Config.INTAKE_ROTATE);
             spinnerGray = opMode.hardwareMap.get(CRServo.class, Config.SPINNER_GRAY);
             spinnerBlack = opMode.hardwareMap.get(CRServo.class, Config.SPINNER_BLACK);
 
