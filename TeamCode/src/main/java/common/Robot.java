@@ -15,13 +15,9 @@ import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.ColorSensor;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
-import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.IMU;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
-
-import org.checkerframework.checker.units.qual.C;
-import org.firstinspires.ftc.robotcore.external.Function;
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 
 public class Robot {
@@ -54,6 +50,7 @@ public class Robot {
     static final double INTAKE_TARGET    = 0.8;
     static final double SPINNER_SPEED    = 0.2;
 
+    public boolean intakeUp = true;
     public boolean intakeOn = false;
 
     // Define Motor and Servo objects  (Make them private so they can't be accessed externally)
@@ -390,6 +387,16 @@ public class Robot {
             spinnerGray.setPower(SPINNER_SPEED);
             spinnerBlack.setPower(SPINNER_SPEED);
             intakeOn = true;
+        }
+    }
+
+    public void toggleIntakeRotate() {
+        if (intakeUp) {
+            intakeRotate.setPosition(INTAKE_TARGET);
+            intakeUp = false;
+        } else {
+            intakeRotate.setPosition(INTAKE_HOME);
+            intakeUp = true;
         }
     }
 
