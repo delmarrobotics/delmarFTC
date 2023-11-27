@@ -30,5 +30,10 @@ public class Config {
     public static final String DRONE_ANGLE      = "droneAngle";
     public static final String DRONE_FIRE       = "droneFire";
 
+    public static final String PIXEL_INTAKE     = "intakePickup";
+    public static final String INTAKE_ROTATE    = "intakeRotate";
+    public static final String SPINNER_GRAY     = "spinnerGray";
+    public static final String SPINNER_BLACK    = "spinnerBlack";
+
     public static final String CAMERA           = "Webcam 1";
 }
