@@ -1,9 +1,7 @@
 package main;
 
-import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
-import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 import common.Robot;
@@ -14,13 +12,14 @@ import common.Robot;
  */
 
 @TeleOp(name="Main TeleOp", group="Main")
+@SuppressWarnings("unused")
 public class MainTeleOp extends LinearOpMode {
 
-    public enum GamepadMode { PIXEL, HANGING };
+    public enum GamepadMode { PIXEL, HANGING }
     GamepadMode mode;
 
     // Declare OpMode members.
-    private ElapsedTime runtime = new ElapsedTime();
+    private final ElapsedTime runtime = new ElapsedTime();
 
     // Initialize the robot hardware.
     private Robot robot = null;
@@ -100,19 +99,19 @@ public class MainTeleOp extends LinearOpMode {
                 }
 
             } else {
-                if (gamepad1.a){
+                if (gamepad1.a) {
+                    // Toggle the intake and the two spinners on / off
                     robot.toggleIntake();
                     while (gamepad1.a) sleep(100);
                 } else if (gamepad1.b) {
+                    // Raise or lower the pixel intake
                     robot.toggleIntakeRotate();
                     while (gamepad1.b) sleep(100);
                 } else if (gamepad1.y){
-                    // pixel hand opening and closing(2 servos)
+                    while (gamepad1.y) sleep(100);
                 } else if (gamepad1.x){
-
-                } else if (gamepad2.a){
+                    while (gamepad1.x) sleep(100);
                 }
-
             }
 
             // Show the elapsed game time and wheel power.
