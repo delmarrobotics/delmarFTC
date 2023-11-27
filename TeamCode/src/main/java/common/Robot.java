@@ -2,7 +2,6 @@ package common;
 
 /*
  * This file defines a Java Class that performs all the setup and configuration for the robot's hardware (motors and sensors).
- * It assumes three motors (left_drive, right_drive and arm) and two servos (left_hand and right_hand)
  *
  * This one file/class can be used by ALL of your OpModes without having to cut & paste the code each time.
  *
@@ -12,6 +11,7 @@ package common;
  */
 
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
+import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.ColorSensor;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
@@ -20,6 +20,7 @@ import com.qualcomm.robotcore.hardware.IMU;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
+import org.checkerframework.checker.units.qual.C;
 import org.firstinspires.ftc.robotcore.external.Function;
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 
@@ -38,49 +39,57 @@ public class Robot {
     static final double RAMP_DISTANCE = WHEEL_DIAMETER_INCHES * 2 * COUNTS_PER_INCH; // Speed ramp up in encoder counts
     static final double MIN_SPEED = .02;
 
-    private int encoderCount = 0;
-    private int lastCount = 0;
-    private double speed = 0.2;
+    // drone launcher servo position
+    static final double DRONE_ANGLE_DOWN = 0.48;
+    static final double DRONE_ANGLE_UP   = 0.31;
+    static final double DRONE_FIRE_DOWN  = 0.063;
+    static final double DRONE_FIRE_UP    = 0.16;
 
-    static final double  DRONE_ANGLE_DOWN = 0.5;
-    static final double  DRONE_ANGLE_UP = 0.5;
-    static final double  DRONE_FIRE_DOWN = 0.5;
-    static final double DRONE_FIRE_UP = 0.5;
+    // pixel dropper servo positions
+    static final double DROPPER_OPEN     = 0.51;
+    static final double DROPPER_CLOSE    = 0.67;
+
+    // Intake
+    static final double INTAKE_HOME      = 0.09;
+    static final double INTAKE_TARGET    = 0.8;
+    static final double SPINNER_SPEED    = 0.2;
 
     public boolean intakeOn = false;
 
     // Define Motor and Servo objects  (Make them private so they can't be accessed externally)
-    public DcMotor leftFrontDrive = null;  //  Used to control the left front drive wheel
+    public DcMotor leftFrontDrive = null;   //  Used to control the left front drive wheel
     public DcMotor rightFrontDrive = null;  //  Used to control the right front drive wheel
-    public DcMotor leftBackDrive = null;  //  Used to control the left back drive wheel
-    public DcMotor rightBackDrive = null;  //  Used to control the right back drive wheel
+    public DcMotor leftBackDrive = null;    //  Used to control the left back drive wheel
+    public DcMotor rightBackDrive = null;   //  Used to control the right back drive wheel
 
     private DcMotor lifter = null;           // Motor to lift the robot off the ground
-    private Servo droneAngle = null;
-    private Servo droneFire = null;
 
     private DcMotor pixelIntake = null;
+    private Servo   intakeRotate = null;
+    private CRServo spinnerGray = null;
+    private CRServo spinnerBlack = null;
 
     private ColorSensor colorSensor = null;
     private IMU imu = null;
 
     private Servo dropper = null;        // Servo to drop the purple pixel
+    private Servo droneAngle = null;
+    private Servo droneFire = null;
 
     public HangingArm hangingArm = null;
+    public PixelArm pixelArm = null;
 
-    public Vision vision;
+    public Vision vision = null;
 
     private final ElapsedTime runtime = new ElapsedTime();
 
     /* Declare OpMode members. */
-    private HardwareMap hardwareMap;
     private LinearOpMode opMode;
     private Telemetry telemetry;
 
     // Define a constructor that allows the OpMode to pass a reference to itself.
     public Robot(LinearOpMode opMode) {
         this.opMode = opMode;
-        hardwareMap = opMode.hardwareMap;
         telemetry = opMode.telemetry;
     }
 
@@ -90,21 +99,29 @@ public class Robot {
     public void init() {
 
         hangingArm = new HangingArm(opMode);
+        pixelArm = new PixelArm(opMode);
         vision = new Vision(opMode);
+
         initDriveTrain();
 
         // ToDo Check the the configuration file has the correct color sensor hardware device selected.
-        //colorSensor = hardwareMap.get(ColorSensor.class, Config.COLOR_SENSOR);
+        //colorSensor = opMode.hardwareMap.get(ColorSensor.class, Config.COLOR_SENSOR);
 
-        imu = hardwareMap.get(IMU.class, Config.IMU);
+        imu = opMode.hardwareMap.get(IMU.class, Config.IMU);
 
         try {
-            lifter = hardwareMap.get(DcMotor.class, Config.LIFTING_WENCH);
-            droneAngle = hardwareMap.get(Servo.class, Config.DRONE_ANGLE);
-            droneFire = hardwareMap.get(Servo.class, Config.DRONE_FIRE);
+            lifter = opMode.hardwareMap.get(DcMotor.class, Config.LIFTING_WENCH);
+
+            droneAngle = opMode.hardwareMap.get(Servo.class, Config.DRONE_ANGLE);
+            droneFire = opMode.hardwareMap.get(Servo.class, Config.DRONE_FIRE);
+
+            pixelIntake = opMode.hardwareMap.get(DcMotor.class, Config.PIXEL_INTAKE);
+            intakeRotate = opMode.hardwareMap.get(Servo.class, Config.INTAKE_ROTATE);
+            spinnerGray = opMode.hardwareMap.get(CRServo.class, Config.SPINNER_GRAY);
+            spinnerBlack = opMode.hardwareMap.get(CRServo.class, Config.SPINNER_BLACK);
 
         } catch (Exception e) {
-            Logger.error(e, "Lifting wench hardware not found");
+            Logger.error(e, "hardware not found");
         }
     }
 
@@ -113,10 +130,10 @@ public class Robot {
      */
     private void initDriveTrain() {
         try {
-            leftFrontDrive = hardwareMap.get(DcMotor.class, Config.LEFT_FRONT);
-            rightFrontDrive = hardwareMap.get(DcMotor.class, Config.RIGHT_FRONT);
-            leftBackDrive = hardwareMap.get(DcMotor.class, Config.LEFT_BACK);
-            rightBackDrive = hardwareMap.get(DcMotor.class, Config.RIGHT_BACK);
+            leftFrontDrive = opMode.hardwareMap.get(DcMotor.class, Config.LEFT_FRONT);
+            rightFrontDrive = opMode.hardwareMap.get(DcMotor.class, Config.RIGHT_FRONT);
+            leftBackDrive = opMode.hardwareMap.get(DcMotor.class, Config.LEFT_BACK);
+            rightBackDrive = opMode.hardwareMap.get(DcMotor.class, Config.RIGHT_BACK);
         } catch (Exception e) {
             Logger.error(e, "Hardware not found");
         }
@@ -138,10 +155,12 @@ public class Robot {
         leftBackDrive.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         rightBackDrive.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
+        /*
         leftFrontDrive.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         rightFrontDrive.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         leftBackDrive.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         rightBackDrive.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+         */
     }
 
 
@@ -176,6 +195,16 @@ public class Robot {
         rightFrontDrive.setPower(rightFrontPower);
         leftBackDrive.setPower(leftBackPower);
         rightBackDrive.setPower(rightBackPower);
+    }
+
+    /**
+     * Stop all the drive train motors.
+     */
+    public void stopRobot() {
+        leftFrontDrive.setPower(0);
+        rightFrontDrive.setPower(0);
+        leftBackDrive.setPower(0);
+        rightBackDrive.setPower(0);
     }
 
     /**
@@ -332,22 +361,8 @@ public class Robot {
 
         double power = Math.min(Math.min(power1, power2), speed);
 
-        //Logger.message("power %f %f %f", power1, power2, power);
-
         return power;
     }
-
-    public void toggleIntake()
-    {
-        if(intakeOn) {
-            pixelIntake.setPower(0);
-            intakeOn = false;
-        } else {
-            pixelIntake.setPower(1);
-            intakeOn = true;
-        }
-    }
-
 
     /**
      * Move the robot until the specified color is detected.
@@ -358,37 +373,41 @@ public class Robot {
 
     }
 
+
     /**
-     * Rotate the robot to the specified orientation. The robot is at orientation 0 after initialization.
-     * Orientation range is -180 (counter clockwise) to 180 (clockwise).
+     * Toggle the pixel intake on or off.
      *
-     * @param orientation position -180 to 180
      */
-    public void setOrientation(double orientation){
-        // ToDo Use SensorIMUOrthogonal.java as an example to create this method
-    }
-
-    /**
-     *  Return the current orientation of the robot.
-     * @return orientation in a range of -180 to 180
-     */
-    public double getOrientation(){
-        double orientation = 0;
-
-        return orientation;
+    public void toggleIntake()
+    {
+        if(intakeOn) {
+            pixelIntake.setPower(0);
+            spinnerGray.setPower(0);
+            spinnerBlack.setPower(0);
+            intakeOn = false;
+        } else {
+            pixelIntake.setPower(1);
+            spinnerGray.setPower(SPINNER_SPEED);
+            spinnerBlack.setPower(SPINNER_SPEED);
+            intakeOn = true;
+        }
     }
 
     /**
      * Drop the preload purple pixel at the current location.
      */
     public void dropPixel(){
-
+        dropper.setPosition(DROPPER_OPEN);
+        opMode.sleep(500);
+        dropper.setPosition(DROPPER_CLOSE);
     }
 
     /**
      * Turn on the motor that drives the lifting wench
      */
-    public void lifterUp() { lifter.setPower(1); }
+    public void lifterUp() {
+        lifter.setPower(1);
+    }
 
     /**
      * Turn on the motor that drives the lifting wench
@@ -404,13 +423,16 @@ public class Robot {
         lifter.setPower(0);
     }
 
-    public void launchDrone() {
+    /**
+     * Launch the drone
+     */
+    public void launchDrone(){
         droneAngle.setPosition(DRONE_ANGLE_UP);
-        opMode.sleep(200);
+        opMode.sleep(750);
         droneFire.setPosition(DRONE_FIRE_UP);
-        opMode.sleep(200);
+        opMode.sleep(750);
+        droneFire.setPosition(DRONE_FIRE_DOWN);
         droneAngle.setPosition(DRONE_ANGLE_DOWN);
     }
-
 }
 

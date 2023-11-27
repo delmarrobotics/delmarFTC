@@ -44,17 +44,25 @@ public class MainTeleOp extends LinearOpMode {
         // run until the end of the match (driver presses STOP)
         while (opModeIsActive()) {
 
-            //if (! gamepad1.atRest())
-            //{
-                // POV Mode uses left stick to go forward, and right stick to turn.
+            // POV Mode uses left stick to go forward, and right stick to rotate.
             double drive  = -gamepad1.left_stick_y  / 2.0;  // Reduce drive rate to 50%.
             double strafe = -gamepad1.left_stick_x  / 2.0;  // Reduce strafe rate to 50%.
-            double turn   = -gamepad1.right_stick_x / 3.0;  // Reduce turn rate to 33%.
-            robot.moveRobot(drive, strafe, turn);
-            //}
+            double yaw   = -gamepad1.right_stick_x / 3.0;  // Reduce rotate rate to 33%.
+            robot.moveRobot(drive, strafe, yaw);
 
-            if (robot.hangingArm.control()) {
-                continue;
+            if (mode == GamepadMode.HANGING) {
+                if (robot.hangingArm.control()) {
+                    continue;
+                }
+            } else if (mode == GamepadMode.PIXEL) {
+                if (robot.pixelArm.control()) {
+                    continue;
+                }
+            }
+
+            if (gamepad1.back) {
+                changeGamepadMode();
+                while (gamepad1.back) sleep(100);
             }
 
             if (gamepad1.right_trigger > 0) {
@@ -62,34 +70,46 @@ public class MainTeleOp extends LinearOpMode {
             }
 
             if (gamepad1.left_bumper) {
+                if (gamepad1.left_trigger > 0) {
+                    // Launch the drone
+                    robot.launchDrone();
+                    while (gamepad1.left_trigger  > 0) {
+                        sleep(100);
+                    }
 
-            } else if (gamepad1.right_bumper) {
-                // robot lifter controls
-                if (gamepad1.left_trigger > 0){
-                    while (gamepad1.left_trigger > 0){
+                } else if (gamepad1.a) {
+                    hangRobot();
+
+                } else if (gamepad1.dpad_up){
+                    while (gamepad1.dpad_up){
                         robot.lifterUp();
                     }
                     robot.lifterStop();
-                } else if (gamepad1.right_trigger > 0) {
-                    while (gamepad1.right_trigger > 0){
+
+                } else if (gamepad1.dpad_down) {
+                    while (gamepad1.dpad_down) {
                         robot.lifterDown();
                     }
                     robot.lifterStop();
-                } else if (gamepad1.a) {
+                }
+
+            } else if (gamepad1.right_bumper) {
+                // robot lifter controls
+                if (gamepad1.a) {
                     robot.dropPixel();
                 }
+
             } else {
                 if (gamepad1.a){
-                    //  arm elbow down
-
+                    robot.toggleIntake();
+                    while (gamepad1.a) sleep(100);
                 } else if (gamepad1.b) {
                     // grabbing pixel from intake
                 } else if (gamepad1.y){
                     // pixel hand opening and closing(2 servos)
                 } else if (gamepad1.x){
-                    // unused
+
                 } else if (gamepad2.a){
-                    robot.toggleIntake();
                 }
 
             }
@@ -97,6 +117,34 @@ public class MainTeleOp extends LinearOpMode {
             // Show the elapsed game time and wheel power.
             //telemetry.addData("Status", "Run Time: " + runtime.toString());
             telemetry.update();
+        }
+    }
+
+    private void hangRobot() {
+        robot.hangingArm.wristUp();
+        sleep(2000);
+        robot.hangingArm.lockInHook();
+        robot.moveRobot(.1, 0, 0);
+        sleep(500);
+        robot.stopRobot();
+        robot.hangingArm.thumbOpen();
+        robot.hangingArm.elbowRelease();
+        sleep(500);
+        robot.hangingArm.thumbClose();
+        robot.hangingArm.wristDown();
+        robot.hangingArm.elbowDown();
+        while (gamepad1.a) {
+            sleep(250);
+        }
+    }
+
+    private void changeGamepadMode () {
+        if (mode == GamepadMode.PIXEL) {
+            mode = GamepadMode.HANGING;
+            robot.hangingArm.displayControls();
+        } else if (mode == GamepadMode.HANGING) {
+            mode = GamepadMode.PIXEL;
+            robot.pixelArm.displayControls();
         }
     }
 }

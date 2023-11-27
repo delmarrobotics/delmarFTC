@@ -25,6 +25,7 @@ public class RedLeftAuto extends LinearOpMode {
 
     private Trajectory traj1;
     private Trajectory traj2;
+    private Trajectory traj3;
 
     @Override
     public void runOpMode() {
@@ -44,20 +45,24 @@ public class RedLeftAuto extends LinearOpMode {
         if (!robot.vision.findTeamElement()) {
             traj1 = drive.trajectoryBuilder(new Pose2d())
                     .forward(30)
-                    .build();
-            traj2 = drive.trajectoryBuilder(traj1.end())
-                    .strafeLeft(20)
+                    .strafeLeft(21)
                     .build();
             drive.followTrajectory(traj1);
-            drive.followTrajectory(traj2);
 
             //Todo save position of object
         } else {
             double angle = robot.vision.findTeamElementAngle();
-            if (angle > 5) {
-
+            if (angle > -1) {
+                traj2 = drive.trajectoryBuilder(new Pose2d())
+                        .forward(30)
+                        .strafeRight(21)
+                        .build();
+                drive.followTrajectory(traj2);
             } else {
-
+                traj3 = drive.trajectoryBuilder(new Pose2d())
+                        .forward(37)
+                        .build();
+                drive.followTrajectory(traj3);
             }
         }
 
