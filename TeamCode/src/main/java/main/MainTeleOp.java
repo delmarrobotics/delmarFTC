@@ -16,7 +16,7 @@ import common.Robot;
 @TeleOp(name="Main TeleOp", group="Main")
 public class MainTeleOp extends LinearOpMode {
 
-    public enum GamepadMode { PIXEL, HANGING };
+    public enum GamepadMode { NONE, PIXEL, HANGING };
     GamepadMode mode;
 
     // Declare OpMode members.
@@ -50,8 +50,14 @@ public class MainTeleOp extends LinearOpMode {
             double yaw   = -gamepad1.right_stick_x / 3.0;  // Reduce rotate rate to 33%.
             robot.moveRobot(drive, strafe, yaw);
 
-            if (robot.hangingArm.control()) {
-                continue;
+            if (mode == GamepadMode.HANGING) {
+                if (robot.hangingArm.control()) {
+                    continue;
+                }
+            } else if (mode == GamepadMode.PIXEL) {
+                if (robot.pixelArm.control()) {
+                    continue;
+                }
             }
 
             if (gamepad1.left_bumper) {

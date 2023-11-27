@@ -77,6 +77,7 @@ public class Robot {
     private Servo droneFire = null;
 
     public HangingArm hangingArm = null;
+    public PixelArm pixelArm = null;
 
     public Vision vision = null;
 
@@ -98,7 +99,9 @@ public class Robot {
     public void init() {
 
         hangingArm = new HangingArm(opMode);
+        pixelArm = new PixelArm(opMode);
         vision = new Vision(opMode);
+
         initDriveTrain();
 
         // ToDo Check the the configuration file has the correct color sensor hardware device selected.
