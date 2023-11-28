@@ -109,8 +109,10 @@ public class Robot {
         initDriveTrain();
 
         // ToDo Check the the configuration file has the correct color sensor hardware device selected.
+        /**
         colorSensor = opMode.hardwareMap.get(NormalizedColorSensor.class, Config.COLOR_SENSOR);
         colorSensor.setGain(COLOR_SENSOR_GAIN);
+         */
 
 
         try {
