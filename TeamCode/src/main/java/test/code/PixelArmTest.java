@@ -5,13 +5,13 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
-import common.HangingArm;
 import common.PixelArm;
 
 /*
  * Test code for the pixel arm
  */
 @TeleOp(name="Pixel Arm Test", group="Test")
+@Disabled
 @SuppressWarnings("unused")
 public class PixelArmTest extends LinearOpMode {
 
