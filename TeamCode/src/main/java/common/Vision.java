@@ -1,10 +1,8 @@
 package common;
 
-import static java.lang.String.valueOf;
 
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
-import org.firstinspires.ftc.robotcore.external.hardware.camera.BuiltinCameraDirection;
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
 import org.firstinspires.ftc.robotcore.external.hardware.camera.controls.ExposureControl;
 import org.firstinspires.ftc.robotcore.external.hardware.camera.controls.GainControl;
@@ -26,7 +24,7 @@ public class Vision {
     private static final String[] LABELS = { "Team Element" };
 
     private TfodProcessor tfod;             // TensorFlow Object Detection processor
-    private AprilTagProcessor aprilTag;     // AprilTag Detecction processor
+    private AprilTagProcessor aprilTag;     // AprilTag Detection processor
     private VisionPortal visionPortal;      // Instance of the vision portal.
 
     private int gain = 16;                 // camera gain
@@ -160,8 +158,8 @@ public class Vision {
     public void enableBothVision() {
         visionPortal.setProcessorEnabled(tfod, true);
         visionPortal.setProcessorEnabled(aprilTag, true);
-        String active = String.valueOf(visionPortal.getProcessorEnabled(tfod)) + String.valueOf(visionPortal.getProcessorEnabled(aprilTag));
-        opMode.telemetry.addData("activeVisionPortal", active);
+        opMode.telemetry.addData("activeVisionPortal", "tfod %b  aprilTag %b",
+                visionPortal.getProcessorEnabled(tfod), visionPortal.getProcessorEnabled(aprilTag));
     }
 
 
