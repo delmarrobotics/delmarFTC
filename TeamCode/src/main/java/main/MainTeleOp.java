@@ -51,6 +51,11 @@ public class MainTeleOp extends LinearOpMode {
             robot.moveRobot(drive, strafe, yaw, speed);
             //robot.moveRobot(drive, strafe, yaw);
 
+            // If the start button is pressed, ignore all controls.
+            if (gamepad1.start || gamepad2.start) {
+                continue;
+            }
+
             if (mode == GamepadMode.HANGING) {
                 if (robot.hangingArm.control()) {
                     continue;

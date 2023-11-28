@@ -26,7 +26,7 @@ public class Robot {
 
     // ToDo   The wheel on the competition robot and the practice robot do not rotate in the same directions. Set the "true"
     // ToDo   to build for the competition robot and the "false" to build for the practice robot.
-    static final boolean COMP_ROBOT = false;
+    static final boolean COMP_ROBOT = true;
 
     // Calculate the COUNTS_PER_INCH for the drive train.
     static final double COUNTS_PER_MOTOR_REV = 28;              // HD Hex Motor Encoder
@@ -36,7 +36,7 @@ public class Robot {
             (COUNTS_PER_MOTOR_REV * DRIVE_GEAR_REDUCTION) / (WHEEL_DIAMETER_INCHES * Math.PI);
     static final double RAMP_DISTANCE = WHEEL_DIAMETER_INCHES * 2 * COUNTS_PER_INCH; // Speed ramp up in encoder counts
 
-    private static final double MIN_SPEED = 0.02;
+    private static final double MIN_SPEED = 0.25;
     private static final double MAX_SPEED = 0.70;
 
     // Color sensor
@@ -109,10 +109,10 @@ public class Robot {
         initDriveTrain();
 
         // ToDo Check the the configuration file has the correct color sensor hardware device selected.
-        /**
+
         colorSensor = opMode.hardwareMap.get(NormalizedColorSensor.class, Config.COLOR_SENSOR);
         colorSensor.setGain(COLOR_SENSOR_GAIN);
-         */
+
 
 
         try {
@@ -204,6 +204,7 @@ public class Robot {
         double rightFrontPower;
         double leftBackPower;
         double rightBackPower;
+
 
         if (x == 0 && y == 0 && yaw == 0 ) {
             leftFrontPower = 0;
@@ -461,6 +462,7 @@ public class Robot {
             pixelIntake.setPower(1);
             spinnerGray.setPower(SPINNER_SPEED);
             spinnerBlack.setPower(SPINNER_SPEED);
+            pixelArm.pixelElbowCollectPosition();
             intakeOn = true;
         }
     }
@@ -510,7 +512,7 @@ public class Robot {
      */
     public void launchDrone(){
         droneAngle.setPosition(DRONE_ANGLE_UP);
-        opMode.sleep(750);
+        opMode.sleep(1000);
         droneFire.setPosition(DRONE_FIRE_UP);
         opMode.sleep(750);
         droneFire.setPosition(DRONE_FIRE_DOWN);

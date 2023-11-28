@@ -15,18 +15,19 @@ public class PixelArm {
 
     // Position for all the pixel arm servos and motor encoders
     static final int    PIXEL_ELBOW_DOWN = 0;
+    static final int    PIXEL_ELBOW_COLLECT = -500;
     static final int    PIXEL_ELBOW_UP = -2000;
 
     static final int    PIXEL_ARM_IN = 0;
     static final int    PIXEL_ARM_OUT = 1200; // ToDo fully extended 2982;
 
-    static final double PIXEL_WRIST_HOME = 0.445;
+    static final double PIXEL_WRIST_HOME = 0.45;
     static final double PIXEL_WRIST_TARGET = 0.52;
     static final double PixEL_WRIST_DROP_1 = 0.34;
     static final double PixEL_WRIST_DROP_2 = 0.39;
 
     static final double HAND_UPPER_CLOSED = 0.66 ;
-    static final double HAND_UPPER_OPENED = 0.63;
+    static final double HAND_UPPER_OPENED = 0.635;    // 63
     static final double HAND_LOWER_CLOSED = 0.445;
     static final double HAND_LOWER_OPENED = 0.41;
 
@@ -92,6 +93,10 @@ public class PixelArm {
         pixelElbow.setPower(0);
         int to = pixelElbow.getCurrentPosition();
         Logger.message("move elbow from %d to %d, new position %d", from, to, newPosition);
+    }
+
+    public void pixelElbowCollectPosition () {
+        pixelElbowMove(PIXEL_ELBOW_COLLECT);
     }
 
     /**
@@ -256,6 +261,7 @@ public class PixelArm {
         }
 
         if (gamepad.left_trigger != 0 ){
+            pixelElbowMove(PIXEL_ELBOW_DOWN);
             openUpperHand();
             openLowerHand();
             opMode.sleep(100);
@@ -267,11 +273,16 @@ public class PixelArm {
             opMode.sleep(500);
             pixelWristMove(PixEL_WRIST_DROP_2);
             closeUpperHand();
+            pixelWristMove(PIXEL_WRIST_HOME);
+            pixelArmMove(PIXEL_ARM_IN);
+            pixelElbowMove(PIXEL_ELBOW_COLLECT);
         }
 
         if (gamepad.right_trigger != 0) {
             pixelWristMove(PIXEL_WRIST_HOME);
             pixelArmMove(PIXEL_ARM_IN);
+            pixelElbowMove(PIXEL_ELBOW_COLLECT);
+
         }
         return handled;
     }
