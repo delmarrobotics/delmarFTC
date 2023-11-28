@@ -100,10 +100,6 @@ public class Vision {
         // Disable or re-enable the TFOD processor at any time.
         //visionPortal.setProcessorEnabled(tfod, true);
 
-        opMode.telemetry.addData("TensorFlow processor enabled ", visionPortal.getProcessorEnabled(tfod));
-        opMode.telemetry.addData("AprilTag processor enabled ", visionPortal.getProcessorEnabled(aprilTag));
-        opMode.telemetry.update();
-
     }   // end method initTfod()
 
     /**
