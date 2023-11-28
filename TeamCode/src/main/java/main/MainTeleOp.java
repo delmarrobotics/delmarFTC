@@ -43,11 +43,13 @@ public class MainTeleOp extends LinearOpMode {
         // run until the end of the match (driver presses STOP)
         while (opModeIsActive()) {
 
-            // POV Mode uses left stick to go forward, and right stick to rotate.
+            // POV Mode uses left stick to go forward, and right stick to rotate, left trigger accelerate.
             double drive  = -gamepad1.left_stick_y  / 2.0;  // Reduce drive rate to 50%.
             double strafe = -gamepad1.left_stick_x  / 2.0;  // Reduce strafe rate to 50%.
             double yaw   = -gamepad1.right_stick_x / 3.0;  // Reduce rotate rate to 33%.
-            robot.moveRobot(drive, strafe, yaw);
+            double speed = gamepad1.left_trigger;
+            robot.moveRobot(drive, strafe, yaw, speed);
+            //robot.moveRobot(drive, strafe, yaw);
 
             if (mode == GamepadMode.HANGING) {
                 if (robot.hangingArm.control()) {
