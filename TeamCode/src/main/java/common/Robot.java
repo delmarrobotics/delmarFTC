@@ -10,12 +10,15 @@ package common;
  *
  */
 
+import android.graphics.Color;
+
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.ColorSensor;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
-import com.qualcomm.robotcore.hardware.IMU;
+import com.qualcomm.robotcore.hardware.NormalizedColorSensor;
+import com.qualcomm.robotcore.hardware.NormalizedRGBA;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
 import org.firstinspires.ftc.robotcore.external.Telemetry;
@@ -36,6 +39,10 @@ public class Robot {
 
     private static final double MIN_SPEED = 0.02;
     private static final double MAX_SPEED = 0.70;
+
+    // Color sensor
+    static final float COLOR_SENSOR_GAIN = 1.75F;
+    public enum COLOR { RED, BLUE}
 
     // drone launcher servo position
     static final double DRONE_ANGLE_DOWN = 0.48;
@@ -68,8 +75,7 @@ public class Robot {
     private CRServo spinnerGray = null;
     private CRServo spinnerBlack = null;
 
-    private ColorSensor colorSensor = null;
-    private IMU imu = null;
+    private NormalizedColorSensor colorSensor = null;
 
     private Servo dropper = null;        // Servo to drop the purple pixel
     private Servo droneAngle = null;
@@ -104,9 +110,9 @@ public class Robot {
         initDriveTrain();
 
         // ToDo Check the the configuration file has the correct color sensor hardware device selected.
-        //colorSensor = opMode.hardwareMap.get(ColorSensor.class, Config.COLOR_SENSOR);
+        colorSensor = opMode.hardwareMap.get(NormalizedColorSensor.class, Config.COLOR_SENSOR);
+        colorSensor.setGain(COLOR_SENSOR_GAIN);
 
-        imu = opMode.hardwareMap.get(IMU.class, Config.IMU);
 
         try {
             lifter = opMode.hardwareMap.get(DcMotor.class, Config.LIFTING_WENCH);
@@ -404,21 +410,45 @@ public class Robot {
 
         double power1 = ((current - start) / RAMP_DISTANCE) * (speed - MIN_SPEED) + MIN_SPEED;
         double power2 = ((end - current) / RAMP_DISTANCE) * (speed - MIN_SPEED) + MIN_SPEED;
-
-        double power = Math.min(Math.min(power1, power2), speed);
-
-        return power;
+        return Math.min(Math.min(power1, power2), speed);
     }
 
     /**
      * Move the robot until the specified color is detected.
      *
-     * @param hue the color to detect
+     * @param color the color to detect
      */
-    public void moveToColor(double hue){
+    public void moveToColor(COLOR color){
 
+        boolean found = false;
+        float[] hsvValues = new float[3];
+        ElapsedTime elapsedTime = new ElapsedTime();
+
+        elapsedTime.reset();
+        moveRobot(1, 0, 0, MIN_SPEED);
+        while (! found) {
+            // Get the normalized colors from the sensor
+            NormalizedRGBA colors = colorSensor.getNormalizedColors();
+
+            // Convert to HSV color space
+            Color.colorToHSV(colors.toColor(), hsvValues);
+            float hue = hsvValues[0];
+            float saturation = hsvValues[1];
+
+            if (color == COLOR.BLUE) {
+                if (hue >= 220 && hue <= 260 && saturation >= .7) {
+                    found = true;
+                }
+            } else if (color == COLOR.RED) {
+                if ((hue >= 330 || hue <= 30) && saturation >= .5) {
+                    found = true;
+                }
+            }
+            if (elapsedTime.milliseconds() > 2000)
+                break;
+        }
+        stopRobot();
     }
-
 
     /**
      * Toggle the pixel intake on or off.
