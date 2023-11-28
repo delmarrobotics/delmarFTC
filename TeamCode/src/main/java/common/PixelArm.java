@@ -151,7 +151,7 @@ public class PixelArm {
                 "  b - open lower hand\n" +
                 "  x - close upper hand\n" +
                 "  y - open upper hand\n" +
-                "  left trigger - pixel pickup test" +
+                "  left trigger - pixel pickup / drop test" +
                 "\n");
     }
 
@@ -160,7 +160,7 @@ public class PixelArm {
      */
     public boolean control() {
 
-        Gamepad gamepad = opMode.gamepad1;
+        Gamepad gamepad = opMode.gamepad2;
         boolean handled = true;
 
         if (gamepad.dpad_up) {
@@ -268,7 +268,6 @@ public class PixelArm {
             pixelWristMove(PixEL_WRIST_DROP_2);
             closeUpperHand();
         }
-
 
         if (gamepad.right_trigger != 0) {
             pixelWristMove(PIXEL_WRIST_HOME);
