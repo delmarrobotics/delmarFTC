@@ -37,8 +37,8 @@ public class MainTeleOp extends LinearOpMode {
         waitForStart();
         runtime.reset();
 
-        mode = GamepadMode.HANGING;
-        robot.hangingArm.displayControls();
+        mode = GamepadMode.PIXEL;
+        robot.pixelArm.displayControls();
 
         // run until the end of the match (driver presses STOP)
         while (opModeIsActive()) {
@@ -64,10 +64,6 @@ public class MainTeleOp extends LinearOpMode {
             if (gamepad1.back) {
                 changeGamepadMode();
                 while (gamepad1.back) sleep(100);
-            }
-
-            if (gamepad1.right_trigger > 0) {
-                robot.launchDrone();
             }
 
             if (gamepad1.left_bumper) {
