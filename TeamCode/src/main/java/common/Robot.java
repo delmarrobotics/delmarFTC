@@ -14,7 +14,6 @@ import android.graphics.Color;
 
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.CRServo;
-import com.qualcomm.robotcore.hardware.ColorSensor;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.NormalizedColorSensor;
@@ -89,13 +88,13 @@ public class Robot {
     private final ElapsedTime runtime = new ElapsedTime();
 
     /* Declare OpMode members. */
-    private LinearOpMode opMode;
-    private Telemetry telemetry;
+    private final LinearOpMode opMode;
+    private final Telemetry telemetry;
 
     // Define a constructor that allows the OpMode to pass a reference to itself.
     public Robot(LinearOpMode opMode) {
         this.opMode = opMode;
-        telemetry = opMode.telemetry;
+        this.telemetry = opMode.telemetry;
     }
 
     /**
@@ -115,6 +114,8 @@ public class Robot {
 
 
         try {
+            dropper = opMode.hardwareMap.get(Servo.class, Config.PIXEL_DROPPER);
+
             lifter = opMode.hardwareMap.get(DcMotor.class, Config.LIFTING_WENCH);
 
             droneAngle = opMode.hardwareMap.get(Servo.class, Config.DRONE_ANGLE);
@@ -159,13 +160,6 @@ public class Robot {
         rightFrontDrive.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         leftBackDrive.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         rightBackDrive.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-
-        /*
-        leftFrontDrive.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        rightFrontDrive.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        leftBackDrive.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        rightBackDrive.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-         */
     }
 
 
