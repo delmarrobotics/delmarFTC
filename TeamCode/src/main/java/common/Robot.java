@@ -410,15 +410,19 @@ public class Robot {
      * Move the robot until the specified color is detected.
      *
      * @param color the color to detect
+     * @param x positive for forward, negative for backwards
+     * @param y positive for strafe left ???, negative for strafe right ???
+     * @param speed drive speed
+     * @param timeout timeout in milliseconds
      */
-    public void moveToColor(COLOR color){
+    public void moveToColor(COLOR color, double x, double y, double speed, double timeout){
 
         boolean found = false;
         float[] hsvValues = new float[3];
         ElapsedTime elapsedTime = new ElapsedTime();
 
         elapsedTime.reset();
-        moveRobot(1, 0, 0, MIN_SPEED);
+        moveRobot(x, y, 0, speed);
         while (! found) {
             // Get the normalized colors from the sensor
             NormalizedRGBA colors = colorSensor.getNormalizedColors();
@@ -437,7 +441,7 @@ public class Robot {
                     found = true;
                 }
             }
-            if (elapsedTime.milliseconds() > 2000)
+            if (elapsedTime.milliseconds() > timeout)
                 break;
         }
         stopRobot();
