@@ -28,6 +28,10 @@ public class RedLeftAuto extends LinearOpMode {
     private Trajectory traj3;
     private Trajectory traj4;
     private Trajectory traj5;
+
+    private enum POSITION { left, center, right }
+    POSITION objectPosition;
+
     @Override
     public void runOpMode() {
         telemetry.addData("Status", "Initialized");
@@ -54,7 +58,8 @@ public class RedLeftAuto extends LinearOpMode {
             drive.followTrajectory(traj1);
             drive.followTrajectory(traj4);
 
-            //Todo save position of object
+            objectPosition = POSITION.left;
+
         } else {
             double angle = robot.vision.findTeamElementAngle();
             if (angle > -1) {
