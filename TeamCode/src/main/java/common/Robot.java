@@ -36,8 +36,9 @@ public class Robot {
             (COUNTS_PER_MOTOR_REV * DRIVE_GEAR_REDUCTION) / (WHEEL_DIAMETER_INCHES * Math.PI);
     static final double RAMP_DISTANCE = WHEEL_DIAMETER_INCHES * 2 * COUNTS_PER_INCH; // Speed ramp up in encoder counts
 
-    private static final double MIN_SPEED = 0.25;
-    private static final double MAX_SPEED = 0.70;
+    private static final double MIN_SPEED        = 0.25;
+    private static final double MAX_SPEED        = 0.70;
+    private static final double MAX_ROTATE_SPEED = 0.50;
 
     // Color sensor
     static final float COLOR_SENSOR_GAIN = 1.75F;
@@ -224,6 +225,11 @@ public class Robot {
             else if (speed > MAX_SPEED) {
                 speed = MAX_SPEED;
             }
+            if (x == 0 && y == 0 && (yaw > 0 || yaw < 0)) {
+                if (speed > MAX_ROTATE_SPEED)
+                    speed = MAX_ROTATE_SPEED;
+            }
+
             double scale = (1 / max) * speed;
 
             leftFrontPower *= scale;
@@ -410,15 +416,19 @@ public class Robot {
      * Move the robot until the specified color is detected.
      *
      * @param color the color to detect
+     * @param x positive for forward, negative for backwards
+     * @param y positive for strafe left ???, negative for strafe right ???
+     * @param speed drive speed
+     * @param timeout timeout in milliseconds
      */
-    public void moveToColor(COLOR color){
+    public void moveToColor(COLOR color, double x, double y, double speed, double timeout){
 
         boolean found = false;
         float[] hsvValues = new float[3];
         ElapsedTime elapsedTime = new ElapsedTime();
 
         elapsedTime.reset();
-        moveRobot(1, 0, 0, MIN_SPEED);
+        moveRobot(x, y, 0, speed);
         while (! found) {
             // Get the normalized colors from the sensor
             NormalizedRGBA colors = colorSensor.getNormalizedColors();
@@ -437,7 +447,7 @@ public class Robot {
                     found = true;
                 }
             }
-            if (elapsedTime.milliseconds() > 2000)
+            if (elapsedTime.milliseconds() > timeout)
                 break;
         }
         stopRobot();
