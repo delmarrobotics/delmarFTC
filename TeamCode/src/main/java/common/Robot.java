@@ -36,8 +36,9 @@ public class Robot {
             (COUNTS_PER_MOTOR_REV * DRIVE_GEAR_REDUCTION) / (WHEEL_DIAMETER_INCHES * Math.PI);
     static final double RAMP_DISTANCE = WHEEL_DIAMETER_INCHES * 2 * COUNTS_PER_INCH; // Speed ramp up in encoder counts
 
-    private static final double MIN_SPEED = 0.25;
-    private static final double MAX_SPEED = 0.70;
+    private static final double MIN_SPEED        = 0.25;
+    private static final double MAX_SPEED        = 0.70;
+    private static final double MAX_ROTATE_SPEED = 0.50;
 
     // Color sensor
     static final float COLOR_SENSOR_GAIN = 1.75F;
@@ -224,6 +225,11 @@ public class Robot {
             else if (speed > MAX_SPEED) {
                 speed = MAX_SPEED;
             }
+            if (x == 0 && y == 0 && (yaw > 0 || yaw < 0)) {
+                if (speed > MAX_ROTATE_SPEED)
+                    speed = MAX_ROTATE_SPEED;
+            }
+
             double scale = (1 / max) * speed;
 
             leftFrontPower *= scale;
