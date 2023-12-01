@@ -59,8 +59,9 @@ public class Robot {
     static final double INTAKE_TARGET    = 0.8;
     static final double SPINNER_SPEED    = 0.2;
 
-    public boolean intakeUp = true;
-    public boolean intakeOn = false;
+    public boolean intakeUp         = true;
+    public boolean intakeOn         = false;
+    private boolean intakeReverseOn = false;
 
     // Define Motor and Servo objects  (Make them private so they can't be accessed externally)
     public DcMotor leftFrontDrive = null;   //  Used to control the left front drive wheel
@@ -471,6 +472,14 @@ public class Robot {
             pixelArm.pixelElbowCollectPosition();
             intakeOn = true;
         }
+    }
+
+    public void intakeReverse() {
+
+        pixelIntake.setPower(-1);
+        spinnerGray.setPower(-SPINNER_SPEED);
+        spinnerBlack.setPower(-SPINNER_SPEED);
+        intakeOn = false;
     }
 
     public void toggleIntakeRotate() {
