@@ -142,6 +142,24 @@ public class PixelArm {
         handLower.setPosition(HAND_LOWER_CLOSED);
     }
 
+    public void autoDrop() {
+        pixelElbowMove(PIXEL_ELBOW_DOWN);
+        openUpperHand();
+        openLowerHand();
+        opMode.sleep(100);
+        pixelElbowMove(PIXEL_ELBOW_UP);
+        pixelArmMove((PIXEL_ARM_OUT));
+        pixelWristMove(PixEL_WRIST_DROP_1);
+        opMode.sleep(500);
+        closeLowerHand();
+        opMode.sleep(500);
+        pixelWristMove(PixEL_WRIST_DROP_2);
+        closeUpperHand();
+        pixelWristMove(PIXEL_WRIST_HOME);
+        pixelArmMove(PIXEL_ARM_IN);
+        pixelElbowMove(PIXEL_ELBOW_COLLECT);
+    }
+
     public void displayControls(){
         opMode.telemetry.addData("Pixel Arm Controls (Gamepad 2)", "\n" +
                 "  dpad up - arm up\n" +
@@ -261,21 +279,7 @@ public class PixelArm {
         }
 
         if (gamepad.left_trigger != 0 ){
-            pixelElbowMove(PIXEL_ELBOW_DOWN);
-            openUpperHand();
-            openLowerHand();
-            opMode.sleep(100);
-            pixelElbowMove(PIXEL_ELBOW_UP);
-            pixelArmMove((PIXEL_ARM_OUT));
-            pixelWristMove(PixEL_WRIST_DROP_1);
-            opMode.sleep(500);
-            closeLowerHand();
-            opMode.sleep(500);
-            pixelWristMove(PixEL_WRIST_DROP_2);
-            closeUpperHand();
-            pixelWristMove(PIXEL_WRIST_HOME);
-            pixelArmMove(PIXEL_ARM_IN);
-            pixelElbowMove(PIXEL_ELBOW_COLLECT);
+            autoDrop();
         }
 
         if (gamepad.right_trigger != 0) {
