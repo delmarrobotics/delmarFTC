@@ -112,6 +112,13 @@ public class HangingArm
         thumb.setPosition(THUMB_CLOSE);
     }
 
+    public void thumbToggle() {
+        if (thumb.getPosition() == THUMB_CLOSE)
+            thumb.setPosition(THUMB_OPEN);
+        else
+            thumb.setPosition(THUMB_CLOSE);
+    }
+
     public void lockInHook () {
         double position;
         for (int i = 0; i < 2; i++) {
@@ -131,9 +138,9 @@ public class HangingArm
                 "  dpad right - rotate down\n" +
                 "  left stick - manual move the elbow\n" +
                 "  right stick - manual rotate the hook\n" +
-                "  a - release hook\n" +
-                "  b - close release\n" +
-                "  x - lock in the hook\n" +
+                "  a - open / close thumb\n" +
+                "  b - \n" +
+                "  right trigger - lock in the hook\n" +
                 "  y - lift the robot off the ground" +
                 "\n");
     }
@@ -168,13 +175,14 @@ public class HangingArm
 
         } else if (gamepad.a) {
             // Release to hook
-            thumbOpen();
-            Logger.message("Hanging Arm open hook release");
+            thumbToggle();
+            while (gamepad.a) opMode.sleep(100);
+            //Logger.message("Hanging Arm open hook release");
 
         } else if (gamepad.b) {
             // Close the hook device
-            thumbClose();
-            Logger.message("Hanging Arm close hook release");
+            //thumbClose();
+            //Logger.message("Hanging Arm close hook release");
 
         } else if (gamepad.x) {
             // Move the hook to its lock position
@@ -222,7 +230,7 @@ public class HangingArm
                 }
             }
 
-        } else if (gamepad.y) {
+        } else if (gamepad.right_trigger != 0) {
             // Lift the robot off the ground
             Logger.message("Hanging Arm lift");
         }
