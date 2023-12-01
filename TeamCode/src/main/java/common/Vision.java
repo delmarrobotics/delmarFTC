@@ -190,7 +190,7 @@ public class Vision {
         }
 
         if (targetFound) {
-            Logger.message("x %f y %f", desiredTag.ftcPose.x, desiredTag.ftcPose.y);
+            //Logger.message("x %f y %f", desiredTag.ftcPose.x, desiredTag.ftcPose.y);
             opMode.telemetry.addLine(String.format("\n==== (ID %d) %s", desiredTag.id, desiredTag.metadata.name));
             opMode.telemetry.addLine(String.format("XYZ %6.1f %6.1f %6.1f  (inch)", desiredTag.ftcPose.x, desiredTag.ftcPose.y, desiredTag.ftcPose.z));
             opMode.telemetry.addLine(String.format("PRY %6.1f %6.1f %6.1f  (deg)", desiredTag.ftcPose.pitch, desiredTag.ftcPose.roll, desiredTag.ftcPose.yaw));
@@ -249,6 +249,12 @@ public class Vision {
         return 0;
     }
 
+    public boolean cameraReady() {
+        VisionPortal.CameraState state;
+        state = visionPortal.getCameraState();
+        Logger.message("camera state %s", state);
+        return (state == VisionPortal.CameraState.STREAMING);
+    }
 
     public void calibrateCamera() {
 

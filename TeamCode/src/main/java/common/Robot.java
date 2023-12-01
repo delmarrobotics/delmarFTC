@@ -155,11 +155,12 @@ public class Robot {
             leftBackDrive.setDirection(DcMotorSimple.Direction.REVERSE);
             rightBackDrive.setDirection(DcMotorSimple.Direction.REVERSE);
         }
-
+        /*
         leftFrontDrive.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         rightFrontDrive.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         leftBackDrive.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         rightBackDrive.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+         */
     }
 
 
@@ -238,7 +239,7 @@ public class Robot {
             leftBackPower *= scale;
             rightBackPower *= scale;
 
-            Logger.message("power %f %f %f %f %f", speed, leftFrontPower, rightFrontPower, leftBackPower, rightBackPower);
+            //Logger.message("power %f %f %f %f %f", speed, leftFrontPower, rightFrontPower, leftBackPower, rightBackPower);
         }
 
         // Send powers to the wheels.
