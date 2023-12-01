@@ -26,7 +26,7 @@ public class Robot {
 
     // ToDo   The wheel on the competition robot and the practice robot do not rotate in the same directions. Set the "true"
     // ToDo   to build for the competition robot and the "false" to build for the practice robot.
-    static final boolean COMP_ROBOT = true;
+    static final boolean COMP_ROBOT = false;
 
     // Calculate the COUNTS_PER_INCH for the drive train.
     static final double COUNTS_PER_MOTOR_REV = 28;              // HD Hex Motor Encoder
@@ -151,9 +151,9 @@ public class Robot {
             rightBackDrive.setDirection(DcMotorSimple.Direction.FORWARD);
         } else {
             leftFrontDrive.setDirection(DcMotorSimple.Direction.FORWARD);
-            rightFrontDrive.setDirection(DcMotorSimple.Direction.REVERSE);
+            rightFrontDrive.setDirection(DcMotorSimple.Direction.FORWARD);
             leftBackDrive.setDirection(DcMotorSimple.Direction.REVERSE);
-            rightBackDrive.setDirection(DcMotorSimple.Direction.FORWARD);
+            rightBackDrive.setDirection(DcMotorSimple.Direction.REVERSE);
         }
 
         leftFrontDrive.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
@@ -221,7 +221,7 @@ public class Robot {
             max = Math.max(max, Math.abs(leftBackPower));
             max = Math.max(max, Math.abs(rightBackPower));
 
-            if (speed < MIN_SPEED)
+            if (speed == 0)
                 speed = MIN_SPEED;
             else if (speed > MAX_SPEED) {
                 speed = MAX_SPEED;
