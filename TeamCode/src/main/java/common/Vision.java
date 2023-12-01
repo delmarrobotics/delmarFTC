@@ -23,6 +23,11 @@ public class Vision {
     private static final String TFOD_MODEL_FILE = "team_prop_1.tflite";
     private static final String[] LABELS = { "Team Element" };
 
+    // AprilTag IDs
+    public static final int BLUE_LEFT_TAG   = 1;
+    public static final int BLUE_CENTER_TAG = 2;
+    public static final int BLUE_RIGHT_TAG  = 3;
+
     private TfodProcessor tfod;             // TensorFlow Object Detection processor
     private AprilTagProcessor aprilTag;     // AprilTag Detection processor
     private VisionPortal visionPortal;      // Instance of the vision portal.
@@ -31,6 +36,8 @@ public class Vision {
     private int exposure = 16;             // camera exposure
 
     Recognition element = null;            // recognized team element
+
+    private AprilTagDetection desiredTag = null;     // Used to hold the data for a detected AprilTag
 
     public LinearOpMode opMode;
 
@@ -162,6 +169,46 @@ public class Vision {
                 visionPortal.getProcessorEnabled(tfod), visionPortal.getProcessorEnabled(aprilTag));
     }
 
+    public boolean findAprilTag (int tagID) {
+
+        boolean targetFound = false;
+        desiredTag  = null;
+
+        // Step through the list of detected tags and look for a matching tag
+        List<AprilTagDetection> currentDetections = aprilTag.getDetections();
+        for (AprilTagDetection detection : currentDetections) {
+            // Look to see if we have size info on this tag.
+            if (detection.metadata != null) {
+                //  Check to see if we want to track towards this tag.
+                if ((tagID < 0) || (detection.id == tagID)) {
+                    // Yes, we want to use this tag.
+                    targetFound = true;
+                    desiredTag = detection;
+                    break;  // don't look any further.
+                }
+            }
+        }
+
+        if (targetFound) {
+            Logger.message("x %f y %f", desiredTag.ftcPose.x, desiredTag.ftcPose.y);
+            opMode.telemetry.addLine(String.format("\n==== (ID %d) %s", desiredTag.id, desiredTag.metadata.name));
+            opMode.telemetry.addLine(String.format("XYZ %6.1f %6.1f %6.1f  (inch)", desiredTag.ftcPose.x, desiredTag.ftcPose.y, desiredTag.ftcPose.z));
+            opMode.telemetry.addLine(String.format("PRY %6.1f %6.1f %6.1f  (deg)", desiredTag.ftcPose.pitch, desiredTag.ftcPose.roll, desiredTag.ftcPose.yaw));
+            opMode.telemetry.addLine(String.format("RBE %6.1f %6.1f %6.1f  (inch, deg, deg)", desiredTag.ftcPose.range, desiredTag.ftcPose.bearing, desiredTag.ftcPose.elevation));
+        } else {
+            opMode.telemetry.addLine(String.format("Tag not found"));
+        }
+
+        return targetFound;
+    }
+
+    public double aprilTagX() {
+        return desiredTag.ftcPose.x;
+    }
+
+    public double aprilTagY(){
+        return desiredTag.ftcPose.y;
+    }
 
     /**
      * Find the object with the highest confidence.
