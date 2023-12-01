@@ -102,6 +102,10 @@ public class MainTeleOp extends LinearOpMode {
                 }
 
             } else {
+                if (gamepad1.left_trigger != 0 ){
+                    robot.pixelArm.autoDrop();
+                }
+
                 if (gamepad1.a) {
                     // Toggle the intake and the two spinners on / off
                     robot.toggleIntake();
