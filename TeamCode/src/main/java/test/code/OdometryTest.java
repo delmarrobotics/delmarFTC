@@ -1,6 +1,5 @@
 package test.code;
 
-import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
@@ -19,11 +18,12 @@ import common.Robot;
 public class OdometryTest extends LinearOpMode {
 
   private static final double MAX_SPEED = 0.70;
-  private static final double MIN_SPEED = 0.20;
+  private static final double MIN_SPEED = 0.10;
   private static final double TICKS_PER_REV = 2000;
   private static final double WHEEL_RADIUS = 0.944882;               // inches 48mm diameter
-
   static final double COUNTS_PER_INCH = TICKS_PER_REV / (WHEEL_RADIUS * 2 * Math.PI);
+  private static final double DECELERATION_COUNT = 4 * COUNTS_PER_INCH;
+
 
   private final ElapsedTime runtime = new ElapsedTime();
 
@@ -48,8 +48,8 @@ public class OdometryTest extends LinearOpMode {
     // Wait for the game to start (driver presses PLAY)
     waitForStart();
 
-    driveWithOdometry(10);
-    // run until the end of the match (driver presses STOP)
+    driveWithOdometry(0, 10, 0.2);
+
     while (opModeIsActive()) {
 
       int leftPos = leftEncoder.getCurrentPosition();
@@ -61,25 +61,66 @@ public class OdometryTest extends LinearOpMode {
       }
   }
 
-  public void driveWithOdometry(double inches) {
+  /**
+   * Move the robot by the specified inches forward, backward, left or right
+   *
+   * @param inchesX positive for forward, negative for backwards
+   * @param inchesY positive for strafe left, negative for strafe right
+   * @param speed 0-1 1 is maximum speed
+   */
+  public void driveWithOdometry(double inchesX, double inchesY, double speed) {
 
-    int leftPos = leftEncoder.getCurrentPosition();
-    int rightPos = rightEncoder.getCurrentPosition();
-    int frontPos = frontEncoder.getCurrentPosition();
+    Encoder encoder;
+    double inches;
+    double current = 0;
+    double x = 0;
+    double y = 0;
 
-    double targetPos = leftPos + (COUNTS_PER_INCH * inches);
+    if (inchesX != 0) {
+      // forward or backward
+      encoder = leftEncoder;
+      inches = inchesX;
+      if (inchesX > 0)
+        x = 1;
+      else
+        x = -1;
 
-    robot.moveRobot(1,0,0, 0.2);
-    runtime.reset();
-    //while (runtime.milliseconds() < 5000) {
+    } else if (inchesY != 0) {
+      // left or right
+      encoder = frontEncoder;
+      inches = inchesY;
+      if (inchesY > 0)
+        y = 1;
+      else
+        y = -1;
+
+    } else {
+      return;
+    }
+
+    int start = encoder.getCurrentPosition();
+    double distance = Math.abs(COUNTS_PER_INCH * inches);
+
+    robot.moveRobot(x, y,0, speed);
+
     while (opModeIsActive()) {
-      int currentPos = leftEncoder.getCurrentPosition();
-      telemetry.addData("positions",  "%f %d", targetPos, currentPos);
-      telemetry.update();
-      if (targetPos <= currentPos) {
+      current = encoder.getCurrentPosition();
+      //Logger.message("traveled %f", Math.abs(current - start));
+      if (Math.abs(current - start) >= distance) {
+        robot.stopRobot();
         break;
+      }
+      double remaining = distance - Math.abs(current - start);
+      if (remaining <= DECELERATION_COUNT) {
+        double decelerationSpeed = (speed - MIN_SPEED) * (remaining / DECELERATION_COUNT);
+        //robot.moveRobot(x, y,0, decelerationSpeed);
+        Logger.message("decelerationSpeed %f", decelerationSpeed);
+      }
+      if (remaining <= (COUNTS_PER_INCH * 2) ) {
+        robot.moveRobot(x, y,0, 0.1);
       }
     }
     robot.stopRobot();
+    Logger.message("driveWithOdometry: target %f  traveled %f", inches, current / COUNTS_PER_INCH);
   }
 }
