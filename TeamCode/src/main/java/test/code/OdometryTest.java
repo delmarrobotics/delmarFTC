@@ -52,6 +52,11 @@ public class OdometryTest extends LinearOpMode {
     // run until the end of the match (driver presses STOP)
     while (opModeIsActive()) {
 
+      int leftPos = leftEncoder.getCurrentPosition();
+      int rightPos = rightEncoder.getCurrentPosition();
+      int frontPos = frontEncoder.getCurrentPosition();
+      telemetry.addData("positions", "left %d   right %d  front %d",
+          leftPos, rightPos, frontPos);
       telemetry.update();
       }
   }
@@ -64,15 +69,17 @@ public class OdometryTest extends LinearOpMode {
 
     double targetPos = leftPos + (COUNTS_PER_INCH * inches);
 
-    robot.moveRobot(1,0,0, 0.1);
+    robot.moveRobot(1,0,0, 0.2);
     runtime.reset();
-    while (runtime.milliseconds() > 3000) {
+    //while (runtime.milliseconds() < 5000) {
+    while (opModeIsActive()) {
       int currentPos = leftEncoder.getCurrentPosition();
       telemetry.addData("positions",  "%f %d", targetPos, currentPos);
-      if (targetPos >= currentPos) {
+      telemetry.update();
+      if (targetPos <= currentPos) {
         break;
       }
-      robot.stopRobot();
     }
+    robot.stopRobot();
   }
 }
