@@ -30,6 +30,7 @@
 package common;
 
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
+import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.Gamepad;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
@@ -49,9 +50,10 @@ public class HangingArm
     private static final double THUMB_OPEN = 0.5;
     private static final double THUMB_CLOSE = 1;
 
-    private Servo elbow;
-    private Servo wrist;
-    private Servo thumb;
+    private Servo elbow;                     // Servo that raises and lowers the arm
+    private Servo wrist;                     // Servo that rotates the hook
+    private Servo thumb;                     // Servo that holds the hook
+    private DcMotor lifter = null;           // Motor to lift the robot off the ground
 
     public LinearOpMode     opMode;
 
@@ -74,9 +76,7 @@ public class HangingArm
             wrist = hardwareMap.get(Servo.class, Config.HANGING_WRIST);
             thumb = hardwareMap.get(Servo.class, Config.HANDING_THUMB);
 
-
-            //thumb.setPosition(THUMB_CLOSE);
-            //elbow.setPosition(ELBOW_HOME_POSITION);
+            lifter = opMode.hardwareMap.get(DcMotor.class, Config.LIFTING_WENCH);
 
         } catch (Exception e){
             Logger.error(e, "Hanging arm hardware not found");
@@ -130,18 +130,39 @@ public class HangingArm
         }
     }
 
+    /**
+     * Turn on the motor that drives the lifting wench
+     */
+    public void lifterUp() {
+        lifter.setPower(1);
+    }
+
+    /**
+     * Turn on the motor that drives the lifting wench
+     */
+    public void lifterDown(){
+        lifter.setPower(-1);
+    }
+
+    /**
+     * Turn off the motor that drives the lifting wench
+     */
+    public void lifterStop(){
+        lifter.setPower(0);
+    }
+
     public void displayControls(){
         opMode.telemetry.addData("Hanging Arm Controls (Gamepad 2)", "\n" +
-                "  dpad up - arm up\n" +
-                "  dpad down - arm down\n" +
-                "  dpad left - rotate up\n" +
-                "  dpad right - rotate down\n" +
+                "  a - lock in the hook\n" +
+                "  b - release hook\n" +
+                "  x - lift the robot off the ground\n" +
+//              "  y - lower the robot to the ground\n" +
                 "  left stick - manual move the elbow\n" +
                 "  right stick - manual rotate the hook\n" +
-                "  a - open / close thumb\n" +
-                "  b - \n" +
-                "  right trigger - lock in the hook\n" +
-                "  y - lift the robot off the ground" +
+//              "  dpad up - arm up\n" +
+//              "  dpad down - arm down\n" +
+//              "  dpad left - rotate up\n" +
+//              "  dpad right - rotate down\n" +
                 "\n");
     }
 
@@ -153,7 +174,29 @@ public class HangingArm
         Gamepad gamepad = opMode.gamepad2;
         boolean handled = true;
 
-        if (gamepad.dpad_up) {
+        if (gamepad.a) {
+            // lock in the hook, handled in MainTeleOp
+            handled = false;
+
+        } else if (gamepad.b) {
+            // toggle the hook release
+            thumbToggle();
+            while (gamepad.b) opMode.sleep(100);
+            Logger.message("Hanging Arm toggle thumb open / close");
+
+        } else if (gamepad.x) {
+            // Raise the robot off the ground
+            while (gamepad.x) lifterUp();
+            lifterStop();
+            Logger.message("Lower the robot to the ground");
+
+        } else if (gamepad.y) {
+            // Lower the robot to the ground
+            while (gamepad.y) lifterDown();
+            lifterStop();
+            Logger.message("Lower the robot to the ground");
+
+        } else  if (gamepad.dpad_up) {
             // Raise the hanging arm from its stored position
             elbowUp();
             Logger.message("Hanging Arm Up");
@@ -173,22 +216,7 @@ public class HangingArm
             wristUp();
             Logger.message("Hanging wrist to hook position");
 
-        } else if (gamepad.a) {
-            // Release to hook
-            thumbToggle();
-            while (gamepad.a) opMode.sleep(100);
-            //Logger.message("Hanging Arm open hook release");
-
-        } else if (gamepad.b) {
-            // Close the hook device
-            //thumbClose();
-            //Logger.message("Hanging Arm close hook release");
-
-        } else if (gamepad.x) {
-            // Move the hook to its lock position
-            lockInHook();
-
-        } else if (gamepad.left_stick_y > 0) {
+        } else  if (gamepad.left_stick_y > 0) {
             // manually move the elbow
             while (gamepad.left_stick_y > 0) {
                 double position = elbow.getPosition() + .01 ;
@@ -230,12 +258,7 @@ public class HangingArm
                 }
             }
 
-        } else if (gamepad.right_trigger != 0) {
-            // Lift the robot off the ground
-            Logger.message("Hanging Arm lift");
-        }
-
-        else {
+        } else {
             handled = false;
         }
         return handled;
