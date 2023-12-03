@@ -519,13 +519,17 @@ public class Robot {
     /**
      * Hang the robot
      */
-    public void hangRobot() {
+    public void hangRobotLockIn() {
         hangingArm.wristUp();
         opMode.sleep(2000);
         hangingArm.lockInHook();
         moveRobot(.1, 0, 0);
         opMode.sleep(500);
         stopRobot();
+    }
+
+    public void hangRobotReleaseHook() {
+
         hangingArm.thumbOpen();
         hangingArm.elbowRelease();
         opMode.sleep(500);

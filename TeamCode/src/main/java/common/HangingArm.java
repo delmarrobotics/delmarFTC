@@ -98,7 +98,7 @@ public class HangingArm
 
     public void wristUp() {
         wrist.setPosition(WRIST_HOME_POSITION);
-    }
+    }   // ToDo check
 
     public void wristDown() {
         wrist.setPosition(WRIST_TARGET_POSITION);
@@ -153,16 +153,18 @@ public class HangingArm
 
     public void displayControls(){
         opMode.telemetry.addLine("Hanging Arm Controls (Gamepad 2)\n" +
-                "  a - lock in the hook\n" +
-                "  b - release hook\n" +
-                "  x - lift the robot off the ground\n" +
-//              "  y - lower the robot to the ground\n" +
+                "  a - raise the arm\n" +
+                "  b - lock in the hook\n" +
+                "  x - release hook\n" +
+                "  y - lift the robot off the ground\n" +
                 "  left stick - manual move the elbow\n" +
                 "  right stick - manual rotate the hook\n"
-//              "  dpad up - arm up\n" +
-//              "  dpad down - arm down\n" +
-//              "  dpad left - rotate up\n" +
-//              "  dpad right - rotate down\n" +
+                //"  right bumper - toggle hook release"
+                //"  y - lower the robot to the ground\n" +
+                //"  dpad up - arm up\n" +
+                //"  dpad down - arm down\n" +
+                //"  dpad left - rotate up\n" +
+                //"  dpad right - rotate down\n" +
                 );
     }
 
@@ -175,24 +177,22 @@ public class HangingArm
         boolean handled = true;
 
         if (gamepad.a) {
-            // lock in the hook, handled in MainTeleOp
-            handled = false;
+            //Raise the arm
+            elbowUp();
 
         } else if (gamepad.b) {
-            // toggle the hook release
-            thumbToggle();
-            while (gamepad.b) opMode.sleep(100);
-            Logger.message("Hanging Arm toggle thumb open / close");
+            // lock in the hook, handled in MainTeleOp
+            handled = false;
+            Logger.message("Hanging Arm lock in hook");
 
         } else if (gamepad.x) {
-            // Raise the robot off the ground
-            while (gamepad.x) lifterUp();
-            lifterStop();
-            Logger.message("Lower the robot to the ground");
+            // Release the hook, handled in MainTeleOp
+            handled = false;
+            Logger.message("Hanging Arm release hook");
 
         } else if (gamepad.y) {
-            // Lower the robot to the ground
-            while (gamepad.y) lifterDown();
+            // Raise the robot off the ground
+            while (gamepad.y) lifterUp();
             lifterStop();
             Logger.message("Lower the robot to the ground");
 
@@ -210,31 +210,40 @@ public class HangingArm
             // Move the hook to its stored position
             wristDown();
             Logger.message("Hanging wrist to stored position");
-        }
-        else if (gamepad.dpad_right) {
+
+        } else if (gamepad.dpad_right) {
             // Turn the hook to it hanging position
             wristUp();
             Logger.message("Hanging wrist to hook position");
 
-        } else  if (gamepad.left_stick_y > 0) {
+        } else if (gamepad.right_bumper && gamepad.a) {
+            // toggle the hook release
+            thumbToggle();
+            while (gamepad.right_bumper || gamepad.a) opMode.sleep(100);
+            Logger.message("Hanging Arm toggle thumb open / close");
+
+        } else if (gamepad.right_bumper && gamepad.b) {
+            // Lower the robot to the ground
+            while (gamepad.right_bumper && gamepad.b) lifterDown();
+            lifterStop();
+            Logger.message("Lower the robot to the ground");
+
+        } else  if (gamepad.left_stick_y != 0) {
             // manually move the elbow
-            while (gamepad.left_stick_y > 0) {
-                double position = elbow.getPosition() + .01 ;
+            while (gamepad.left_stick_y != 0) {
+                double position = elbow.getPosition();
+                if (Double.isNaN(position))
+                    position = ELBOW_HOME_POSITION;
+                if (gamepad.left_stick_y > 0)
+                    position += .01;
+                else if (gamepad.left_stick_y < 0)
+                    position -= 0.01;
                 elbow.setPosition(position);
                 Logger.message("elbow position %f", position);
                 opMode.sleep(100);
             }
 
-        }  else if (gamepad.left_stick_y < 0) {
-            // manually move the elbow
-            while (gamepad.left_stick_y < 0) {
-                double position = elbow.getPosition() - .01;
-                elbow.setPosition(position);
-                Logger.message("elbow position %f", position);
-                opMode.sleep(100);
-            }
-
-        } else if (gamepad.right_stick_y > 0) {
+        }  else if (gamepad.right_stick_y > 0) {
             // manually move the wrist
             while (gamepad.right_stick_y > 0) {
                 double position = wrist.getPosition() + .005 ;
@@ -256,6 +265,22 @@ public class HangingArm
                     Logger.message("wrist position %f", position);
                     opMode.sleep(100);
                 }
+            }
+
+        }  else if (gamepad.right_stick_y != 0) {
+            // manually move the wrist
+            while (gamepad.right_stick_y != 0) {
+                double position = wrist.getPosition();
+                // Check the the position is defined, getPosition previously called.
+                if (Double.isNaN(position))
+                    position = WRIST_HOME_POSITION;
+                else if (gamepad.right_stick_y > 0)
+                    position += 0.005;
+                else if (gamepad.right_stick_y < 0)
+                    position -= 0.005;
+                wrist.setPosition(position);
+                Logger.message("wrist position %f", position);
+                opMode.sleep(100);
             }
 
         } else {
