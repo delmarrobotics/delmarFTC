@@ -24,9 +24,9 @@ import org.firstinspires.ftc.robotcore.external.Telemetry;
 
 public class Robot {
 
-    // ToDo   The wheel on the competition robot and the practice robot do not rotate in the same directions. Set the "true"
-    // ToDo   to build for the competition robot and the "false" to build for the practice robot.
-    static final boolean COMP_ROBOT = false;
+    // The wheel on the competition robot and the practice robot do not rotate in the same directions. Set the "true"
+    // to build for the competition robot and the "false" to build for the practice robot.
+    static final boolean COMP_ROBOT = true;
 
     // Calculate the COUNTS_PER_INCH for the drive train.
     static final double COUNTS_PER_MOTOR_REV = 28;              // HD Hex Motor Encoder
@@ -61,15 +61,12 @@ public class Robot {
 
     public boolean intakeUp         = true;
     public boolean intakeOn         = false;
-    private boolean intakeReverseOn = false;
 
     // Define Motor and Servo objects  (Make them private so they can't be accessed externally)
     public DcMotor leftFrontDrive = null;   //  Used to control the left front drive wheel
     public DcMotor rightFrontDrive = null;  //  Used to control the right front drive wheel
     public DcMotor leftBackDrive = null;    //  Used to control the left back drive wheel
     public DcMotor rightBackDrive = null;   //  Used to control the right back drive wheel
-
-    private DcMotor lifter = null;           // Motor to lift the robot off the ground
 
     private DcMotor pixelIntake = null;
     private Servo   intakeRotate = null;
@@ -110,13 +107,12 @@ public class Robot {
 
         initDriveTrain();
 
-        colorSensor = opMode.hardwareMap.get(NormalizedColorSensor.class, Config.COLOR_SENSOR);
-        colorSensor.setGain(COLOR_SENSOR_GAIN);
+        // ToDo added back
+        //colorSensor = opMode.hardwareMap.get(NormalizedColorSensor.class, Config.COLOR_SENSOR);
+        //colorSensor.setGain(COLOR_SENSOR_GAIN);
 
         try {
             dropper = opMode.hardwareMap.get(Servo.class, Config.PIXEL_DROPPER);
-
-            lifter = opMode.hardwareMap.get(DcMotor.class, Config.LIFTING_WENCH);
 
             droneAngle = opMode.hardwareMap.get(Servo.class, Config.DRONE_ANGLE);
             droneFire = opMode.hardwareMap.get(Servo.class, Config.DRONE_FIRE);
@@ -456,16 +452,22 @@ public class Robot {
     }
 
     /**
+     * Turn the intake off
+     */
+    public void intakeOff() {
+        pixelIntake.setPower(0);
+        spinnerGray.setPower(0);
+        spinnerBlack.setPower(0);
+        intakeOn = false;
+    }
+
+    /**
      * Toggle the pixel intake on or off.
-     *
      */
     public void toggleIntake()
     {
         if(intakeOn) {
-            pixelIntake.setPower(0);
-            spinnerGray.setPower(0);
-            spinnerBlack.setPower(0);
-            intakeOn = false;
+            intakeOff();
         } else {
             pixelIntake.setPower(1);
             spinnerGray.setPower(SPINNER_SPEED);
@@ -503,27 +505,6 @@ public class Robot {
     }
 
     /**
-     * Turn on the motor that drives the lifting wench
-     */
-    public void lifterUp() {
-        lifter.setPower(1);
-    }
-
-    /**
-     * Turn on the motor that drives the lifting wench
-     */
-    public void lifterDown(){
-        lifter.setPower(-1);
-    }
-
-    /**
-     * Turn off the motor that drives the lifting wench
-     */
-    public void lifterStop(){
-        lifter.setPower(0);
-    }
-
-    /**
      * Launch the drone
      */
     public void launchDrone(){
@@ -534,5 +515,24 @@ public class Robot {
         droneFire.setPosition(DRONE_FIRE_DOWN);
         droneAngle.setPosition(DRONE_ANGLE_DOWN);
     }
-}
+
+    /**
+     * Hang the robot
+     */
+    public void hangRobot() {
+        hangingArm.wristUp();
+        opMode.sleep(2000);
+        hangingArm.lockInHook();
+        moveRobot(.1, 0, 0);
+        opMode.sleep(500);
+        stopRobot();
+        hangingArm.thumbOpen();
+        hangingArm.elbowRelease();
+        opMode.sleep(500);
+        hangingArm.thumbClose();
+        hangingArm.wristDown();
+        hangingArm.elbowDown();
+    }
+
+} // end of class
 
