@@ -239,9 +239,9 @@ public class HangingArm
                 else if (gamepad.left_stick_y < 0)
                     position -= 0.01;
                 elbow.setPosition(position);
-                Logger.message("elbow position %f", position);
                 opMode.sleep(100);
             }
+            Logger.message("elbow position %f", elbow.getPosition());
 
         }  else if (gamepad.right_stick_y > 0) {
             // manually move the wrist
@@ -250,10 +250,10 @@ public class HangingArm
                 // Check the the position is defined, getPosition previously called.
                 if (! Double.isNaN(position)) {
                     wrist.setPosition(position);
-                    Logger.message("wrist position %f", position);
                     opMode.sleep(100);
                 }
             }
+            Logger.message("wrist position %f", wrist.getPosition());
 
         } else if (gamepad.right_stick_y < 0) {
             // manually move the wrist
@@ -262,10 +262,10 @@ public class HangingArm
                 // Check the the position is defined, getPosition previously called.
                 if (! Double.isNaN(position)) {
                     wrist.setPosition(position);
-                    Logger.message("wrist position %f", position);
                     opMode.sleep(100);
                 }
             }
+            Logger.message("wrist position %f", wrist.getPosition());
 
         }  else if (gamepad.right_stick_y != 0) {
             // manually move the wrist
@@ -279,9 +279,9 @@ public class HangingArm
                 else if (gamepad.right_stick_y < 0)
                     position -= 0.005;
                 wrist.setPosition(position);
-                Logger.message("wrist position %f", position);
                 opMode.sleep(100);
             }
+            Logger.message("wrist position %f", wrist.getPosition());
 
         } else {
             handled = false;

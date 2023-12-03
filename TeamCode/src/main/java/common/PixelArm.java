@@ -296,7 +296,9 @@ public class PixelArm {
             // manually rotate the hands
             while (gamepad.right_stick_y != 0) {
                 double position = pixelWrist.getPosition();
-                if (gamepad.right_stick_y > 0)
+                if (Double.isNaN(position))
+                    position = PIXEL_WRIST_HOME;
+                else if (gamepad.right_stick_y > 0)
                     position += 0.005;
                 else if (gamepad.right_stick_y < 0)
                     position -= 0.005;
