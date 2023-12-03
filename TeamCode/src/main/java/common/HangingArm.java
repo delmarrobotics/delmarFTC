@@ -53,9 +53,9 @@ public class HangingArm
     private Servo elbow;                     // Servo that raises and lowers the arm
     private Servo wrist;                     // Servo that rotates the hook
     private Servo thumb;                     // Servo that holds the hook
-    private DcMotor lifter = null;           // Motor to lift the robot off the ground
+    private DcMotor lifter;                  // Motor to lift the robot off the ground
 
-    public LinearOpMode     opMode;
+    public LinearOpMode opMode;
 
     //constructor
     public HangingArm(LinearOpMode opMode) {
@@ -152,18 +152,18 @@ public class HangingArm
     }
 
     public void displayControls(){
-        opMode.telemetry.addData("Hanging Arm Controls (Gamepad 2)", "\n" +
+        opMode.telemetry.addLine("Hanging Arm Controls (Gamepad 2)\n" +
                 "  a - lock in the hook\n" +
                 "  b - release hook\n" +
                 "  x - lift the robot off the ground\n" +
 //              "  y - lower the robot to the ground\n" +
                 "  left stick - manual move the elbow\n" +
-                "  right stick - manual rotate the hook\n" +
+                "  right stick - manual rotate the hook\n"
 //              "  dpad up - arm up\n" +
 //              "  dpad down - arm down\n" +
 //              "  dpad left - rotate up\n" +
 //              "  dpad right - rotate down\n" +
-                "\n");
+                );
     }
 
     /**

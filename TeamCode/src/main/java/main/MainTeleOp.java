@@ -4,6 +4,7 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
+import common.PixelArm;
 import common.Robot;
 
 /*
@@ -39,10 +40,17 @@ public class MainTeleOp extends LinearOpMode {
 
         displayControls();
         robot.pixelArm.displayControls();
+        displayControls2();
         mode = GamepadMode.PIXEL;
 
         // run until the end of the match (driver presses STOP)
         while (opModeIsActive()) {
+
+            // If the start button is pressed, ignore all controls. Start button is used to
+            // select active gamepad.
+            if (gamepad1.start || gamepad2.start) {
+                continue;
+            }
 
             // POV Mode uses left stick to go forward, and right stick to rotate, left trigger accelerate.
             double drive  = -gamepad1.left_stick_y  / 2.0;  // Reduce drive rate to 50%.
@@ -51,61 +59,54 @@ public class MainTeleOp extends LinearOpMode {
             double speed = gamepad1.left_trigger;
             robot.moveRobot(drive, strafe, yaw, speed);
 
-            // If the start button is pressed, ignore all controls.
-            if (gamepad1.start || gamepad2.start) {
-                continue;
-            }
-
-            if (gamepad1.back) {
+            if (gamepad2.back) {
                 changeGamepadMode();
-                while (gamepad1.back) sleep(100);
+                while (gamepad2.back) sleep(100);
             }
 
             if (mode == GamepadMode.HANGING) {
                 if (robot.hangingArm.control()) {
                     continue;
+
                 } else if (gamepad2.a) {
                     robot.hangRobot();
                     while (gamepad2.a) sleep(250);
+
+                } else  if (gamepad2.left_trigger > 0) {
+                    // Launch the drone
+                    robot.launchDrone();
+                    while (gamepad2.left_trigger > 0) sleep(100);
                 }
 
             } else if (mode == GamepadMode.PIXEL) {
+                if (robot.pixelArm.dropCommand())
+                    robot.intakeOff();
                 if (robot.pixelArm.control())
                     continue;
             }
 
-            if (gamepad1.left_bumper) {
-                if (gamepad1.left_trigger > 0) {
-                    // Launch the drone
-                    robot.launchDrone();
-                    while (gamepad1.left_trigger  > 0) {
-                        sleep(100);
-                    }
-                }
+            // ToDo code for testing, remove, should be in PixelArm class
+            if (gamepad1.left_trigger != 0 ){
+                robot.pixelArm.autoDrop(PixelArm.DROP_POSITION.LOW);
+            }
 
-            } else {
-                if (gamepad1.left_trigger != 0 ){
-                    robot.pixelArm.autoDrop();
-                }
+            if (gamepad1.a) {
+                // Toggle the intake and the two spinners on / off
+                robot.toggleIntake();
+                while (gamepad1.a) sleep(100);
 
-                if (gamepad1.a) {
-                    // Toggle the intake and the two spinners on / off
-                    robot.toggleIntake();
-                    while (gamepad1.a) sleep(100);
+            } else if (gamepad1.y) {
+                // Reverse the intake and the spinners
+                robot.intakeReverse();
+                while (gamepad1.y) sleep(100);
 
-                } else if (gamepad1.y) {
-                    // Reverse the intake and the spinners
-                    robot.intakeReverse();
-                    while (gamepad1.y) sleep(100);
+            } else if (gamepad1.b) {
+                // Raise or lower the pixel intake
+                robot.toggleIntakeRotate();
+                while (gamepad1.b) sleep(100);
 
-                } else if (gamepad1.b) {
-                    // Raise or lower the pixel intake
-                    robot.toggleIntakeRotate();
-                    while (gamepad1.b) sleep(100);
-
-                } else if (gamepad1.x) {
-                    while (gamepad1.x) sleep(100);
-                }
+            } else if (gamepad1.x) {
+                while (gamepad1.x) sleep(100);
             }
 
             telemetry.update();
@@ -117,10 +118,13 @@ public class MainTeleOp extends LinearOpMode {
             mode = GamepadMode.HANGING;
             displayControls();
             robot.hangingArm.displayControls();
+            displayControls2();
+
         } else if (mode == GamepadMode.HANGING) {
             mode = GamepadMode.PIXEL;
             displayControls();
             robot.pixelArm.displayControls();
+            displayControls2();
         }
     }
 
@@ -129,11 +133,15 @@ public class MainTeleOp extends LinearOpMode {
                 "  left stick - drive robot\n" +
                 "  right stick - rotate robot\n" +
                 "  left trigger - accelerate robot speed\n" +
-                "  back - toggle gamepad2 (pixelArm / hangingArm)\n" +
                 "  a - intake on / off\n" +
                 "  b - intake rotate up / down\n" +
                 "  y - intake reverse\n" +
                 "\n");
+    }
+    public void displayControls2() {
+        if (mode == GamepadMode.HANGING)
+            telemetry.addLine(" right trigger - launch drone");
+        telemetry.addLine("\n  back - toggle gamepad2 (pixelArm / hangingArm)");
     }
 
 }
