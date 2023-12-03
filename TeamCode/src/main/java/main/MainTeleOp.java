@@ -4,6 +4,7 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
+import common.Logger;
 import common.PixelArm;
 import common.Robot;
 
@@ -60,6 +61,7 @@ public class MainTeleOp extends LinearOpMode {
             robot.moveRobot(drive, strafe, yaw, speed);
 
             if (gamepad2.back) {
+                Logger.message("Changed gamepad at %f", runtime.seconds());
                 changeGamepadMode();
                 while (gamepad2.back) sleep(100);
             }
