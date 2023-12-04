@@ -134,14 +134,14 @@ public class HangingArm
      * Turn on the motor that drives the lifting wench
      */
     public void lifterUp() {
-        lifter.setPower(1);
+        lifter.setPower(-1);
     }
 
     /**
      * Turn on the motor that drives the lifting wench
      */
     public void lifterDown(){
-        lifter.setPower(-1);
+        lifter.setPower(1);
     }
 
     /**
@@ -216,15 +216,15 @@ public class HangingArm
             wristUp();
             Logger.message("Hanging wrist to hook position");
 
-        } else if (gamepad.right_bumper && gamepad.a) {
+        } else if (gamepad.right_bumper) {
             // toggle the hook release
             thumbToggle();
-            while (gamepad.right_bumper || gamepad.a) opMode.sleep(100);
+            while (gamepad.right_bumper) opMode.sleep(100);
             Logger.message("Hanging Arm toggle thumb open / close");
 
-        } else if (gamepad.right_bumper && gamepad.b) {
+        } else if (gamepad.left_bumper) {
             // Lower the robot to the ground
-            while (gamepad.right_bumper && gamepad.b) lifterDown();
+            while (gamepad.left_bumper) lifterDown();
             lifterStop();
             Logger.message("Lower the robot to the ground");
 

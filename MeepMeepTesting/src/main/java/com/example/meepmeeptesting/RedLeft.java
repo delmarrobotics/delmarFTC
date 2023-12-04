@@ -10,7 +10,7 @@ import com.noahbres.meepmeep.roadrunner.entity.RoadRunnerBotEntity;
 public class RedLeft {
     public static void main(String[] args) {
 
-        MeepMeep meepMeep = new MeepMeep(1200);
+        MeepMeep meepMeep = new MeepMeep(800);
 
         double xStart = -35.25;
         double x2 = 11.75;
