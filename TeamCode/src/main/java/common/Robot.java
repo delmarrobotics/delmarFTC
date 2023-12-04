@@ -437,11 +437,11 @@ public class Robot {
             float saturation = hsvValues[1];
 
             if (color == COLOR.BLUE) {
-                if (hue >= 220 && hue <= 260 && saturation >= .7) {
+                if (hue >= 190 && hue <= 230 && saturation >= .7) {
                     found = true;
                 }
             } else if (color == COLOR.RED) {
-                if ((hue >= 330 || hue <= 30) && saturation >= .5) {
+                if ((hue >= 30 && hue <= 90) && saturation >= .5) {
                     found = true;
                 }
             }
