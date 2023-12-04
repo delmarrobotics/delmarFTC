@@ -87,8 +87,10 @@ public class MainTeleOp extends LinearOpMode {
                 }
 
             } else if (mode == GamepadMode.PIXEL) {
-                if (robot.pixelArm.dropCommand())
+                if (robot.pixelArm.positionCommand())
                     robot.intakeOff();
+                else if (robot.pixelArm.dropCommand())
+                    robot.dropPixel();
                 if (robot.pixelArm.control())
                     continue;
             }

@@ -67,8 +67,8 @@ import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
  * Remove or comment out the @Disabled line to add this OpMode to the Driver Station OpMode list
  */
 @TeleOp(name = "Sensor: Color Test", group = "Test")
-@Disabled
-public class SensorColorTest extends LinearOpMode {
+
+public class  SensorColorTest extends LinearOpMode {
 
   /** The colorSensor field will contain a reference to our color sensor hardware object */
   NormalizedColorSensor colorSensor;
@@ -175,9 +175,9 @@ public class SensorColorTest extends LinearOpMode {
         telemetry.addData("Distance (cm)", "%.3f", ((DistanceSensor) colorSensor).getDistance(DistanceUnit.CM));
       }
 
-      if (hue >= 220 && hue <= 260 && saturation >= .7){
+      if (hue >= 190 && hue <= 230 && saturation >= .7){
         telemetry.addData("Line", "Blue line found");
-      } else if ((hue >= 330 || hue <= 30) && saturation >= .5) {
+      } else if ((hue >= 30 && hue <= 90) && saturation >= .5) {
         telemetry.addData("Line", "Red line found");
       } else {
         telemetry.addData("Line", "No line found");

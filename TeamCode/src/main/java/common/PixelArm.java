@@ -140,21 +140,27 @@ public class PixelArm {
         }
     }
 
-    public boolean dropCommand () {
+    public boolean positionCommand () {
 
         Gamepad gamepad = opMode.gamepad2;
         return (gamepad.a || gamepad.b || gamepad.x);
     }
 
+    public boolean dropCommand () {
+        Gamepad gamepad = opMode.gamepad2;
+        return (gamepad.right_trigger > 0);
+
+    }
+
     public void displayControls(){
         opMode.telemetry.addLine("Pixel Arm Controls (Gamepad 2)\n" +
                 "  a - position arm at low position\n" +
-                "  b - position arm  at mid position\n" +
-                "  x - position arm  at high position\n" +
-                "  y - drop pixel\n" +
+                "  b - position arm at mid position\n" +
+                "  x - position arm at high position\n" +
+                "  y - position arm at pickup position\n" +
+                "  right triggers - drop pixels" +
                 "  left stick - move elbow (u/d)  arm (l/r)\n" +
-                "  right stick - manual rotate the hands\n" +
-                "  right triggers - drop pixels");
+                "  right stick - manual rotate the hands\n");
     }
 
     /**
@@ -180,10 +186,10 @@ public class PixelArm {
             positionArm(ARM_POSITION.HIGH);
             while (gamepad.x) opMode.sleep(100);
 
-        } else if (gamepad.right_trigger != 0) {
+        } else if (gamepad.y) {
             // open / close the upper hand
             positionArm(ARM_POSITION.HOME);
-            while (gamepad.right_trigger != 0) opMode.sleep(100);
+            while (gamepad.y) opMode.sleep(100);
 
         } else if (gamepad.dpad_down) {
             // Lower the pixel arm to its stored position
