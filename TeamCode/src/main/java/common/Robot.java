@@ -72,6 +72,7 @@ public class Robot {
     private Servo   intakeRotate = null;
     private CRServo spinnerGray = null;
     private CRServo spinnerBlack = null;
+    private CRServo spinnerBucket = null;
 
     private NormalizedColorSensor colorSensor = null;
 
@@ -121,6 +122,7 @@ public class Robot {
             intakeRotate = opMode.hardwareMap.get(Servo.class, Config.INTAKE_ROTATE);
             spinnerGray = opMode.hardwareMap.get(CRServo.class, Config.SPINNER_GRAY);
             spinnerBlack = opMode.hardwareMap.get(CRServo.class, Config.SPINNER_BLACK);
+            spinnerBucket = opMode.hardwareMap.get(CRServo.class, Config.SPINNER_BUCKET);
 
         } catch (Exception e) {
             Logger.error(e, "hardware not found");
@@ -458,6 +460,7 @@ public class Robot {
         pixelIntake.setPower(0);
         spinnerGray.setPower(0);
         spinnerBlack.setPower(0);
+        spinnerBucket.setPower(0);
         intakeOn = false;
     }
 
@@ -472,7 +475,7 @@ public class Robot {
             pixelIntake.setPower(1);
             spinnerGray.setPower(SPINNER_SPEED);
             spinnerBlack.setPower(SPINNER_SPEED);
-            pixelArm.pixelElbowCollectPosition();
+            spinnerBucket.setPower(SPINNER_SPEED);
             intakeOn = true;
         }
     }

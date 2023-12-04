@@ -47,9 +47,11 @@ public class MainTeleOp extends LinearOpMode {
         // run until the end of the match (driver presses STOP)
         while (opModeIsActive()) {
 
-            // If the start button is pressed, ignore all controls. Start button is used to
+            // If the start button is pressed, ignore a and b buttons. Start button is used to
             // select active gamepad.
             if (gamepad1.start || gamepad2.start) {
+                while (gamepad1.start || gamepad1.a || gamepad1.b ||  gamepad2.start  || gamepad2.a || gamepad2.b )
+                    sleep(100);
                 continue;
             }
 
@@ -89,11 +91,6 @@ public class MainTeleOp extends LinearOpMode {
                     robot.intakeOff();
                 if (robot.pixelArm.control())
                     continue;
-            }
-
-            // ToDo code for testing, remove, should be in PixelArm class
-            if (gamepad1.left_trigger != 0 ){
-                robot.pixelArm.autoDrop(PixelArm.DROP_POSITION.LOW);
             }
 
             if (gamepad1.a) {
