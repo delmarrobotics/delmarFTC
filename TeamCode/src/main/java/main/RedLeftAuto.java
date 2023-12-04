@@ -50,10 +50,10 @@ public class RedLeftAuto extends LinearOpMode {
         if (!robot.vision.findTeamElement()) {
             telemetry.addData("dir", "Left");
             traj1 = drive.trajectoryBuilder(new Pose2d())
-                    .forward(30)
+                    .forward(33.25)
                     .build();
             traj4 = drive.trajectoryBuilder(traj1.end())
-                    .strafeLeft(21)
+                    .strafeLeft(14)
                     .build();
             drive.followTrajectory(traj1);
             drive.followTrajectory(traj4);
@@ -65,7 +65,7 @@ public class RedLeftAuto extends LinearOpMode {
             if (angle > -1) {
                 telemetry.addData("dir", "Right");
                 traj2 = drive.trajectoryBuilder(new Pose2d())
-                        .forward(30)
+                        .forward(33.25)
                         .build();
                 traj5 = drive.trajectoryBuilder(traj2.end())
                         .strafeRight(21)
@@ -75,7 +75,7 @@ public class RedLeftAuto extends LinearOpMode {
             } else {
                 telemetry.addData("dir", "Middle");
                 traj3 = drive.trajectoryBuilder(new Pose2d())
-                        .forward(37)
+                        .forward(33.25)
                         .build();
                 drive.followTrajectory(traj3);
             }
