@@ -501,11 +501,16 @@ public class Robot {
     /**
      * Drop the preload purple pixel at the current location.
      */
-    public void dropPixel(){
+    public void dropPurplePixel(){
         dropper.setPosition(DROPPER_OPEN);
         opMode.sleep(500);
         dropper.setPosition(DROPPER_CLOSE);
     }
+
+    public void dropPixel () {
+        spinnerBucket.setPower(-SPINNER_SPEED);
+    }
+
 
     /**
      * Launch the drone
