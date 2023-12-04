@@ -29,7 +29,7 @@ public class DriveToLineTest extends LinearOpMode {
     waitForStart();
     runtime.reset();
 
-    robot.moveToColor(Robot.COLOR.BLUE, 1, 0, MIN_SPEED, 4000);
+    robot.moveToColor(Robot.COLOR.RED, 1, 0, MIN_SPEED, 4000);
 
     // run until the end of the match (driver presses STOP)
     while (opModeIsActive()) {
