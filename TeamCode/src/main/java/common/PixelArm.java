@@ -26,10 +26,10 @@ public class PixelArm {
     static final int    PIXEL_ARM_OUT_MID     = 2100;
     static final int    PIXEL_ARM_OUT_HIGH    = 2982;
 
-    static final double PIXEL_WRIST_HOME      = 0.45;
-    static final double PIXEL_WRIST_DROP_LOW  = 0.34;
-    static final double PIXEL_WRIST_DROP_MID  = 0.34;
-    static final double PIXEL_WRIST_DROP_HIGH = 0.34;
+    static final double PIXEL_WRIST_HOME      = 0.64;
+    static final double PIXEL_WRIST_DROP_LOW  = 0.42;
+    static final double PIXEL_WRIST_DROP_MID  = 0.42;
+    static final double PIXEL_WRIST_DROP_HIGH = 0.42;
 
     private DcMotor pixelElbow = null;
     private DcMotor pixelArm   = null;
@@ -59,6 +59,7 @@ public class PixelArm {
             pixelElbow.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
             pixelWrist.setPosition(PIXEL_WRIST_HOME);
+            pixelArmMove(PIXEL_ARM_IN);
 
         } catch (Exception e) {
             Logger.error(e, "Pixel arm hardware not found");
@@ -123,6 +124,7 @@ public class PixelArm {
 
         if (position == ARM_POSITION.LOW) {
             pixelElbowMove(PIXEL_ELBOW_UP_LOW);
+            opMode.sleep(500);
             pixelArmMove((PIXEL_ARM_OUT_LOW));
             pixelWristMove(PIXEL_WRIST_DROP_LOW);
         } else if (position == ARM_POSITION.MID) {
@@ -226,7 +228,7 @@ public class PixelArm {
 
 
         } else if (gamepad.right_stick_y != 0) {
-            // manually rotate the hands
+            // manually rotate the bucket
             while (gamepad.right_stick_y != 0) {
                 double position = pixelWrist.getPosition();
                 if (Double.isNaN(position))

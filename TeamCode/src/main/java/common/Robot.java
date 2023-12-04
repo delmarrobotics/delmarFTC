@@ -26,7 +26,7 @@ public class Robot {
 
     // The wheel on the competition robot and the practice robot do not rotate in the same directions. Set the "true"
     // to build for the competition robot and the "false" to build for the practice robot.
-    static final boolean COMP_ROBOT = false;
+    static final boolean COMP_ROBOT = true;
 
     // Calculate the COUNTS_PER_INCH for the drive train.
     static final double COUNTS_PER_MOTOR_REV = 28;              // HD Hex Motor Encoder
