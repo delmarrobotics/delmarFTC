@@ -17,7 +17,7 @@ public class RedLeft {
         double yStart = -29;
         double y2 = -11.75;
 
-        RoadRunnerBotEntity centerElement = new DefaultBotBuilder(meepMeep)
+        RoadRunnerBotEntity CenterElement = new DefaultBotBuilder(meepMeep)
                 // Set bot constraints: maxVel, maxAccel, maxAngVel, maxAngAccel, track width
                 .setConstraints(40, 40, Math.toRadians(180), Math.toRadians(180), 15)
                 .setDimensions(16,16)
@@ -52,10 +52,23 @@ public class RedLeft {
                                 .lineTo(new Vector2d(47.75,-29.25))
                                 .build()
                 );
+        RoadRunnerBotEntity RightElement = new DefaultBotBuilder(meepMeep)
+                // Set bot constraints: maxVel, maxAccel, maxAngVel, maxAngAccel, track width
+                .setConstraints(40, 40, Math.toRadians(180), Math.toRadians(180), 15)
+                .setDimensions(16,16)
+                .followTrajectorySequence(drive ->
+                        drive.trajectorySequenceBuilder(new Pose2d(-35.25, -62.5, Math.toRadians(90)))
+                                .lineTo(new Vector2d(-35.25, -33))
+                                .turn(Math.toRadians(-90))
+                                .lineTo(new Vector2d(-30,-33))
+                                .waitSeconds(1)
+                                .lineTo(new Vector2d(47.25, -41.25))
+                                .build()
+                );
         meepMeep.setBackground(MeepMeep.Background.FIELD_CENTERSTAGE_JUICE_DARK)
                 .setDarkMode(true)
                 .setBackgroundAlpha(0.95f)
-                .addEntity(LeftElement)
+                .addEntity(RightElement)
                 .start();
     }
 }
