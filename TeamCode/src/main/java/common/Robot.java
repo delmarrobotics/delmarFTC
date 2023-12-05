@@ -55,8 +55,8 @@ public class Robot {
     static final double DROPPER_CLOSE    = 0.67;
 
     // Intake
-    static final double INTAKE_HOME      = 0.09;
-    static final double INTAKE_TARGET    = 0.8;
+    static final double INTAKE_HOME      = 0.32;
+    static final double INTAKE_TARGET    = 0.98;
     static final double SPINNER_SPEED    = 0.2;
 
     public boolean intakeUp         = true;
@@ -483,8 +483,8 @@ public class Robot {
     public void intakeReverse() {
 
         pixelIntake.setPower(-1);
-        spinnerGray.setPower(-SPINNER_SPEED);
-        spinnerBlack.setPower(-SPINNER_SPEED);
+        //spinnerGray.setPower(-SPINNER_SPEED);
+        //spinnerBlack.setPower(-SPINNER_SPEED);
         intakeOn = false;
     }
 
