@@ -1,19 +1,22 @@
+/*
+ * This file contains the code for the pixel arm.
+ */
+
 package common;
 
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.Gamepad;
 import com.qualcomm.robotcore.hardware.Servo;
+import com.qualcomm.robotcore.util.ElapsedTime;
 
-/*
-* This file contains the code for the pixel arm.
-*/
 public class PixelArm {
 
     public enum ARM_POSITION { HOME, LOW, MID, HIGH }
+    private enum PIXEL_ARM_STATE { NONE, MOVE_HOME, MOVE_LOW, MOVE_MID, MOVE_HIGH, DROP_PIXEL }
 
     static final double PIXEL_ELBOW_SPEED = .3;
-    static final double PIXEL_ARM_SPEED = .3;
+    static final double PIXEL_ARM_SPEED = .4;
 
     // Position for all the pixel arm servos and motor encoders
     static final int    PIXEL_ELBOW_DOWN      = 0;
@@ -34,6 +37,9 @@ public class PixelArm {
     private DcMotor pixelElbow = null;
     private DcMotor pixelArm   = null;
     private Servo   pixelWrist = null;
+
+    private PIXEL_ARM_STATE state  = PIXEL_ARM_STATE.NONE;
+    private final ElapsedTime stateTime = new ElapsedTime();
 
     public LinearOpMode opMode;
 
@@ -120,11 +126,59 @@ public class PixelArm {
         pixelWrist.setPosition(position);
     }
 
+    public void stateMachine () {
+
+        if (state == PIXEL_ARM_STATE.NONE)
+            return;
+
+        if (stateTime.milliseconds() < 1000)
+            return;
+
+        if (state == PIXEL_ARM_STATE.MOVE_LOW) {
+            pixelArmMove((PIXEL_ARM_OUT_LOW));
+            pixelWristMove(PIXEL_WRIST_DROP_LOW);
+        } else if (state == PIXEL_ARM_STATE.MOVE_MID) {
+            pixelArmMove((PIXEL_ARM_OUT_MID));
+            pixelWristMove(PIXEL_WRIST_DROP_MID);
+        } else if (state == PIXEL_ARM_STATE.MOVE_HIGH) {
+            pixelArmMove((PIXEL_ARM_OUT_HIGH));
+            pixelWristMove(PIXEL_WRIST_DROP_HIGH);
+        }
+
+        state = PIXEL_ARM_STATE.NONE;
+    }
+
+    public void dropPixel () {
+        state = PIXEL_ARM_STATE.DROP_PIXEL
+        stateTime.reset();
+    }
+
+    public void positionArmAsyn(ARM_POSITION position) {
+
+        if (position == ARM_POSITION.LOW) {
+            pixelElbowMove(PIXEL_ELBOW_UP_LOW);
+            state = PIXEL_ARM_STATE.MOVE_LOW;
+            stateTime.reset();
+        } else if (position == ARM_POSITION.MID) {
+            pixelElbowMove(PIXEL_ELBOW_UP_MID);
+            state = PIXEL_ARM_STATE.MOVE_MID;
+            stateTime.reset();
+        } else if (position == ARM_POSITION.HIGH) {
+            pixelElbowMove(PIXEL_ELBOW_UP_HIGH);
+            state = PIXEL_ARM_STATE.MOVE_HIGH;
+            stateTime.reset();
+        } else if (position == ARM_POSITION.HOME) {
+            pixelWristMove(PIXEL_WRIST_HOME);
+            pixelArmMove(PIXEL_ARM_IN);
+            pixelElbowMove(PIXEL_ELBOW_DOWN);
+        }
+    }
+
     public void positionArm(ARM_POSITION position) {
 
         if (position == ARM_POSITION.LOW) {
             pixelElbowMove(PIXEL_ELBOW_UP_LOW);
-            opMode.sleep(500);
+            opMode.sleep(750);
             pixelArmMove((PIXEL_ARM_OUT_LOW));
             pixelWristMove(PIXEL_WRIST_DROP_LOW);
         } else if (position == ARM_POSITION.MID) {
@@ -174,29 +228,24 @@ public class PixelArm {
         boolean handled = true;
 
         if (gamepad.a) {
-            // Drop both pixels at the lower position
+            // Move the arm to the lower drop position
             positionArm(ARM_POSITION.LOW);
             while (gamepad.a) opMode.sleep(100);
 
         } else if (gamepad.b) {
-            // Drop both pixels at the middle position
+            // Move the arm to the middle drop position
             positionArm(ARM_POSITION.MID);
             while (gamepad.b) opMode.sleep(100);
 
         } else if (gamepad.x) {
-            // Drop both pixel at the higher position
+            // Move the arm to the higher drop position
             positionArm(ARM_POSITION.HIGH);
             while (gamepad.x) opMode.sleep(100);
 
         } else if (gamepad.y) {
-            // open / close the upper hand
+            // Move the arm to the home position
             positionArm(ARM_POSITION.HOME);
             while (gamepad.y) opMode.sleep(100);
-
-        } else if (gamepad.dpad_down) {
-            // Lower the pixel arm to its stored position
-            pixelElbowMove(PIXEL_ELBOW_DOWN);
-            Logger.message("Pixel Elbow Down");
 
         } else if (gamepad.left_stick_y != 0) {
             // manually move the pixel arm elbow
@@ -223,9 +272,10 @@ public class PixelArm {
                 if (gamepad.left_stick_x == 0)
                     break;
             }
-            //pixelArm.setPower(0);
-            Logger.message( "arm position %7d", pixelArm.getCurrentPosition());
-
+            int position = pixelArm.getCurrentPosition();
+            pixelArm.setTargetPosition(position);
+            pixelArm.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+            Logger.message( "arm position %7d", position);
 
         } else if (gamepad.right_stick_y != 0) {
             // manually rotate the bucket

@@ -156,13 +156,11 @@ public class HangingArm
                 "  a - raise the arm\n" +
                 "  b - lock in the hook\n" +
                 "  x - release hook\n" +
-                "  y - lift the robot off the ground\n" +
+                "  y - lower the arm\n" +
+                "  dpad up - lift the robot off the ground\n" +
                 "  left stick - manual move the elbow\n" +
                 "  right stick - manual rotate the hook\n"
                 //"  right bumper - toggle hook release"
-                //"  y - lower the robot to the ground\n" +
-                //"  dpad up - arm up\n" +
-                //"  dpad down - arm down\n" +
                 //"  dpad left - rotate up\n" +
                 //"  dpad right - rotate down\n" +
                 );
@@ -179,6 +177,7 @@ public class HangingArm
         if (gamepad.a) {
             //Raise the arm
             elbowUp();
+            Logger.message("Hanging Arm Up");
 
         } else if (gamepad.b) {
             // lock in the hook, handled in MainTeleOp
@@ -186,25 +185,28 @@ public class HangingArm
             Logger.message("Hanging Arm lock in hook");
 
         } else if (gamepad.x) {
-            // Release the hook, handled in MainTeleOp
-            handled = false;
+            // Release the hook
+            thumbOpen();
             Logger.message("Hanging Arm release hook");
 
         } else if (gamepad.y) {
+            // lower the hanging arm
+            thumbClose();
+            wristDown();
+            elbowDown();
+            Logger.message("Hanging Arm Down");
+
+        } else  if (gamepad.dpad_up) {
             // Raise the robot off the ground
             while (gamepad.y) lifterUp();
             lifterStop();
             Logger.message("Lower the robot to the ground");
 
-        } else  if (gamepad.dpad_up) {
-            // Raise the hanging arm from its stored position
-            elbowUp();
-            Logger.message("Hanging Arm Up");
-
         } else if (gamepad.dpad_down) {
-            // Lower the hanging arm to its stored position
-            elbowDown();
-            Logger.message("Hanging Arm Down");
+            // Lower the robot to the ground
+            while (gamepad.left_bumper) lifterDown();
+            lifterStop();
+            Logger.message("Lower the robot to the ground");
 
         } else if (gamepad.dpad_left) {
             // Move the hook to its stored position
@@ -221,12 +223,6 @@ public class HangingArm
             thumbToggle();
             while (gamepad.right_bumper) opMode.sleep(100);
             Logger.message("Hanging Arm toggle thumb open / close");
-
-        } else if (gamepad.left_bumper) {
-            // Lower the robot to the ground
-            while (gamepad.left_bumper) lifterDown();
-            lifterStop();
-            Logger.message("Lower the robot to the ground");
 
         } else  if (gamepad.left_stick_y != 0) {
             // manually move the elbow

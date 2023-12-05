@@ -76,10 +76,6 @@ public class MainTeleOp extends LinearOpMode {
                     robot.hangRobotLockIn();
                     while (gamepad2.b) sleep(250);
 
-                } else if (gamepad2.x) {
-                    robot.hangRobotReleaseHook();
-                    while (gamepad2.x) sleep(250);
-
                 } else  if (gamepad2.left_trigger > 0) {
                     // Launch the drone
                     robot.launchDrone();
