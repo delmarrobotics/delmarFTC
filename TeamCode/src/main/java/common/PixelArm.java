@@ -149,7 +149,7 @@ public class PixelArm {
     }
 
     public void dropPixel () {
-        state = PIXEL_ARM_STATE.DROP_PIXEL
+        state = PIXEL_ARM_STATE.DROP_PIXEL;
         stateTime.reset();
     }
 
