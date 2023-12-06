@@ -77,6 +77,8 @@ public class HangingArm
             thumb = hardwareMap.get(Servo.class, Config.HANDING_THUMB);
 
             lifter = opMode.hardwareMap.get(DcMotor.class, Config.LIFTING_WENCH);
+            lifter.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+
 
         } catch (Exception e){
             Logger.error(e, "Hanging arm hardware not found");
@@ -198,13 +200,13 @@ public class HangingArm
 
         } else  if (gamepad.dpad_up) {
             // Raise the robot off the ground
-            while (gamepad.y) lifterUp();
+            while (gamepad.dpad_up) lifterUp();
             lifterStop();
             Logger.message("Lower the robot to the ground");
 
         } else if (gamepad.dpad_down) {
             // Lower the robot to the ground
-            while (gamepad.left_bumper) lifterDown();
+            while (gamepad.dpad_down) lifterDown();
             lifterStop();
             Logger.message("Lower the robot to the ground");
 

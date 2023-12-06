@@ -15,14 +15,14 @@ public class PixelArm {
     public enum ARM_POSITION { HOME, LOW, MID, HIGH }
     private enum PIXEL_ARM_STATE { NONE, MOVE_HOME, MOVE_LOW, MOVE_MID, MOVE_HIGH, DROP_PIXEL }
 
-    static final double PIXEL_ELBOW_SPEED = .3;
-    static final double PIXEL_ARM_SPEED = .4;
+    static final double PIXEL_ELBOW_SPEED = .75;
+    static final double PIXEL_ARM_SPEED = .5;
 
     // Position for all the pixel arm servos and motor encoders
     static final int    PIXEL_ELBOW_DOWN      = 0;
     static final int    PIXEL_ELBOW_UP_LOW    = -2000;
-    static final int    PIXEL_ELBOW_UP_MID    = -2000;
-    static final int    PIXEL_ELBOW_UP_HIGH   = -2000;
+    static final int    PIXEL_ELBOW_UP_MID    = -2330;
+    static final int    PIXEL_ELBOW_UP_HIGH   = -2700;
 
     static final int    PIXEL_ARM_IN          = 0;
     static final int    PIXEL_ARM_OUT_LOW     = 1200;
@@ -30,9 +30,9 @@ public class PixelArm {
     static final int    PIXEL_ARM_OUT_HIGH    = 2982;
 
     static final double PIXEL_WRIST_HOME      = 0.64;
-    static final double PIXEL_WRIST_DROP_LOW  = 0.42;
-    static final double PIXEL_WRIST_DROP_MID  = 0.42;
-    static final double PIXEL_WRIST_DROP_HIGH = 0.42;
+    static final double PIXEL_WRIST_DROP_LOW  = 0.445;
+    static final double PIXEL_WRIST_DROP_MID  = 0.445;
+    static final double PIXEL_WRIST_DROP_HIGH = 0.445;
 
     private DcMotor pixelElbow = null;
     private DcMotor pixelArm   = null;
@@ -193,6 +193,12 @@ public class PixelArm {
             pixelWristMove(PIXEL_WRIST_HOME);
             pixelArmMove(PIXEL_ARM_IN);
             pixelElbowMove(PIXEL_ELBOW_DOWN);
+            while (pixelArm.isBusy()) {
+                if (!opMode.opModeIsActive()) {
+                    break;
+                }
+            }
+            pixelArm.setPower(0);
         }
     }
 
@@ -214,7 +220,7 @@ public class PixelArm {
                 "  b - position arm at mid position\n" +
                 "  x - position arm at high position\n" +
                 "  y - position arm at pickup position\n" +
-                "  right triggers - drop pixels" +
+                "  right triggers - drop pixels\n" +
                 "  left stick - move elbow (u/d)  arm (l/r)\n" +
                 "  right stick - manual rotate the hands\n");
     }
