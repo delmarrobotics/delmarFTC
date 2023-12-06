@@ -131,21 +131,42 @@ public class PixelArm {
         if (state == PIXEL_ARM_STATE.NONE)
             return;
 
-        if (stateTime.milliseconds() < 1000)
-            return;
-
         if (state == PIXEL_ARM_STATE.MOVE_LOW) {
-            pixelArmMove((PIXEL_ARM_OUT_LOW));
-            pixelWristMove(PIXEL_WRIST_DROP_LOW);
-        } else if (state == PIXEL_ARM_STATE.MOVE_MID) {
-            pixelArmMove((PIXEL_ARM_OUT_MID));
-            pixelWristMove(PIXEL_WRIST_DROP_MID);
-        } else if (state == PIXEL_ARM_STATE.MOVE_HIGH) {
-            pixelArmMove((PIXEL_ARM_OUT_HIGH));
-            pixelWristMove(PIXEL_WRIST_DROP_HIGH);
-        }
+            if (stateTime.milliseconds() < 1000)
+                return;
+            Logger.message("pixel arm and wrist to low position");
+            //pixelArmMove((PIXEL_ARM_OUT_LOW));
+            //pixelWristMove(PIXEL_WRIST_DROP_LOW);
+            state = PIXEL_ARM_STATE.NONE;
 
-        state = PIXEL_ARM_STATE.NONE;
+        } else if (state == PIXEL_ARM_STATE.MOVE_MID) {
+            if (stateTime.milliseconds() < 1000)
+                return;
+            Logger.message("pixel arm and wrist to middle position");
+            //pixelArmMove((PIXEL_ARM_OUT_MID));
+            //pixelWristMove(PIXEL_WRIST_DROP_MID);
+            state = PIXEL_ARM_STATE.NONE;
+
+        } else if (state == PIXEL_ARM_STATE.MOVE_HIGH) {
+            if (stateTime.milliseconds() < 1000)
+                return;
+            Logger.message("pixel arm and wrist to high position");
+            //pixelArmMove((PIXEL_ARM_OUT_HIGH));
+            //pixelWristMove(PIXEL_WRIST_DROP_HIGH);
+            state = PIXEL_ARM_STATE.NONE;
+
+        } else if (state == PIXEL_ARM_STATE.MOVE_HOME) {
+            if (stateTime.milliseconds() < 1000)
+                return;
+            Logger.message("pixel elbow to home position");
+            //pixelElbowMove(PIXEL_ELBOW_DOWN);
+
+            if (pixelArm.isBusy())
+                return;
+            Logger.message("pixel arm power off");
+            //pixelArm.setPower(0);
+            state = PIXEL_ARM_STATE.NONE;
+        }
     }
 
     public void dropPixel () {
@@ -156,21 +177,26 @@ public class PixelArm {
     public void positionArmAsyn(ARM_POSITION position) {
 
         if (position == ARM_POSITION.LOW) {
-            pixelElbowMove(PIXEL_ELBOW_UP_LOW);
+            Logger.message("pixel elbow to low position");
+            //pixelElbowMove(PIXEL_ELBOW_UP_LOW);
             state = PIXEL_ARM_STATE.MOVE_LOW;
             stateTime.reset();
         } else if (position == ARM_POSITION.MID) {
-            pixelElbowMove(PIXEL_ELBOW_UP_MID);
+            Logger.message("pixel elbow to middle position");
+            //pixelElbowMove(PIXEL_ELBOW_UP_MID);
             state = PIXEL_ARM_STATE.MOVE_MID;
             stateTime.reset();
         } else if (position == ARM_POSITION.HIGH) {
-            pixelElbowMove(PIXEL_ELBOW_UP_HIGH);
+            Logger.message("pixel elbow to high position");
+            //pixelElbowMove(PIXEL_ELBOW_UP_HIGH);
             state = PIXEL_ARM_STATE.MOVE_HIGH;
             stateTime.reset();
         } else if (position == ARM_POSITION.HOME) {
-            pixelWristMove(PIXEL_WRIST_HOME);
-            pixelArmMove(PIXEL_ARM_IN);
-            pixelElbowMove(PIXEL_ELBOW_DOWN);
+            Logger.message("pixel wrist and arm to home position");
+            //pixelWristMove(PIXEL_WRIST_HOME);
+            //pixelArmMove(PIXEL_ARM_IN);
+            state = PIXEL_ARM_STATE.MOVE_HOME;
+            stateTime.reset();
         }
     }
 
