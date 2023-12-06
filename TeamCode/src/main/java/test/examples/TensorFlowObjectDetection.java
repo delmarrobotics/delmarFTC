@@ -52,7 +52,7 @@ import java.util.concurrent.TimeUnit;
  * Remove or comment out the @Disabled line to add this OpMode to the Driver Station OpMode list.
  */
 @TeleOp(name = "Test: Object Detection", group = "Test")
-@Disabled
+//@Disabled
 public class TensorFlowObjectDetection extends LinearOpMode {
 
 
@@ -65,7 +65,8 @@ public class TensorFlowObjectDetection extends LinearOpMode {
     private static final String TFOD_MODEL_ASSET = "MyModelStoredAsAsset.tflite";
     // TFOD_MODEL_FILE points to a model file stored onboard the Robot Controller's storage,
     // this is used when uploading models directly to the RC using the model upload interface.
-    private static final String TFOD_MODEL_FILE = "team_prop_1.tflite";
+    //private static final String TFOD_MODEL_FILE = "team_prop_1.tflite";
+    private static final String TFOD_MODEL_FILE = "TeamElement1.tflite";
     // Define the labels recognized in the model for TFOD (must be in training order!)
     private static final String[] LABELS = {
        "Team Element",
