@@ -24,10 +24,6 @@ import org.firstinspires.ftc.robotcore.external.Telemetry;
 
 public class Robot {
 
-    // The wheel on the competition robot and the practice robot do not rotate in the same directions. Set the "true"
-    // to build for the competition robot and the "false" to build for the practice robot.
-    static final boolean COMP_ROBOT = true;
-
     // Calculate the COUNTS_PER_INCH for the drive train.
     static final double COUNTS_PER_MOTOR_REV = 28;              // HD Hex Motor Encoder
     static final double DRIVE_GEAR_REDUCTION = 20;              // Gearing
@@ -108,7 +104,6 @@ public class Robot {
 
         initDriveTrain();
 
-        // ToDo added back
         colorSensor = opMode.hardwareMap.get(NormalizedColorSensor.class, Config.COLOR_SENSOR);
         colorSensor.setGain(COLOR_SENSOR_GAIN);
 
@@ -142,23 +137,15 @@ public class Robot {
             Logger.error(e, "Hardware not found");
         }
 
-        if (COMP_ROBOT) {
-            leftFrontDrive.setDirection(DcMotorSimple.Direction.REVERSE);
-            rightFrontDrive.setDirection(DcMotorSimple.Direction.REVERSE);
-            leftBackDrive.setDirection(DcMotorSimple.Direction.FORWARD);
-            rightBackDrive.setDirection(DcMotorSimple.Direction.FORWARD);
-        } else {
-            leftFrontDrive.setDirection(DcMotorSimple.Direction.FORWARD);
-            rightFrontDrive.setDirection(DcMotorSimple.Direction.FORWARD);
-            leftBackDrive.setDirection(DcMotorSimple.Direction.REVERSE);
-            rightBackDrive.setDirection(DcMotorSimple.Direction.REVERSE);
-        }
-        /*
+        leftFrontDrive.setDirection(DcMotorSimple.Direction.FORWARD);
+        rightFrontDrive.setDirection(DcMotorSimple.Direction.FORWARD);
+        leftBackDrive.setDirection(DcMotorSimple.Direction.REVERSE);
+        rightBackDrive.setDirection(DcMotorSimple.Direction.REVERSE);
+
         leftFrontDrive.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         rightFrontDrive.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         leftBackDrive.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         rightBackDrive.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-         */
     }
 
 
@@ -507,9 +494,18 @@ public class Robot {
         dropper.setPosition(DROPPER_CLOSE);
     }
 
+    public void dropYellowPixel() {
+        pixelArm.positionArm(PixelArm.ARM_POSITION.LOW);
+        opMode.sleep(1000);
+        dropPixel();
+        opMode.sleep(1500);
+        pixelArm.positionArm(PixelArm.ARM_POSITION.HOME);
+    }
+
     public void dropPixel () {
         spinnerBucket.setPower(-SPINNER_SPEED);
     }
+
 
 
     /**
