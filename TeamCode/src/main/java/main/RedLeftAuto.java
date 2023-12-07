@@ -10,6 +10,7 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 import org.firstinspires.ftc.teamcode.drive.SampleMecanumDrive;
 import org.firstinspires.ftc.teamcode.trajectorysequence.TrajectorySequence;
 
+import common.Logger;
 import common.Robot;
 
 /*
@@ -25,11 +26,9 @@ public class RedLeftAuto extends LinearOpMode {
     private Robot robot = null;
     private SampleMecanumDrive drive = null;
 
-    private Trajectory traj1;
-    private Trajectory traj2;
-    private Trajectory traj3;
-    private Trajectory traj4;
-    private Trajectory traj5;
+    private TrajectorySequence traj1;
+    private TrajectorySequence traj2;
+    private TrajectorySequence traj3;
 
     private enum POSITION { left, center, right }
     POSITION objectPosition;
@@ -51,41 +50,52 @@ public class RedLeftAuto extends LinearOpMode {
 
         if (!robot.vision.findTeamElement()) {
             telemetry.addData("dir", "Left");
-            traj1 = drive.trajectoryBuilder(new Pose2d())
-                    .forward(33.25)
+            traj1 = drive.trajectorySequenceBuilder(new Pose2d(-35.25, -62.5, Math.toRadians(90)))
+                    .strafeLeft(13)
+                    .lineTo(new Vector2d(-48.25, -31))
+                    .waitSeconds(1)
+                    .lineTo(new Vector2d(-48.25, -11.75))
+                    .turn(Math.toRadians(-90))
+                    .lineTo(new Vector2d( 11.75, -11.75))
+                    .turn(Math.toRadians(-90))
+                    .lineTo(new Vector2d(11.75, -29.25))
+                    .turn(Math.toRadians(90))
+                    .lineTo(new Vector2d(47.75,-29.25))
                     .build();
-            traj4 = drive.trajectoryBuilder(traj1.end())
-                    .strafeLeft(14)
-                    .build();
-            drive.followTrajectory(traj1);
-            drive.followTrajectory(traj4);
-
+            drive.followTrajectorySequence(traj1);
             objectPosition = POSITION.left;
+            Logger.message("Team element at left position");
 
         } else {
             double angle = robot.vision.findTeamElementAngle();
             if (angle > -1) {
                 telemetry.addData("dir", "Right");
-                traj2 = drive.trajectoryBuilder(new Pose2d())
-                        .forward(33.25)
-                        .build();
-                traj5 = drive.trajectoryBuilder(traj2.end())
-                        .strafeRight(21)
-                        .build();
-                drive.followTrajectory(traj2);
-                drive.followTrajectory(traj5);
+                    traj2 = drive.trajectorySequenceBuilder(new Pose2d(-35.25, -62.5, Math.toRadians(90)))
+                            .lineTo(new Vector2d(-35.25, -33))
+                            .turn(Math.toRadians(-90))
+                            .lineTo(new Vector2d(-30,-33))
+                            .waitSeconds(1)
+                            .lineTo(new Vector2d(47.25, -41.25))
+                            .build();
+                    drive.followTrajectorySequence(traj2);
+                Logger.message("Team element at right position, angle %f", angle);
+
             } else {
                 telemetry.addData("dir", "Middle");
-
+                Logger.message("Team element at center position");
                 objectPosition = POSITION.center;
-                TrajectorySequence center = drive.trajectorySequenceBuilder(new Pose2d(-35.25, -62.5, Math.toRadians(90)))
+                traj3 = drive.trajectorySequenceBuilder(new Pose2d(-35.25, -62.5, Math.toRadians(90)))
                         .lineTo(new Vector2d(-35.25, -29))
-                        .addDisplacementMarker(() -> robot.dropPurplePixel())
-                        .waitSeconds(0.5)
+                        .waitSeconds(1)
                         .lineTo(new Vector2d(-35.25, -11.75))
                         .turn(Math.toRadians(-90))
+                        .lineTo(new Vector2d( 11.75, -11.75))
+                        .turn(Math.toRadians(-90))
+                        .lineTo(new Vector2d(11.75, -35.25))
+                        .turn(Math.toRadians(90))
+                        .lineTo(new Vector2d(47.75,-35.25))
                         .build();
-                drive.followTrajectorySequence(center);
+                drive.followTrajectorySequence(traj3);
 
                 /*
                 traj3 = drive.trajectoryBuilder(new Pose2d())
