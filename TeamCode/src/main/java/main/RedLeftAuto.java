@@ -50,6 +50,8 @@ public class RedLeftAuto extends LinearOpMode {
 
         if (!robot.vision.findTeamElement()) {
             telemetry.addData("dir", "Left");
+            objectPosition = POSITION.left;
+            Logger.message("Team element at left position");
             traj1 = drive.trajectorySequenceBuilder(new Pose2d(-35.25, -62.5, Math.toRadians(90)))
                     .strafeLeft(13)
                     .lineTo(new Vector2d(-48.25, -31))
@@ -63,26 +65,25 @@ public class RedLeftAuto extends LinearOpMode {
                     .lineTo(new Vector2d(47.75,-29.25))
                     .build();
             drive.followTrajectorySequence(traj1);
-            objectPosition = POSITION.left;
-            Logger.message("Team element at left position");
 
         } else {
             double angle = robot.vision.findTeamElementAngle();
-            if (angle > -1) {
+            if (angle < 0) {
                 telemetry.addData("dir", "Right");
-                    traj2 = drive.trajectorySequenceBuilder(new Pose2d(-35.25, -62.5, Math.toRadians(90)))
-                            .lineTo(new Vector2d(-35.25, -33))
-                            .turn(Math.toRadians(-90))
-                            .lineTo(new Vector2d(-30,-33))
-                            .waitSeconds(1)
-                            .lineTo(new Vector2d(47.25, -41.25))
-                            .build();
-                    drive.followTrajectorySequence(traj2);
+                objectPosition = POSITION.right;
                 Logger.message("Team element at right position, angle %f", angle);
+                traj2 = drive.trajectorySequenceBuilder(new Pose2d(-35.25, -62.5, Math.toRadians(90)))
+                        .lineTo(new Vector2d(-35.25, -33))
+                        .turn(Math.toRadians(-90))
+                        .lineTo(new Vector2d(-30,-33))
+                        .waitSeconds(1)
+                        .lineTo(new Vector2d(47.25, -41.25))
+                        .build();
+                    drive.followTrajectorySequence(traj2);
 
             } else {
                 telemetry.addData("dir", "Middle");
-                Logger.message("Team element at center position");
+                Logger.message("Team element at center position, angle %f", angle);
                 objectPosition = POSITION.center;
                 traj3 = drive.trajectorySequenceBuilder(new Pose2d(-35.25, -62.5, Math.toRadians(90)))
                         .lineTo(new Vector2d(-35.25, -29))
@@ -109,9 +110,8 @@ public class RedLeftAuto extends LinearOpMode {
         // run until the end of the match (driver presses STOP)
         while (opModeIsActive()) {
 
-
             // Show the elapsed game time and wheel power.
-            telemetry.addData("Status", "Run Time: " + runtime.toString());
+            //telemetry.addData("Status", "Run Time: " + runtime.toString());
             telemetry.update();
         }
     }
