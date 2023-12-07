@@ -5,7 +5,6 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 import common.Logger;
-import common.PixelArm;
 import common.Robot;
 
 /*

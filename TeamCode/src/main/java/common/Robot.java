@@ -470,8 +470,6 @@ public class Robot {
     public void intakeReverse() {
 
         pixelIntake.setPower(-1);
-        //spinnerGray.setPower(-SPINNER_SPEED);
-        //spinnerBlack.setPower(-SPINNER_SPEED);
         intakeOn = false;
     }
 
@@ -506,8 +504,6 @@ public class Robot {
         spinnerBucket.setPower(-SPINNER_SPEED);
     }
 
-
-
     /**
      * Launch the drone
      */
@@ -521,7 +517,7 @@ public class Robot {
     }
 
     /**
-     * Hang the robot
+     * Lock in the hanging arm hook
      */
     public void hangRobotLockIn() {
         hangingArm.wristUp();
