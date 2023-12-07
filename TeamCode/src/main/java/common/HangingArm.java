@@ -159,9 +159,9 @@ public class HangingArm
                 "  b - lock in the hook\n" +
                 "  x - release hook\n" +
                 "  y - lower the arm\n" +
-                "  dpad up - lift the robot off the ground\n" +
-                "  left stick - manual move the elbow\n" +
-                "  right stick - manual rotate the hook\n"
+                "  dpad up - lift the robot off the ground\n"
+                //"  left stick - manual move the elbow\n" +
+                //"  right stick - manual rotate the hook\n"
                 //"  right bumper - toggle hook release\n" +
                 //"  dpad left - rotate up\n" +
                 //"  dpad right - rotate down\n" +
