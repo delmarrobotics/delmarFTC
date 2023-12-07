@@ -126,45 +126,45 @@ public class PixelArm {
         pixelWrist.setPosition(position);
     }
 
-    public void stateMachine () {
+    public void positionArmStateMachine () {
 
         if (state == PIXEL_ARM_STATE.NONE)
             return;
 
         if (state == PIXEL_ARM_STATE.MOVE_LOW) {
-            if (stateTime.milliseconds() < 1000)
+            if (stateTime.milliseconds() < 500)
                 return;
             Logger.message("pixel arm and wrist to low position");
-            //pixelArmMove((PIXEL_ARM_OUT_LOW));
-            //pixelWristMove(PIXEL_WRIST_DROP_LOW);
+            pixelArmMove((PIXEL_ARM_OUT_LOW));
+            pixelWristMove(PIXEL_WRIST_DROP_LOW);
             state = PIXEL_ARM_STATE.NONE;
 
         } else if (state == PIXEL_ARM_STATE.MOVE_MID) {
-            if (stateTime.milliseconds() < 1000)
+            if (stateTime.milliseconds() < 500)
                 return;
             Logger.message("pixel arm and wrist to middle position");
-            //pixelArmMove((PIXEL_ARM_OUT_MID));
-            //pixelWristMove(PIXEL_WRIST_DROP_MID);
+            pixelArmMove((PIXEL_ARM_OUT_MID));
+            pixelWristMove(PIXEL_WRIST_DROP_MID);
             state = PIXEL_ARM_STATE.NONE;
 
         } else if (state == PIXEL_ARM_STATE.MOVE_HIGH) {
-            if (stateTime.milliseconds() < 1000)
+            if (stateTime.milliseconds() < 500)
                 return;
             Logger.message("pixel arm and wrist to high position");
-            //pixelArmMove((PIXEL_ARM_OUT_HIGH));
-            //pixelWristMove(PIXEL_WRIST_DROP_HIGH);
+            pixelArmMove((PIXEL_ARM_OUT_HIGH));
+            pixelWristMove(PIXEL_WRIST_DROP_HIGH);
             state = PIXEL_ARM_STATE.NONE;
 
         } else if (state == PIXEL_ARM_STATE.MOVE_HOME) {
             if (stateTime.milliseconds() < 1000)
                 return;
             Logger.message("pixel elbow to home position");
-            //pixelElbowMove(PIXEL_ELBOW_DOWN);
+            pixelElbowMove(PIXEL_ELBOW_DOWN);
 
             if (pixelArm.isBusy())
                 return;
             Logger.message("pixel arm power off");
-            //pixelArm.setPower(0);
+            pixelArm.setPower(0);
             state = PIXEL_ARM_STATE.NONE;
         }
     }
@@ -178,23 +178,23 @@ public class PixelArm {
 
         if (position == ARM_POSITION.LOW) {
             Logger.message("pixel elbow to low position");
-            //pixelElbowMove(PIXEL_ELBOW_UP_LOW);
+            pixelElbowMove(PIXEL_ELBOW_UP_LOW);
             state = PIXEL_ARM_STATE.MOVE_LOW;
             stateTime.reset();
         } else if (position == ARM_POSITION.MID) {
             Logger.message("pixel elbow to middle position");
-            //pixelElbowMove(PIXEL_ELBOW_UP_MID);
+            pixelElbowMove(PIXEL_ELBOW_UP_MID);
             state = PIXEL_ARM_STATE.MOVE_MID;
             stateTime.reset();
         } else if (position == ARM_POSITION.HIGH) {
             Logger.message("pixel elbow to high position");
-            //pixelElbowMove(PIXEL_ELBOW_UP_HIGH);
+            pixelElbowMove(PIXEL_ELBOW_UP_HIGH);
             state = PIXEL_ARM_STATE.MOVE_HIGH;
             stateTime.reset();
         } else if (position == ARM_POSITION.HOME) {
             Logger.message("pixel wrist and arm to home position");
-            //pixelWristMove(PIXEL_WRIST_HOME);
-            //pixelArmMove(PIXEL_ARM_IN);
+            pixelWristMove(PIXEL_WRIST_HOME);
+            pixelArmMove(PIXEL_ARM_IN);
             state = PIXEL_ARM_STATE.MOVE_HOME;
             stateTime.reset();
         }
@@ -246,9 +246,10 @@ public class PixelArm {
                 "  b - position arm at mid position\n" +
                 "  x - position arm at high position\n" +
                 "  y - position arm at pickup position\n" +
-                "  right triggers - drop pixels\n" +
-                "  left stick - move elbow (u/d)  arm (l/r)\n" +
-                "  right stick - manual rotate the hands\n");
+                "  right triggers - drop pixels\n"
+                //"  left stick - move elbow (u/d)  arm (l/r)\n" +
+                //"  right stick - manual rotate the hands\n"
+                );
     }
 
     /**
@@ -259,24 +260,26 @@ public class PixelArm {
         Gamepad gamepad = opMode.gamepad2;
         boolean handled = true;
 
+        positionArmStateMachine();
+
         if (gamepad.a) {
             // Move the arm to the lower drop position
-            positionArm(ARM_POSITION.LOW);
+            positionArmAsyn(ARM_POSITION.LOW);
             while (gamepad.a) opMode.sleep(100);
 
         } else if (gamepad.b) {
             // Move the arm to the middle drop position
-            positionArm(ARM_POSITION.MID);
+            positionArmAsyn(ARM_POSITION.MID);
             while (gamepad.b) opMode.sleep(100);
 
         } else if (gamepad.x) {
             // Move the arm to the higher drop position
-            positionArm(ARM_POSITION.HIGH);
+            positionArmAsyn(ARM_POSITION.HIGH);
             while (gamepad.x) opMode.sleep(100);
 
         } else if (gamepad.y) {
             // Move the arm to the home position
-            positionArm(ARM_POSITION.HOME);
+            positionArmAsyn(ARM_POSITION.HOME);
             while (gamepad.y) opMode.sleep(100);
 
         } else if (gamepad.left_stick_y != 0) {
