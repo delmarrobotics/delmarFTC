@@ -100,7 +100,7 @@ public class HangingArm
 
     public void wristUp() {
         wrist.setPosition(WRIST_HOME_POSITION);
-    }   // ToDo check
+    }
 
     public void wristDown() {
         wrist.setPosition(WRIST_TARGET_POSITION);
