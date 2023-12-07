@@ -1,12 +1,14 @@
 package main;
 
 import com.acmerobotics.roadrunner.geometry.Pose2d;
+import com.acmerobotics.roadrunner.geometry.Vector2d;
 import com.acmerobotics.roadrunner.trajectory.Trajectory;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.teamcode.drive.SampleMecanumDrive;
+import org.firstinspires.ftc.teamcode.trajectorysequence.TrajectorySequence;
 
 import common.Robot;
 
@@ -74,10 +76,23 @@ public class RedLeftAuto extends LinearOpMode {
                 drive.followTrajectory(traj5);
             } else {
                 telemetry.addData("dir", "Middle");
+
+                objectPosition = POSITION.center;
+                TrajectorySequence center = drive.trajectorySequenceBuilder(new Pose2d(-35.25, -62.5, Math.toRadians(90)))
+                        .lineTo(new Vector2d(-35.25, -29))
+                        .addDisplacementMarker(() -> robot.dropPurplePixel())
+                        .waitSeconds(0.5)
+                        .lineTo(new Vector2d(-35.25, -11.75))
+                        .turn(Math.toRadians(-90))
+                        .build();
+                drive.followTrajectorySequence(center);
+
+                /*
                 traj3 = drive.trajectoryBuilder(new Pose2d())
                         .forward(33.25)
                         .build();
                 drive.followTrajectory(traj3);
+                 */
             }
         }
 
