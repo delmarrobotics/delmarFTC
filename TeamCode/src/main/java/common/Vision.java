@@ -20,7 +20,7 @@ import java.util.concurrent.TimeUnit;
 * This file contains support for TensorFlow object recognition and AprilTag recognition
 */
 public class Vision {
-    private static final String TFOD_MODEL_FILE = "team_prop_1.tflite";
+    private static final String TFOD_MODEL_FILE = "TeamElement1.tflite";
     private static final String[] LABELS = { "Team Element" };
 
     // AprilTag IDs
