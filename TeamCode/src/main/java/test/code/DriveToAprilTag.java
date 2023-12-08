@@ -25,7 +25,7 @@ public class DriveToAprilTag extends LinearOpMode {
   private SampleMecanumDrive drive = null;
 
   private enum POSITION { left, center, right }
-  DriveToAprilTag.POSITION objectPosition = POSITION.left;
+  DriveToAprilTag.POSITION objectPosition = POSITION.center;
 
   @Override
   public void runOpMode() {
@@ -44,11 +44,6 @@ public class DriveToAprilTag extends LinearOpMode {
     telemetry.update();
 
 
-    Trajectory traj = drive.trajectoryBuilder(new Pose2d())
-            .strafeRight(5)
-            .build();
-    drive.followTrajectory(traj);
-
     // Wait for the game to start (driver presses PLAY)
     waitForStart();
 
@@ -57,53 +52,59 @@ public class DriveToAprilTag extends LinearOpMode {
     // run until the end of the match (driver presses STOP)
     boolean inPosition = false;
     while (opModeIsActive()) {
-      if (robot.vision.findAprilTag(Vision.BLUE_RIGHT_TAG)) {
-        double x = robot.vision.aprilTagX();
-        Logger.message("x %f", x);
-        if (x < 0 && x < -0.5) {
-          robot.moveRobot(0, 1, 0, 0.2);
-        } else if (x > 0 && x > 0.5) {
-          robot.moveRobot(0, -1, 0, 0.2);
-        } else {
-          inPosition = true;
-          robot.stopRobot();
-          break;
-        }
+      if (robot.vision.findAprilTag(Vision.BLUE_CENTER_TAG)) {
+        inPosition = true;
+        telemetry.update();
+        break;
       } else {
         Logger.message("no tag found");
-        robot.stopRobot();
+        telemetry.update();
         break;
       }
-      telemetry.update();
     }
 
     if (inPosition) {
+      double x = robot.vision.aprilTagX();
+      Logger.message("x %f", x);
       double range = robot.vision.aprilTagY();
-      Logger.message("range %f", range);
+      Logger.message("range %f", range-4);
+
+      robot.moveToColor(Robot.COLOR.RED, 1, 0, 0.2,3000);
+      /*
       Trajectory traj1 = drive.trajectoryBuilder(new Pose2d())
               .forward(range)
               .build();
       drive.followTrajectory(traj1);
 
+       */
+
       double strafe;
       Trajectory traj2;
       if (objectPosition == POSITION.left) {
-        traj2 = drive.trajectoryBuilder(traj1.end())
+        traj2 = drive.trajectoryBuilder(new Pose2d())
                 .strafeLeft(5)
                 .build();
         Logger.message("left");
+
       } else if (objectPosition == POSITION.center) {
-        traj2 = drive.trajectoryBuilder(traj1.end())
-                .strafeRight(1)
-                .build();
+        if (x > 0) {
+          traj2 = drive.trajectoryBuilder(new Pose2d())
+                  .strafeLeft(x)
+                  .build();
+          drive.followTrajectory(traj2);
+        }
+        else if (x < 0 ) {
+          traj2 = drive.trajectoryBuilder(new Pose2d())
+                  .strafeRight(-x)
+                  .build();
+          drive.followTrajectory(traj2);
+        }
         Logger.message("center");
+
       } else {
-        traj2 = drive.trajectoryBuilder(traj1.end())
-                .strafeRight(7)
-                .build();
+
         Logger.message("right");
       }
-      drive.followTrajectory(traj2);
     }
   }
 }

@@ -2,6 +2,7 @@ package common;
 
 
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
+import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
 import org.firstinspires.ftc.robotcore.external.hardware.camera.controls.ExposureControl;
@@ -38,6 +39,8 @@ public class Vision {
     Recognition element = null;            // recognized team element
 
     private AprilTagDetection desiredTag = null;     // Used to hold the data for a detected AprilTag
+
+    private final ElapsedTime searchTime = new ElapsedTime();
 
     public LinearOpMode opMode;
 
@@ -215,10 +218,23 @@ public class Vision {
      *
      * @return true if an object was detected
      */
-    public boolean findTeamElement () {
+    public boolean findTeamElement (double timeout) {
 
         element = null;
-        List<Recognition> currentRecognitions = tfod.getRecognitions();
+
+        List<Recognition> currentRecognitions;
+        searchTime.reset();
+        while (true) {
+            currentRecognitions = tfod.getRecognitions();
+            if (currentRecognitions.size() != 0)
+                break;
+            Logger.message("no team element found");
+            if (timeout == 0 || searchTime.milliseconds() >= timeout)
+                break;
+            opMode.sleep(100);
+        }
+
+        currentRecognitions = tfod.getRecognitions();
         if (currentRecognitions.size() == 0)
             return false;
 
@@ -277,7 +293,7 @@ public class Vision {
                 gainControl.setGain(gain);
                 opMode.sleep(500);
 
-                if (findTeamElement()) {
+                if (findTeamElement(100)) {
                    Logger.message("found - exposure: %d gain: %d  Confidence: %.2f", exposure, gain, element.getConfidence());
                    if (element.getConfidence() < confidence) {
                        bestExposure = exposure;
