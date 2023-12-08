@@ -42,7 +42,7 @@ public class Robot {
 
     // drone launcher servo position
     static final double DRONE_ANGLE_DOWN = 0.48;
-    static final double DRONE_ANGLE_UP   = 0.31;
+    static final double DRONE_ANGLE_UP   = 0.28;
     static final double DRONE_FIRE_DOWN  = 0.063;
     static final double DRONE_FIRE_UP    = 0.16;
 
