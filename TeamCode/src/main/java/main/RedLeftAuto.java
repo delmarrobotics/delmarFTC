@@ -45,6 +45,9 @@ public class RedLeftAuto extends LinearOpMode {
 
          drive = new SampleMecanumDrive(hardwareMap);
 
+        while (! robot.vision.cameraReady())
+            sleep(100);
+
         // Wait for the game to start (driver presses PLAY)
         waitForStart();
         runtime.reset();
