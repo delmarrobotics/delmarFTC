@@ -44,6 +44,9 @@ public class RedLeftAuto extends LinearOpMode {
 
          drive = new SampleMecanumDrive(hardwareMap);
 
+        while (! robot.vision.cameraReady())
+            sleep(100);
+
         // Wait for the game to start (driver presses PLAY)
         waitForStart();
         runtime.reset();
@@ -55,7 +58,8 @@ public class RedLeftAuto extends LinearOpMode {
             traj1 = drive.trajectorySequenceBuilder(new Pose2d(-35.25, -62.5, Math.toRadians(90)))
                     .strafeLeft(13)
                     .lineTo(new Vector2d(-48.25, -31))
-                    .waitSeconds(1)
+                    .waitSeconds(0.5)
+                    .addDisplacementMarker(() ->robot.dropPurplePixel())
                     .lineTo(new Vector2d(-48.25, -11.75))
                     .turn(Math.toRadians(-90))
                     .lineTo(new Vector2d( 11.75, -11.75))
@@ -76,7 +80,8 @@ public class RedLeftAuto extends LinearOpMode {
                         .lineTo(new Vector2d(-35.25, -33))
                         .turn(Math.toRadians(-90))
                         .lineTo(new Vector2d(-30,-33))
-                        .waitSeconds(1)
+                        .waitSeconds(0.5)
+                        .addDisplacementMarker(() ->robot.dropPurplePixel())
                         .lineTo(new Vector2d(47.25, -41.25))
                         .build();
                     drive.followTrajectorySequence(traj2);
@@ -87,7 +92,8 @@ public class RedLeftAuto extends LinearOpMode {
                 objectPosition = POSITION.center;
                 traj3 = drive.trajectorySequenceBuilder(new Pose2d(-35.25, -62.5, Math.toRadians(90)))
                         .lineTo(new Vector2d(-35.25, -29))
-                        .waitSeconds(1)
+                        .waitSeconds(0.5)
+                        .addDisplacementMarker(() ->robot.dropPurplePixel())
                         .lineTo(new Vector2d(-35.25, -11.75))
                         .turn(Math.toRadians(-90))
                         .lineTo(new Vector2d( 11.75, -11.75))
@@ -97,20 +103,12 @@ public class RedLeftAuto extends LinearOpMode {
                         .lineTo(new Vector2d(47.75,-35.25))
                         .build();
                 drive.followTrajectorySequence(traj3);
-
-                /*
-                traj3 = drive.trajectoryBuilder(new Pose2d())
-                        .forward(33.25)
-                        .build();
-                drive.followTrajectory(traj3);
-                 */
             }
         }
 
         // run until the end of the match (driver presses STOP)
         while (opModeIsActive()) {
 
-            // Show the elapsed game time and wheel power.
             //telemetry.addData("Status", "Run Time: " + runtime.toString());
             telemetry.update();
         }
