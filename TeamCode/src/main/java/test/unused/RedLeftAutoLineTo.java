@@ -17,7 +17,7 @@ import common.Robot;
  *
  */
 
-@Autonomous(name="Red Left Start", group="Main")  // ToDo change to @Autonomous when testing is complete
+@Autonomous(name="Red Left Line To Start", group="Main")  // ToDo change to @Autonomous when testing is complete
 public class RedLeftAutoLineTo extends LinearOpMode {
 
     // Declare OpMode members.
