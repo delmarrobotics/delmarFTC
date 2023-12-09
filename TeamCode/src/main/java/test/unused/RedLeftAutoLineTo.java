@@ -3,6 +3,7 @@ package test.unused;
 import com.acmerobotics.roadrunner.geometry.Pose2d;
 import com.acmerobotics.roadrunner.geometry.Vector2d;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
@@ -17,7 +18,8 @@ import common.Robot;
  *
  */
 
-@Autonomous(name="Red Left Line To Start", group="Main")  // ToDo change to @Autonomous when testing is complete
+@Autonomous(name="Red Left Line To Start", group="Main")
+@Disabled
 public class RedLeftAutoLineTo extends LinearOpMode {
 
     // Declare OpMode members.
