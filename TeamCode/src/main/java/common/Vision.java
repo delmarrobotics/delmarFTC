@@ -213,6 +213,8 @@ public class Vision {
         return desiredTag.ftcPose.y;
     }
 
+    public double aprilTagYaw() { return desiredTag.ftcPose.yaw; }
+
     /**
      * Find the object with the highest confidence.
      *
