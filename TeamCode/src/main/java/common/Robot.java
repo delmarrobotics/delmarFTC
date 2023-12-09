@@ -16,11 +16,15 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
+import com.qualcomm.robotcore.hardware.IMU;
 import com.qualcomm.robotcore.hardware.NormalizedColorSensor;
 import com.qualcomm.robotcore.hardware.NormalizedRGBA;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
 import org.firstinspires.ftc.robotcore.external.Telemetry;
+import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
+import org.firstinspires.ftc.robotcore.external.navigation.AngularVelocity;
+import org.firstinspires.ftc.robotcore.external.navigation.YawPitchRollAngles;
 
 public class Robot {
 
@@ -76,6 +80,8 @@ public class Robot {
     private Servo droneAngle = null;
     private Servo droneFire = null;
 
+    private IMU imu;
+
     public HangingArm hangingArm = null;
     public PixelArm pixelArm = null;
 
@@ -108,6 +114,8 @@ public class Robot {
         colorSensor.setGain(COLOR_SENSOR_GAIN);
 
         try {
+            imu = opMode.hardwareMap.get(IMU.class, "imu");
+
             dropper = opMode.hardwareMap.get(Servo.class, Config.PIXEL_DROPPER);
 
             droneAngle = opMode.hardwareMap.get(Servo.class, Config.DRONE_ANGLE);
@@ -118,6 +126,7 @@ public class Robot {
             spinnerGray = opMode.hardwareMap.get(CRServo.class, Config.SPINNER_GRAY);
             spinnerBlack = opMode.hardwareMap.get(CRServo.class, Config.SPINNER_BLACK);
             spinnerBucket = opMode.hardwareMap.get(CRServo.class, Config.SPINNER_BUCKET);
+
 
         } catch (Exception e) {
             Logger.error(e, "hardware not found");
@@ -536,6 +545,20 @@ public class Robot {
         hangingArm.thumbClose();
         hangingArm.wristDown();
         hangingArm.elbowDown();
+    }
+
+    /**
+     *  Return the current orientation of the robot.
+     * @return orientation in a range of -180 to 180
+     */
+    public double getOrientation(){
+
+        YawPitchRollAngles orientation = imu.getRobotYawPitchRollAngles();
+        Logger.message("Yaw   (Z) %.2f Deg. (Heading)", orientation.getYaw(AngleUnit.DEGREES));
+        Logger.message("Pitch (X) %.2f Deg.", orientation.getPitch(AngleUnit.DEGREES));
+        Logger.message("Roll  (Y) %.2f Deg.\n", orientation.getRoll(AngleUnit.DEGREES));
+
+        return orientation.getYaw(AngleUnit.DEGREES);
     }
 
 } // end of class
