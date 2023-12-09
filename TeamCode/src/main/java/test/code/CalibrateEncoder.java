@@ -29,6 +29,7 @@
 
 package test.code;
 
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
@@ -65,7 +66,8 @@ import common.Logger;
  */
 
 @TeleOp(name="Calibrate Encoder", group="Test")
-@SuppressWarnings("test/unused")
+@Disabled
+@SuppressWarnings("unused")
 
 public class CalibrateEncoder extends LinearOpMode {
 
