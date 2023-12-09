@@ -56,13 +56,16 @@ import main.RedLeftAuto;
 public class RoadRunnerTest extends LinearOpMode {
 
     // Declare OpMode members.
-    private ElapsedTime runtime = new ElapsedTime();
     private Robot robot = null;
     private SampleMecanumDrive drive = null;
 
     private TrajectorySequence traj1;
     private TrajectorySequence traj2;
     private TrajectorySequence traj3;
+
+    private enum POSITION { left, center, right }
+    RoadRunnerTest.POSITION objectPosition;
+
 
     @Override
     public void runOpMode() {
@@ -81,22 +84,30 @@ public class RoadRunnerTest extends LinearOpMode {
 
         // Wait for the game to start (driver presses PLAY)
         waitForStart();
-        runtime.reset();
-/*
-        traj3 = drive.trajectorySequenceBuilder(new Pose2d(0, 0, 0))
-                .lineTo(new Vector2d(12, 0))
-                .waitSeconds(2.5)
-                .lineTo(new Vector2d(24, 0))
+
+        TrajectorySequence left = drive.trajectorySequenceBuilder(new Pose2d(0, 0, 0))
+                .forward(24)
+                .strafeLeft(12)
+                .addTemporalMarker(3,() -> robot.dropPurplePixel())
+                .waitSeconds(1)
+                .forward(21)
                 .turn(Math.toRadians(-90))
-                //.turn(Math.toRadians(-90))
-                //.lineTo(new Vector2d( 11.75, -11.75))
-                //.turn(Math.toRadians(-90))
-                //.lineTo(new Vector2d(11.75, -35.25))
-                //.turn(Math.toRadians(90))
-                //.lineTo(new Vector2d(47.75,-35.25))
+                .forward(50)
+                .strafeRight(30)
                 .build();
-        drive.followTrajectorySequence(traj3);
-*/
+
+        TrajectorySequence right = drive.trajectorySequenceBuilder(new Pose2d(0, 0, 0))
+                .forward(24)
+                .turn(Math.toRadians(-90))
+                .forward(12)
+                .addTemporalMarker(3,() -> robot.dropPurplePixel())
+                .waitSeconds(1)
+                .back(12)
+                .strafeLeft(21)
+                .forward(50)
+                .strafeRight(30)
+                .build();
+
         TrajectorySequence center = drive.trajectorySequenceBuilder(new Pose2d(0, 0, 0))
                 .forward(27)
                 .addTemporalMarker(2,() -> robot.dropPurplePixel())
