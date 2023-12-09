@@ -11,6 +11,7 @@ import common.HangingArm;
  * Test code for the hanging arm
  */
 @TeleOp(name="Hanging Arm Test", group="Test")
+@Disabled
 @SuppressWarnings("unused")
 public class HangingArmMain extends LinearOpMode {
 

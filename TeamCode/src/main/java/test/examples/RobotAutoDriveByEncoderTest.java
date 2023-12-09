@@ -32,6 +32,7 @@ package test.examples;
 import android.icu.util.DateInterval;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.util.ElapsedTime;
@@ -67,7 +68,7 @@ import common.Logger;
  */
 
 @Autonomous(name="Auto Drive By Encoder", group="Test")
-
+@Disabled
 public class RobotAutoDriveByEncoderTest extends LinearOpMode {
 
     /* Declare OpMode members. */
