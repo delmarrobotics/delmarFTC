@@ -1,3 +1,6 @@
+/*
+ * The class contain support the the autonomous phase of the Center Stage competition
+ */
 package common;
 
 import com.acmerobotics.roadrunner.geometry.Pose2d;
@@ -7,9 +10,6 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import org.firstinspires.ftc.teamcode.drive.SampleMecanumDrive;
 import org.firstinspires.ftc.teamcode.trajectorysequence.TrajectorySequence;
 
-/*
-*
-*/
 public class Auto {
     public enum POSITION { left, center, right }
     public enum COLOR { RED, BLUE }
@@ -53,10 +53,10 @@ public class Auto {
     }
 
     /**
-     * Drop the purple pixel
+     * Drop the purple pixel on the spike mark.
      *
-     * @param x forward  1, backward -1
-     * @param y right 1, left -1
+     * @param x direction to search, forward  1, backward -1
+     * @param y direction to search, right 1, left -1
      */
     public void purplePixel (double x, double y) {
 
@@ -68,6 +68,9 @@ public class Auto {
         robot.dropPurplePixel();
     }
 
+    /**
+     * Drop the yellow pixel on the backdrop.
+     */
     public void yellowPixel () {
 
         double strafe = 0;
