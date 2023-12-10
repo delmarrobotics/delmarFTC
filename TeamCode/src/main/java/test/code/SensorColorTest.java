@@ -27,7 +27,7 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package test.examples;
+package test.code;
 
 import android.app.Activity;
 import android.graphics.Color;
