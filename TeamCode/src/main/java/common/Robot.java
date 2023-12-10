@@ -21,9 +21,7 @@ import com.qualcomm.robotcore.hardware.NormalizedColorSensor;
 import com.qualcomm.robotcore.hardware.NormalizedRGBA;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
-import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
-import org.firstinspires.ftc.robotcore.external.navigation.AngularVelocity;
 import org.firstinspires.ftc.robotcore.external.navigation.YawPitchRollAngles;
 
 import java.util.Arrays;
@@ -96,12 +94,10 @@ public class Robot {
 
     /* Declare OpMode members. */
     private final LinearOpMode opMode;
-    private final Telemetry telemetry;
 
     // Define a constructor that allows the OpMode to pass a reference to itself.
     public Robot(LinearOpMode opMode) {
         this.opMode = opMode;
-        this.telemetry = opMode.telemetry;
     }
 
     /**
@@ -396,18 +392,19 @@ public class Robot {
 
             if (color == COLOR.BLUE) {
                 if (hue >= 190 && hue <= 230 && saturation >= .7) {
-                    found = true;
                     Logger.message("blue line found");
+                    found = true;
                 }
             } else if (color == COLOR.RED) {
                 if ((hue >= 30 && hue <= 90) && saturation >= .5) {
-                    found = true;
                     Logger.message("red line found");
+                    found = true;
                 }
             }
-            if (elapsedTime.milliseconds() > timeout)
+            if (elapsedTime.milliseconds() > timeout){
                 Logger.message("no line found");
-            break;
+                break;
+            }
         }
         stopRobot();
     }
@@ -498,16 +495,6 @@ public class Robot {
         moveRobot(.1, 0, 0);
         opMode.sleep(500);
         stopRobot();
-    }
-
-    public void hangRobotReleaseHook() {
-
-        hangingArm.thumbOpen();
-        hangingArm.elbowRelease();
-        opMode.sleep(500);
-        hangingArm.thumbClose();
-        hangingArm.wristDown();
-        hangingArm.elbowDown();
     }
 
     /**
