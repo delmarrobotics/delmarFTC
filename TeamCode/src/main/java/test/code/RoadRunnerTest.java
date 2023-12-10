@@ -30,22 +30,13 @@
 package test.code;
 
 import com.acmerobotics.roadrunner.geometry.Pose2d;
-import com.acmerobotics.roadrunner.geometry.Vector2d;
-import com.acmerobotics.roadrunner.trajectory.Trajectory;
-import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
-import com.qualcomm.robotcore.hardware.DcMotor;
-import com.qualcomm.robotcore.util.ElapsedTime;
-import com.qualcomm.robotcore.util.Range;
 
-import org.firstinspires.ftc.teamcode.drive.SampleMecanumDrive;
 import org.firstinspires.ftc.teamcode.trajectorysequence.TrajectorySequence;
 
 import common.Drive;
-import common.Logger;
 import common.Robot;
-import main.RedLeftAuto;
 
 
 /*
@@ -59,14 +50,6 @@ public class RoadRunnerTest extends LinearOpMode {
     // Declare OpMode members.
     private Robot robot = null;
     private Drive drive = null;
-
-    private TrajectorySequence traj1;
-    private TrajectorySequence traj2;
-    private TrajectorySequence traj3;
-
-    private enum POSITION { left, center, right }
-    RoadRunnerTest.POSITION objectPosition;
-
 
     @Override
     public void runOpMode() {
