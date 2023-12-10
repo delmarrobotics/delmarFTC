@@ -42,6 +42,7 @@ import com.qualcomm.robotcore.util.Range;
 import org.firstinspires.ftc.teamcode.drive.SampleMecanumDrive;
 import org.firstinspires.ftc.teamcode.trajectorysequence.TrajectorySequence;
 
+import common.Drive;
 import common.Logger;
 import common.Robot;
 import main.RedLeftAuto;
@@ -57,7 +58,7 @@ public class RoadRunnerTest extends LinearOpMode {
 
     // Declare OpMode members.
     private Robot robot = null;
-    private SampleMecanumDrive drive = null;
+    private Drive drive = null;
 
     private TrajectorySequence traj1;
     private TrajectorySequence traj2;
@@ -76,7 +77,7 @@ public class RoadRunnerTest extends LinearOpMode {
         robot = new Robot(this);
         robot.init();
 
-        drive = new SampleMecanumDrive(hardwareMap);
+        drive = new Drive(hardwareMap);
 
         //while (! robot.vision.cameraReady())
        //     sleep(100);
@@ -117,7 +118,10 @@ public class RoadRunnerTest extends LinearOpMode {
                 .forward(50)
                 .strafeRight(30)
                 .build();
-        drive.followTrajectorySequence(center);
+        //drive.followTrajectorySequence(center);
+
+        drive.turn(90);
+        //drive.forward(60);
 
     }
 

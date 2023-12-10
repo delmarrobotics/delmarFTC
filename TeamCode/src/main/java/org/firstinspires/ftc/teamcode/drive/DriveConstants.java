@@ -45,7 +45,7 @@ public class DriveConstants {
      * convenience. Make sure to exclude any gear ratio included in MOTOR_CONFIG from GEAR_RATIO.
      */
     public static double WHEEL_RADIUS = (96/25.4)/2; // 96mm diameter wheels convedfrted to radius in inches
-    public static double GEAR_RATIO = 1; // output (wheel) speed / input (motor) speed
+    public static double GEAR_RATIO = 20; // output (wheel) speed / input (motor) speed
     public static double TRACK_WIDTH = 14.6; // in
 
     /*

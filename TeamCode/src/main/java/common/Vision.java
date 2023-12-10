@@ -29,6 +29,10 @@ public class Vision {
     public static final int BLUE_CENTER_TAG = 2;
     public static final int BLUE_RIGHT_TAG  = 3;
 
+    public static final int RED_LEFT_TAG    = 4;   // ToDo check ids
+    public static final int RED_CENTER_TAG  = 5;
+    public static final int RED_RIGHT_TAG   = 6;
+
     private TfodProcessor tfod;             // TensorFlow Object Detection processor
     private AprilTagProcessor aprilTag;     // AprilTag Detection processor
     private VisionPortal visionPortal;      // Instance of the vision portal.
@@ -204,6 +208,8 @@ public class Vision {
 
         return targetFound;
     }
+
+    public int aprilTagID() { return desiredTag.id; }
 
     public double aprilTagX() {
         return desiredTag.ftcPose.x;
