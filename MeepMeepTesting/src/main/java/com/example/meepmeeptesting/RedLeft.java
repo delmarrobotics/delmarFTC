@@ -17,23 +17,6 @@ public class RedLeft {
         double yStart = -29;
         double y2 = -11.75;
 
-        RoadRunnerBotEntity CenterElement = new DefaultBotBuilder(meepMeep)
-                // Set bot constraints: maxVel, maxAccel, maxAngVel, maxAngAccel, track width
-                .setConstraints(40, 40, Math.toRadians(180), Math.toRadians(180), 15)
-                .setDimensions(16,16)
-                .followTrajectorySequence(drive ->
-                        drive.trajectorySequenceBuilder(new Pose2d(-35.25, -62.5, Math.toRadians(90)))
-                                .lineTo(new Vector2d(-35.25, -29))
-                                .waitSeconds(1)
-                                .lineTo(new Vector2d(-35.25, -11.75))
-                                .turn(Math.toRadians(-90))
-                                .lineTo(new Vector2d( 11.75, -11.75))
-                                .turn(Math.toRadians(-90))
-                                .lineTo(new Vector2d(11.75, -35.25))
-                                .turn(Math.toRadians(90))
-                                .lineTo(new Vector2d(47.75,-35.25))
-                                .build()
-                );
         RoadRunnerBotEntity LeftElement = new DefaultBotBuilder(meepMeep)
                 // Set bot constraints: maxVel, maxAccel, maxAngVel, maxAngAccel, track width
                 .setConstraints(40, 40, Math.toRadians(180), Math.toRadians(180), 15)
@@ -63,6 +46,23 @@ public class RedLeft {
                                 .lineTo(new Vector2d(-30,-33))
                                 .waitSeconds(1)
                                 .lineTo(new Vector2d(47.25, -41.25))
+                                .build()
+                );
+        RoadRunnerBotEntity CenterElement = new DefaultBotBuilder(meepMeep)
+                // Set bot constraints: maxVel, maxAccel, maxAngVel, maxAngAccel, track width
+                .setConstraints(40, 40, Math.toRadians(180), Math.toRadians(180), 15)
+                .setDimensions(16,16)
+                .followTrajectorySequence(drive ->
+                        drive.trajectorySequenceBuilder(new Pose2d(-35.25, -62.5, Math.toRadians(90)))
+                                .lineTo(new Vector2d(-35.25, -29))
+                                .waitSeconds(1)
+                                .lineTo(new Vector2d(-35.25, -11.75))
+                                .turn(Math.toRadians(-90))
+                                .lineTo(new Vector2d( 11.75, -11.75))
+                                .turn(Math.toRadians(-90))
+                                .lineTo(new Vector2d(11.75, -35.25))
+                                .turn(Math.toRadians(90))
+                                .lineTo(new Vector2d(47.75,-35.25))
                                 .build()
                 );
         meepMeep.setBackground(MeepMeep.Background.FIELD_CENTERSTAGE_JUICE_DARK)
