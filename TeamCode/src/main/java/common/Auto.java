@@ -33,21 +33,22 @@ public class Auto {
 
     public POSITION findTeamElement() {
 
-        if (!robot.vision.findTeamElement(3000)) {
-            // Team element not found
-            objectPosition = POSITION.right;
-            Logger.message("Team element at right position");
-        } else {
-            // Team element is on the left spike mark
+        if (robot.vision.findTeamElement(3000)) {
+            // Found the team element
             double angle = robot.vision.findTeamElementAngle();
-            objectPosition = POSITION.left;
             if (angle < 0) {
+                // Team element is on the left spike mark
+                objectPosition = POSITION.left;
                 Logger.message("Team element at left position, angle %f", angle);
             } else {
                 // Team element is on the center spike mark
-                Logger.message("Team element at center position, angle %f", angle);
                 objectPosition = POSITION.center;
+                Logger.message("Team element at center position, angle %f", angle);
             }
+        } else {
+            // Team element not found, assume the team element is on the right spike mark
+            objectPosition = POSITION.right;
+            Logger.message("Team element at right position");
         }
         return objectPosition;
     }
@@ -81,7 +82,7 @@ public class Auto {
                 double x = robot.vision.aprilTagX();
                 double range = robot.vision.aprilTagY();
                 double yaw = robot.vision.aprilTagYaw();
-                Logger.message("x %f  range %f  yaw %f", x, range, yaw);
+                Logger.message("aprilTag: x %f  range %f  yaw %f", x, range, yaw);
 
                 TrajectorySequence traj1 = drive.trajectorySequenceBuilder(new Pose2d())
                         .turn(Math.toRadians(yaw))
@@ -91,7 +92,7 @@ public class Auto {
                 Logger.message("robot orientation %3.1f", robot.getOrientation());
 
                 if (color == COLOR.BLUE)
-                    robot.moveToColor(Robot.COLOR.RED, 1, 0, 0.2,3000);
+                    robot.moveToColor(Robot.COLOR.BLUE, 1, 0, 0.2,3000);
                 else if (color == COLOR.RED)
                     robot.moveToColor(Robot.COLOR.RED, 1, 0, 0.2,3000);
 
@@ -122,13 +123,13 @@ public class Auto {
                 }  else if (id == Vision.BLUE_RIGHT_TAG || id == Vision.RED_RIGHT_TAG) {
                     if (objectPosition == POSITION.left) {
                         strafe = x - 18;
-                        Logger.message("center tag, left position, strafe %f", strafe);
+                        Logger.message("right tag, left position, strafe %f", strafe);
                     } else if (objectPosition == POSITION.center) {
                         strafe = x - 12;
-                        Logger.message("center tag, center position, strafe %f", strafe);
+                        Logger.message("right tag, center position, strafe %f", strafe);
                     } else {
                         strafe = x - 6;
-                        Logger.message("center tag, right position, strafe %f", strafe);
+                        Logger.message("reight tag, right position, strafe %f", strafe);
                     }
                 }
 

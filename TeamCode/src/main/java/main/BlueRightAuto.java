@@ -69,15 +69,15 @@ public class BlueRightAuto extends LinearOpMode {
                 .forward(36.5)
                 .build();
 
+        auto.setColor(Auto.COLOR.BLUE);
+
         while (! robot.vision.cameraReady())
             sleep(100);
         sleep(1000);
 
-        // Wait for the game to start (driver presses PLAY)
         waitForStart();
         runtime.reset();
 
-        auto.setColor(Auto.COLOR.BLUE);
         objectPosition = auto.findTeamElement();
 
         if (objectPosition == Auto.POSITION.left) {

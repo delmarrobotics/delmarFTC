@@ -343,11 +343,6 @@ public class Robot {
                     Logger.message("encoderDrive timed out");
                     break;
                 }
-
-                Logger.message("Running to  %7d :%7d", newLeftTarget, newRightTarget);
-                Logger.message("Currently at  at %7d :%7d",
-                        leftFrontDrive.getCurrentPosition(),
-                        rightFrontDrive.getCurrentPosition());
             }
 
             // Stop all motion;
@@ -357,6 +352,12 @@ public class Robot {
             // Restore run mode to prior state
             for (DcMotor motor : motors)
                 motor.setMode(mode);
+
+            Logger.message("moveDistance: target  %6.2f %6.2f  traveled %6.2f %6.2f",
+                    (double)newLeftTarget / COUNTS_PER_INCH,
+                    (double)newRightTarget / COUNTS_PER_INCH,
+                    (double)leftFrontDrive.getCurrentPosition() / COUNTS_PER_INCH,
+                    (double)rightFrontDrive.getCurrentPosition() / COUNTS_PER_INCH);
         }
     }
 
@@ -396,14 +397,17 @@ public class Robot {
             if (color == COLOR.BLUE) {
                 if (hue >= 190 && hue <= 230 && saturation >= .7) {
                     found = true;
+                    Logger.message("blue line found");
                 }
             } else if (color == COLOR.RED) {
                 if ((hue >= 30 && hue <= 90) && saturation >= .5) {
                     found = true;
+                    Logger.message("red line found");
                 }
             }
             if (elapsedTime.milliseconds() > timeout)
-                break;
+                Logger.message("no line found");
+            break;
         }
         stopRobot();
     }
