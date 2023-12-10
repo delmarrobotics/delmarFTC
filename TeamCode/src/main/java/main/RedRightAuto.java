@@ -44,28 +44,36 @@ public class RedRightAuto extends LinearOpMode {
                 .back(15.75)
                 .build();
         TrajectorySequence left2 = drive.trajectorySequenceBuilder(left1.end())
-                .forward(52.25)
-                .strafeLeft(6)
+                .forward(15.75)
+                .turn(Math.toRadians(90))
+                .forward(23.5)
+                .turn(Math.toRadians(90))
+                .forward(70.5)
+                .strafeLeft(29.5)
                 .build();
 
         TrajectorySequence right1 = drive.trajectorySequenceBuilder(new Pose2d(0, 0, 0))
-                .forward(31.5)
+                .forward(27.25)
                 .turn(Math.toRadians(-90))
-                .forward(10)
+                .forward(8)
                 .build();
         TrajectorySequence right2 = drive.trajectorySequenceBuilder(right1.end())
-                .forward(26.5)
-                .strafeLeft(2)
-                .waitSeconds(5)
+                .back(8)
+                .turn(Math.toRadians(90))
+                .forward(23.5)
+                .turn(Math.toRadians(90))
+                .forward(70.5)
+                .strafeLeft(17.5)
                 .build();
 
         TrajectorySequence center1 = drive.trajectorySequenceBuilder(new Pose2d(0, 0, 0))
                 .forward(33.5)
                 .build();
         TrajectorySequence center2 = drive.trajectorySequenceBuilder(center1.end())
-                .back(6)
-                .turn(Math.toRadians(-90))
-                .forward(36.5)
+                .forward(17.25)
+                .turn(Math.toRadians(90))
+                .forward(70.5)
+                .strafeLeft(23.5)
                 .build();
 
         while (! robot.vision.cameraReady())
