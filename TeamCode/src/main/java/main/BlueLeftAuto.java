@@ -17,7 +17,7 @@ import org.firstinspires.ftc.teamcode.trajectorysequence.TrajectorySequence;
 import common.Auto;
 import common.Robot;
 
-@Autonomous(name="Blue Right Start", group="Main")
+@Autonomous(name="Blue Left Start", group="Main")
 public class BlueLeftAuto extends LinearOpMode {
 
     // Declare OpMode members.
