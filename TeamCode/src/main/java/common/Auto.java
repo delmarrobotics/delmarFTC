@@ -14,7 +14,7 @@ public class Auto {
     public enum POSITION { left, center, right }
     public enum COLOR { RED, BLUE }
 
-    POSITION objectPosition;
+    POSITION objectPosition = POSITION.center;  //ToDo remove, for testing
     COLOR color;
 
     LinearOpMode opMode;

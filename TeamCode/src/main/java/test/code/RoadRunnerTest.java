@@ -48,7 +48,7 @@ import common.Robot;
 public class RoadRunnerTest extends LinearOpMode {
 
     // Declare OpMode members.
-    private Robot robot = null;
+    public Robot robot = null;
     private Drive drive = null;
 
     @Override
@@ -69,47 +69,24 @@ public class RoadRunnerTest extends LinearOpMode {
         // Wait for the game to start (driver presses PLAY)
         waitForStart();
 
-        TrajectorySequence left = drive.trajectorySequenceBuilder(new Pose2d(0, 0, 0))
-                .forward(24)
-                .strafeLeft(12)
-                .addTemporalMarker(3,() -> robot.dropPurplePixel())
-                .waitSeconds(1)
-                .forward(21)
-                .turn(Math.toRadians(-90))
-                .forward(50)
-                .strafeRight(30)
-                .build();
+        distanceTest();
 
-        TrajectorySequence right = drive.trajectorySequenceBuilder(new Pose2d(0, 0, 0))
-                .forward(24)
-                .turn(Math.toRadians(-90))
-                .forward(12)
-                .addTemporalMarker(3,() -> robot.dropPurplePixel())
-                .waitSeconds(1)
-                .back(12)
-                .strafeLeft(21)
-                .forward(50)
-                .strafeRight(30)
-                .build();
-
-        TrajectorySequence center = drive.trajectorySequenceBuilder(new Pose2d(0, 0, 0))
-                .forward(27)
-                .addTemporalMarker(2,() -> robot.dropPurplePixel())
-                .waitSeconds(1)
-                .forward(18)
-                .turn(Math.toRadians(-90))
-                .forward(50)
-                .strafeRight(30)
-                .build();
-        //drive.followTrajectorySequence(center);
-
-        robot.resetEncoders();
+        /*
         drive.forward(31.25);
-
         sleep(500);
         robot.dropPurplePixel();
         drive.forward(23.5);
-
+        */
     }
 
+    public void distanceTest () {
+        double distance = 24;
+        for (distance = 12; distance <= 36; distance += 12) {
+            drive.forward(distance);
+            drive.back(distance);
+            drive.turn(Math.toRadians(90));
+            drive.strafeLeft(distance);
+            drive.strafeRight(distance);
+        }
+    }
 }

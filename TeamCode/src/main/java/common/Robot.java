@@ -10,11 +10,14 @@ package common;
  *
  */
 
+import static org.firstinspires.ftc.teamcode.drive.DriveConstants.encoderTicksToInches;
+
 import android.graphics.Color;
 
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.IMU;
 import com.qualcomm.robotcore.hardware.NormalizedColorSensor;
@@ -24,6 +27,7 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.YawPitchRollAngles;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -255,6 +259,8 @@ public class Robot {
         leftBackDrive.setPower(0);
         rightBackDrive.setPower(0);
     }
+
+
     public void resetEncoders() {
 
         for (DcMotor motor : motors) {
@@ -263,7 +269,16 @@ public class Robot {
             motor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
             motor.setMode(mode);
         }
+    }
 
+    public List<Double> getWheelPositions() {
+
+        List<Double> wheelPositions = new ArrayList<>();
+        for (DcMotor motor : motors) {
+            int position = motor.getCurrentPosition();
+            wheelPositions.add((double)position * COUNTS_PER_INCH);
+        }
+        return wheelPositions;
     }
 
     /**
@@ -391,6 +406,7 @@ public class Robot {
 
         elapsedTime.reset();
         moveRobot(x, y, 0, speed);
+
         while (! found) {
             // Get the normalized colors from the sensor
             NormalizedRGBA colors = colorSensor.getNormalizedColors();
