@@ -235,7 +235,7 @@ public class Vision {
             currentRecognitions = tfod.getRecognitions();
             if (currentRecognitions.size() != 0)
                 break;
-            Logger.message("no team element found");
+            //Logger.message("no team element found");
             if (timeout == 0 || searchTime.milliseconds() >= timeout)
                 break;
             opMode.sleep(100);

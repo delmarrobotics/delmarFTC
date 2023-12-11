@@ -60,12 +60,14 @@ public class Auto {
      * @param y direction to search, right 1, left -1
      */
     public void purplePixel (double x, double y) {
-
+        /*
         if (color == COLOR.RED)
             robot.moveToColor(Robot.COLOR.RED, x, y, 0.2,3000);
         else
             robot.moveToColor(Robot.COLOR.BLUE, x, y, 0.2,3000);
         robot.moveDistance(robot.MIN_SPEED, 1.5, 1.5, 2000);
+
+         */
         robot.dropPurplePixel();
     }
 
@@ -86,8 +88,9 @@ public class Auto {
 
                 TrajectorySequence traj1 = drive.trajectorySequenceBuilder(new Pose2d())
                         .turn(Math.toRadians(yaw))
-                        .forward(range-2)
+                        //.forward(range-2)
                         .build();
+                Logger.message("robot orientation %3.1f", robot.getOrientation());
                 drive.followTrajectorySequence(traj1);
                 Logger.message("robot orientation %3.1f", robot.getOrientation());
 
@@ -151,7 +154,7 @@ public class Auto {
                 break;
 
             } else {
-                Logger.message("Tag not found");
+                //Logger.message("Tag not found");
                 if (retry == 0) {
                     robot.moveDistance(robot.MIN_SPEED, -3, -3, 2000);
                     retry += 1;

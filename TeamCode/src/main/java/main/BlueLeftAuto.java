@@ -61,7 +61,7 @@ public class BlueLeftAuto extends LinearOpMode {
                 .build();
 
         TrajectorySequence center1 = drive.trajectorySequenceBuilder(new Pose2d(0, 0, 0))
-                .forward(33.5)
+                .forward(31.25)
                 .build();
         TrajectorySequence center2 = drive.trajectorySequenceBuilder(center1.end())
                 .back(6)
@@ -69,9 +69,12 @@ public class BlueLeftAuto extends LinearOpMode {
                 .forward(36.5)
                 .build();
 
+        telemetry.addLine("waiting for camera");
+        telemetry.update();
         while (! robot.vision.cameraReady())
             sleep(100);
         sleep(1000);
+        telemetry.addLine("camera ready");
 
         // Wait for the game to start (driver presses PLAY)
         waitForStart();

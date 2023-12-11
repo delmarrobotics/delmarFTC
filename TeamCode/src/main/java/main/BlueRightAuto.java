@@ -39,7 +39,7 @@ public class BlueRightAuto extends LinearOpMode {
         Auto auto = new Auto(this, robot, drive);
 
         TrajectorySequence left1 = drive.trajectorySequenceBuilder(new Pose2d(0, 0, 0))
-                .forward(31.25)
+                .forward(28)
                 .turn(Math.toRadians(90))
                 .forward(10)
                 .build();
@@ -61,7 +61,7 @@ public class BlueRightAuto extends LinearOpMode {
                 .build();
 
         TrajectorySequence center1 = drive.trajectorySequenceBuilder(new Pose2d(0, 0, 0))
-                .forward(33.5)
+                .forward(31.25)
                 .build();
         TrajectorySequence center2 = drive.trajectorySequenceBuilder(center1.end())
                 .back(6)
