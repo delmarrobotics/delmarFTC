@@ -197,7 +197,12 @@ public class Robot {
         rightBackDrive.setPower(rightBackPower);
     }
 
+
     public void moveRobot(double x, double y, double yaw, double speed) {
+        moveRobot (x, y, yaw, speed, MIN_SPEED, MAX_SPEED);
+    }
+
+    public void moveRobot(double x, double y, double yaw, double speed, double minSpeed, double maxSpeed) {
 
         double leftFrontPower;
         double rightFrontPower;
@@ -405,7 +410,8 @@ public class Robot {
         ElapsedTime elapsedTime = new ElapsedTime();
 
         elapsedTime.reset();
-        moveRobot(x, y, 0, speed);
+
+        moveRobot(x, y, 0, speed, speed, speed);
 
         while (! found) {
             // Get the normalized colors from the sensor
