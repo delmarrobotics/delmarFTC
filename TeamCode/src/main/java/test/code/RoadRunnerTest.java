@@ -103,7 +103,9 @@ public class RoadRunnerTest extends LinearOpMode {
                 .build();
         //drive.followTrajectorySequence(center);
 
+        robot.resetEncoders();
         drive.forward(31.25);
+
         sleep(500);
         robot.dropPurplePixel();
         drive.forward(23.5);

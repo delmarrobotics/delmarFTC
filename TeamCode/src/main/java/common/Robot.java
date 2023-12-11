@@ -255,6 +255,16 @@ public class Robot {
         leftBackDrive.setPower(0);
         rightBackDrive.setPower(0);
     }
+    public void resetEncoders() {
+
+        for (DcMotor motor : motors) {
+            DcMotor.RunMode mode = leftFrontDrive.getMode();
+            motor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+            motor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+            motor.setMode(mode);
+        }
+
+    }
 
     /**
      *  Method to perform a relative move, based on encoder counts.
