@@ -498,10 +498,11 @@ public class Robot {
     }
 
     public void dropYellowPixel() {
-        pixelArm.positionArm(PixelArm.ARM_POSITION.LOW);
-        opMode.sleep(1500);
+        //pixelArm.positionArm(PixelArm.ARM_POSITION.LOW);
+        //opMode.sleep(1500);
         dropPixel();
         opMode.sleep(2000);
+        pixelArm.pixelWristMove(PixelArm.PIXEL_WRIST_HOME);
         pixelArm.positionArm(PixelArm.ARM_POSITION.HOME);
     }
 

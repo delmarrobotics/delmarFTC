@@ -81,12 +81,17 @@ public class Auto {
 
         while (opMode.opModeIsActive()) {
             if (robot.vision.findAprilTag(-1)) {
+
+                robot.pixelArm.pixelElbowMove(PixelArm.PIXEL_ARM_OUT_LOW);
+
                 double x = robot.vision.aprilTagX();
                 double range = robot.vision.aprilTagY();
                 double yaw = robot.vision.aprilTagYaw();
                 Logger.message("aprilTag: x %f  range %f  yaw %f", x, range, yaw);
                 robot.turn(yaw);
                 Logger.message("robot orientation %3.1f", robot.getOrientation());
+
+                robot.pixelArm.positionArm(PixelArm.ARM_POSITION.LOW);
 
                 if (color == COLOR.BLUE)
                     robot.moveToColor(Robot.COLOR.BLUE, 1, 0, 0.25, 2000);
@@ -146,7 +151,12 @@ public class Auto {
                     drive.followTrajectorySequence(traj2);
                 }
 
-                //robot.dropYellowPixel();  //ToDo uncomment
+                robot.pixelArm.pixelWristMove(PixelArm.PIXEL_ARM_OUT_LOW);
+
+                robot.dropYellowPixel();
+
+                robot.back(3);
+
                 break;
 
             } else {
