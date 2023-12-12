@@ -39,7 +39,9 @@ public class Robot {
     static final double WHEEL_DIAMETER_INCHES = (96 / 25.4);     // 96 mm while converted to inches
     static final double COUNTS_PER_INCH =
             (COUNTS_PER_MOTOR_REV * DRIVE_GEAR_REDUCTION) / (WHEEL_DIAMETER_INCHES * Math.PI);
-    static final double RAMP_DISTANCE = COUNTS_PER_INCH * 2; // Speed ramp up in encoder counts
+
+    static final double RAMP_DISTANCE = COUNTS_PER_INCH * 2; // ramp down distance in encoder counts
+    static final double RAMP_TIME = 1000;                    // ramp up time in milliseconds
 
     public final double MIN_SPEED        = 0.25;
     public final double MAX_SPEED        = 0.70;
@@ -47,7 +49,7 @@ public class Robot {
 
     // Color sensor
     static final float COLOR_SENSOR_GAIN = 2.2F;
-    public enum COLOR { RED, BLUE}
+    public enum COLOR { RED, BLUE }
 
     // drone launcher servo position
     static final double DRONE_ANGLE_DOWN = 0.48;
@@ -307,69 +309,63 @@ public class Robot {
         int newRightTarget;
 
         // Ensure that the OpMode is still active
-        if (opMode.opModeIsActive()) {
+        if (! opMode.opModeIsActive())  return;
 
-            DcMotor.RunMode mode = leftFrontDrive.getMode();
+        Logger.message("moveDistance: heading %6.2f", getOrientation());
 
-            for (DcMotor motor : motors) {
-                motor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-                motor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-            }
-            // Determine new target position, and pass to motor controller
-            newLeftTarget = leftFrontDrive.getCurrentPosition() + (int) (leftInches * COUNTS_PER_INCH);
-            newRightTarget = rightFrontDrive.getCurrentPosition() + (int) (rightInches * COUNTS_PER_INCH);
+        DcMotor.RunMode mode = leftFrontDrive.getMode();
+        for (DcMotor motor : motors) {
+            motor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+            motor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        }
 
-            leftFrontDrive.setTargetPosition(newLeftTarget);
-            rightFrontDrive.setTargetPosition(newRightTarget);
-            leftBackDrive.setTargetPosition(newLeftTarget);
-            rightBackDrive.setTargetPosition(newRightTarget);
+        // Determine new target position, and pass to motor controller
+        newLeftTarget = leftFrontDrive.getCurrentPosition() + (int) (leftInches * COUNTS_PER_INCH);
+        newRightTarget = rightFrontDrive.getCurrentPosition() + (int) (rightInches * COUNTS_PER_INCH);
+        leftFrontDrive.setTargetPosition(newLeftTarget);
+        rightFrontDrive.setTargetPosition(newRightTarget);
+        leftBackDrive.setTargetPosition(newLeftTarget);
+        rightBackDrive.setTargetPosition(newRightTarget);
 
-            // Turn On RUN_TO_POSITION
+        // Turn On RUN_TO_POSITION
+        for (DcMotor motor : motors)
+            motor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+
+        // Looping until we move the desired distance
+        int leftStart = leftFrontDrive.getCurrentPosition();
+        runtime.reset();
+        while (opMode.opModeIsActive()) {
+
+            double rampPower = rampSpeed(leftFrontDrive.getCurrentPosition(), leftStart, newLeftTarget, speed, runtime.milliseconds());
+
+            // Correct for drift
+            double leftFrontPos = leftFrontDrive.getCurrentPosition();
+            double rightFrontPos = rightFrontDrive.getCurrentPosition();
+            double leftBackPos = leftBackDrive.getCurrentPosition();
+            double rightBackPos = rightBackDrive.getCurrentPosition();
+            double maxPos = Math.max(Math.max(Math.max(leftFrontPos, rightFrontPos), leftBackPos), rightBackPos);
+
+            double scale = .0015;
+            double leftFrontAdjust = (maxPos - leftFrontPos) * scale;
+            double rightFrontAdjust = (maxPos - rightFrontPos) * scale;
+            double leftBackAdjust = (maxPos = leftBackPos) * scale;
+            double rightBackAdjust = (maxPos - rightBackPos) * scale;
+
+            leftFrontDrive.setPower(rampPower + leftFrontAdjust);
+            rightFrontDrive.setPower(rampPower + rightFrontAdjust);
+            leftBackDrive.setPower(rampPower + leftBackAdjust);
+            rightBackDrive.setPower(rampPower + rightBackAdjust);
+
             for (DcMotor motor : motors)
-                motor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+                if (! motor.isBusy())
+                    break;;
 
-            // keep looping while we are still active, and there is time left, and both motors are running.
-            // Note: We use (isBusy() && isBusy()) in the loop test, which means that when EITHER motor hits
-            // its target position, the motion will stop.  This is "safer" in the event that the robot will
-            // always end the motion as soon as possible.
-            // However, if you require that BOTH motors have finished their moves before the robot continues
-            // onto the next step, use (isBusy() || isBusy()) in the loop test.
-            int leftStart = leftFrontDrive.getCurrentPosition();
-            runtime.reset();
-            while (opMode.opModeIsActive()) {
-
-                double rampPower = rampSpeed(leftFrontDrive.getCurrentPosition(), leftStart, newLeftTarget, speed);
-
-                double leftFrontPos = leftFrontDrive.getCurrentPosition();
-                double rightFrontPos = rightFrontDrive.getCurrentPosition();
-                double leftBackPos = leftBackDrive.getCurrentPosition();
-                double rightBackPos = rightBackDrive.getCurrentPosition();
-                double maxPos = Math.max(Math.max(Math.max(leftFrontPos, rightFrontPos), leftBackPos), rightBackPos);
-
-                double scale = .0015;
-                double leftFrontScale = (maxPos - leftFrontPos) * scale;
-                double rightFrontScale = (maxPos - rightFrontPos) * scale;
-                double leftBackScale = (maxPos = leftBackPos) * scale;
-                double rightBackScale = (maxPos - rightBackPos) * scale;
-
-                leftFrontDrive.setPower(rampPower * leftFrontScale);
-                rightFrontDrive.setPower(rampPower * rightFrontScale);
-                leftBackDrive.setPower(rampPower * leftBackScale);
-                rightBackDrive.setPower(rampPower * rightBackScale);
-
-                if (! leftFrontDrive.isBusy())
-                    break;
-
-                if (! rightFrontDrive.isBusy())
-                  break;
-
-                if (runtime.milliseconds() >= timeout) {
-                    Logger.message("encoderDrive timed out");
-                    break;
-                }
+            if (runtime.milliseconds() >= timeout) {
+                Logger.message("moveDistance: timed out");
+                break;
             }
 
-            Logger.message("power: %4.2f %4.2f %4.2f %4.2f     position: %6d %6d %6d %6d     busy: %b  %b  %b  %b",
+            Logger.message("moveDistance:  power: %4.2f %4.2f %4.2f %4.2f     position: %6d %6d %6d %6d",
                     leftFrontDrive.getPower(),
                     rightFrontDrive.getPower(),
                     leftBackDrive.getPower(),
@@ -377,31 +373,29 @@ public class Robot {
                     leftFrontDrive.getCurrentPosition(),
                     rightFrontDrive.getCurrentPosition(),
                     leftBackDrive.getCurrentPosition(),
-                    rightBackDrive.getCurrentPosition(),
-                    leftFrontDrive.isBusy(),
-                    rightFrontDrive.isBusy(),
-                    leftBackDrive.isBusy(),
-                    rightBackDrive.isBusy());
-
-            // Stop all motion;
-            for (DcMotor motor : motors)
-                motor.setPower(0);
-
-            // Restore run mode to prior state
-            for (DcMotor motor : motors)
-                motor.setMode(mode);
-
-            Logger.message("moveDistance: target  %6.2f %6.2f  traveled %6.2f %6.2f",
-                    (double)newLeftTarget / COUNTS_PER_INCH,
-                    (double)newRightTarget / COUNTS_PER_INCH,
-                    (double)leftFrontDrive.getCurrentPosition() / COUNTS_PER_INCH,
-                    (double)rightFrontDrive.getCurrentPosition() / COUNTS_PER_INCH);
+                    rightBackDrive.getCurrentPosition());
         }
+
+        // Stop all motion;
+        for (DcMotor motor : motors)
+            motor.setPower(0);
+
+        // Restore run mode to prior state
+        for (DcMotor motor : motors)
+            motor.setMode(mode);
+
+        Logger.message("moveDistance: target  %6.2f %6.2f  traveled %6.2f %6.2f",
+                (double)newLeftTarget / COUNTS_PER_INCH,
+                (double)newRightTarget / COUNTS_PER_INCH,
+                (double)leftFrontDrive.getCurrentPosition() / COUNTS_PER_INCH,
+                (double)rightFrontDrive.getCurrentPosition() / COUNTS_PER_INCH);
+        Logger.message("moveDistance: heading %6.2f", getOrientation());
     }
 
-    private double rampSpeed(double current, double start, double end, double speed) {
 
-        double power1 = ((current - start) / RAMP_DISTANCE) * Math.max(MIN_SPEED, speed - MIN_SPEED) + MIN_SPEED;
+    private double rampSpeed(double current, double start, double end, double speed, double elasped) {
+
+        double power1 = (elasped / RAMP_TIME) * Math.max(MIN_SPEED, speed - MIN_SPEED) + MIN_SPEED;
         double power2 = ((end - current) / RAMP_DISTANCE) * Math.max(MIN_SPEED, speed - MIN_SPEED)  + MIN_SPEED;
         return Math.min(Math.min(power1, power2), speed);
     }
