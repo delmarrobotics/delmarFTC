@@ -81,7 +81,8 @@ public class RoadRunnerTest extends LinearOpMode {
         //redRightRight();
         //redRightCenter();
         //redRightLeft();
-        yellowPixel();
+        //yellowPixel();
+        robot.moveDistance(0.3,30, 30, 5000);
     }
 
     public void blueRightRight(){

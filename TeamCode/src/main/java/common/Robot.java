@@ -40,11 +40,11 @@ public class Robot {
     static final double COUNTS_PER_INCH =
             (COUNTS_PER_MOTOR_REV * DRIVE_GEAR_REDUCTION) / (WHEEL_DIAMETER_INCHES * Math.PI);
 
-    static final double RAMP_DISTANCE = COUNTS_PER_INCH * 2; // ramp down distance in encoder counts
+    static final double RAMP_DISTANCE = COUNTS_PER_INCH * 5; // ramp down distance in encoder counts
     static final double RAMP_TIME = 1000;                    // ramp up time in milliseconds
 
     public final double MIN_SPEED        = 0.25;
-    public final double MAX_SPEED        = 0.70;
+    public final double MAX_SPEED        = 1;
     private static final double MAX_ROTATE_SPEED = 0.50;
 
     // Color sensor
@@ -348,7 +348,7 @@ public class Robot {
             double scale = .0015;
             double leftFrontAdjust = (maxPos - leftFrontPos) * scale;
             double rightFrontAdjust = (maxPos - rightFrontPos) * scale;
-            double leftBackAdjust = (maxPos = leftBackPos) * scale;
+            double leftBackAdjust = (maxPos - leftBackPos) * scale;
             double rightBackAdjust = (maxPos - rightBackPos) * scale;
 
             leftFrontDrive.setPower(rampPower + leftFrontAdjust);
@@ -365,11 +365,15 @@ public class Robot {
                 break;
             }
 
-            Logger.message("moveDistance:  power: %4.2f %4.2f %4.2f %4.2f     position: %6d %6d %6d %6d",
+            Logger.message("moveDistance:  power: %4.2f %4.2f %4.2f %4.2f    adjust: %4.2f %4.2f %4.2f %4.2f     position: %6d %6d %6d %6d",
                     leftFrontDrive.getPower(),
                     rightFrontDrive.getPower(),
                     leftBackDrive.getPower(),
                     rightBackDrive.getPower(),
+                    leftFrontAdjust,
+                    rightFrontAdjust,
+                    leftBackAdjust,
+                    rightBackAdjust,
                     leftFrontDrive.getCurrentPosition(),
                     rightFrontDrive.getCurrentPosition(),
                     leftBackDrive.getCurrentPosition(),
@@ -384,11 +388,13 @@ public class Robot {
         for (DcMotor motor : motors)
             motor.setMode(mode);
 
-        Logger.message("moveDistance: target  %6.2f %6.2f  traveled %6.2f %6.2f",
+        Logger.message("moveDistance: target  %6.2f %6.2f  traveled %6.2f %6.2f %6.2f %6.2f",
                 (double)newLeftTarget / COUNTS_PER_INCH,
                 (double)newRightTarget / COUNTS_PER_INCH,
                 (double)leftFrontDrive.getCurrentPosition() / COUNTS_PER_INCH,
-                (double)rightFrontDrive.getCurrentPosition() / COUNTS_PER_INCH);
+                (double)rightFrontDrive.getCurrentPosition() / COUNTS_PER_INCH,
+                (double)leftBackDrive.getCurrentPosition() / COUNTS_PER_INCH,
+                (double)rightBackDrive.getCurrentPosition() / COUNTS_PER_INCH);
         Logger.message("moveDistance: heading %6.2f", getOrientation());
     }
 
