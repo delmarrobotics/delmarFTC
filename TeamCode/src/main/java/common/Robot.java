@@ -352,10 +352,12 @@ public class Robot {
                 rampPower = Math.min(Math.min(ramUp, ramDown), speed);
             } else {
                 // Backward
-                maxPos = Math.min(Math.max(Math.max(leftFrontPos, rightFrontPos), leftBackPos), rightBackPos);
+                maxPos = Math.min(Math.min(Math.min(leftFrontPos, rightFrontPos), leftBackPos), rightBackPos);
                 double ramUp = (runtime.milliseconds() / RAMP_TIME) * Math.min(speed + MIN_SPEED, 0) - MIN_SPEED;
                 double ramDown = (Math.pow((newLeftTarget - maxPos), 2) / Math.pow(RAMP_DISTANCE, 2)) * Math.min(speed - MIN_SPEED, 0) - MIN_SPEED;
-                rampPower = Math.min(Math.min(ramUp, ramDown), speed);
+                rampPower = Math.max(Math.max(ramUp, ramDown), speed);
+
+                Logger.message("%6.0f  %6.0f  %6.0f  %6.0f  %6.0f  %6.0f  %6.0f  %6.0f  %6.0f", maxPos, leftFrontPos, rightFrontPos, leftBackPos, rightBackPos, ramUp, ramDown, speed, rampPower);
             }
 
             double scale = .0015;
@@ -378,7 +380,7 @@ public class Robot {
                 break;
             }
 
-            Logger.message("moveDistance:  power: %4.2f %4.2f %4.2f %4.2f    adjust: %4.2f %4.2f %4.2f %4.2f     position: %6d %6d %6d %6d",
+            Logger.message("moveDistance: power: %4.2f %4.2f %4.2f %4.2f    adjust: %4.2f %4.2f %4.2f %4.2f     position: %6d %6d %6d %6d",
                     leftFrontDrive.getPower(),
                     rightFrontDrive.getPower(),
                     leftBackDrive.getPower(),
