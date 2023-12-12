@@ -86,19 +86,19 @@ public class RoadRunnerTest extends LinearOpMode {
 
     public void blueRightRight(){
 
-        drive.forward(30);
+        robot.forward(30);
         robot.turn(-88);
-        drive.forward(6.5);
+        robot.forward(6.5);
         sleep(500);
         robot.dropPurplePixel();
-        drive.forward(6.5);
+        robot.forward(6.5);
         robot.turn(95);
-        drive.forward(24);
+        robot.forward(24);
         robot.turn(95);
-        drive.forward(90);
+        robot.forward(90);
         double heading = robot.getOrientation();
         Logger.message("forward heading %6.2f", heading);
-        drive.strafeLeft(40);
+        robot.strafeLeft(40);
         auto.yellowPixel();
     }
 

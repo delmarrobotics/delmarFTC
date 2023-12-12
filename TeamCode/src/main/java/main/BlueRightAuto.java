@@ -15,6 +15,7 @@ import org.firstinspires.ftc.teamcode.drive.SampleMecanumDrive;
 import org.firstinspires.ftc.teamcode.trajectorysequence.TrajectorySequence;
 
 import common.Auto;
+import common.Logger;
 import common.Robot;
 
 @Autonomous(name="Blue Right Start", group="Main")
@@ -88,23 +89,31 @@ public class BlueRightAuto extends LinearOpMode {
         objectPosition = auto.findTeamElement();
 
         if (objectPosition == Auto.POSITION.left) {
-            drive.followTrajectorySequence(left1);
-            auto.purplePixel(1, 0);
-            drive.followTrajectorySequence(left2);
-            auto.yellowPixel();
 
         } else if (objectPosition == Auto.POSITION.right) {
-            drive.followTrajectorySequence(right1);
-            auto.purplePixel(1, 0);
-            drive.followTrajectorySequence(right2);
-            //auto.yellowPixel();
+            robot.forward(30);
+            robot.turn(-88);
+            robot.forward(6.5);
+            sleep(500);
+            robot.dropPurplePixel();
+            robot.forward(6.5);
+            robot.turn(95);
+            robot.forward(24);
+            robot.turn(95);
+            robot.forward(90);
+            robot.strafeLeft(40);
 
         } else if (objectPosition == Auto.POSITION.center) {
-            drive.followTrajectorySequence(center1);
-            auto.purplePixel(1, 0);
-            drive.followTrajectorySequence(center2);
-            auto.yellowPixel();
+            robot.forward(35);
+            sleep(500);
+            robot.dropPurplePixel();
+            robot.forward(21);
+            robot.turn(95);
+            robot.forward(77);
+            robot.strafeLeft(40);
         }
+
+        auto.yellowPixel();
 
         telemetry.addData("Run Time", runtime.toString());
     }

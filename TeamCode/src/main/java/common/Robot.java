@@ -586,5 +586,9 @@ public class Robot {
         drive.back(distance);
     }
 
-} // end of class
+    public void strafeLeft (double distance) {
+        drive.strafeLeft(distance);
+    }
+
+    } // end of class
 
