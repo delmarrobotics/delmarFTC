@@ -35,7 +35,9 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
 import org.firstinspires.ftc.teamcode.trajectorysequence.TrajectorySequence;
 
+import common.Auto;
 import common.Drive;
+import common.Logger;
 import common.Robot;
 
 
@@ -50,6 +52,7 @@ public class RoadRunnerTest extends LinearOpMode {
     // Declare OpMode members.
     public Robot robot = null;
     private Drive drive = null;
+    Auto auto;
 
     @Override
     public void runOpMode() {
@@ -61,6 +64,9 @@ public class RoadRunnerTest extends LinearOpMode {
         robot.init();
 
         drive = new Drive(hardwareMap);
+        drive.setRobot(robot);
+
+        auto = new Auto(this, robot, drive);
 
         //while (! robot.vision.cameraReady())
        //     sleep(100);
@@ -69,14 +75,90 @@ public class RoadRunnerTest extends LinearOpMode {
         // Wait for the game to start (driver presses PLAY)
         waitForStart();
 
-        distanceTest();
+        //robot.moveToColor(Robot.COLOR.RED, 1, 0, 0.25, 2000);
+        //turnTest();
+       //blueRightRight();
+        //redRightRight();
+        //redRightCenter();
+        //redRightLeft();
+        yellowPixel();
+    }
 
-        /*
-        drive.forward(31.25);
+    public void blueRightRight(){
+
+        drive.forward(30);
+        robot.turn(-88);
+        drive.forward(6.5);
         sleep(500);
         robot.dropPurplePixel();
-        drive.forward(23.5);
-        */
+        drive.forward(6.5);
+        robot.turn(95);
+        drive.forward(24);
+        robot.turn(95);
+        drive.forward(90);
+        double heading = robot.getOrientation();
+        Logger.message("forward heading %6.2f", heading);
+        drive.strafeLeft(40);
+        auto.yellowPixel();
+    }
+
+    public void redRightRight(){
+
+        auto.setColor(Auto.COLOR.RED);
+        robot.forward(30);
+        robot.turn(-90);
+        robot.forward(6.5);
+        sleep(500);
+        robot.dropPurplePixel();
+        robot.forward(15);
+        double heading = robot.getOrientation();
+        Logger.message("forward heading %6.2f", heading);
+        auto.yellowPixel();
+    }
+
+    public void redRightCenter() {
+        auto.setColor(Auto.COLOR.RED);
+        drive.forward(34);
+        sleep(500);
+        robot.dropPurplePixel();
+        drive.back(12);
+        robot.turn(-90);
+        drive.forward(21.5);
+        double heading = robot.getOrientation();
+        Logger.message("forward heading %6.2f", heading);
+        auto.yellowPixel();
+
+    }
+
+    public void redRightLeft() {
+        auto.setColor(Auto.COLOR.RED);
+        robot.forward(27);
+        robot.turn(90);
+        robot.forward(7);
+        sleep(500);
+        robot.dropPurplePixel();
+        robot.back(12);
+        robot.turn(90);
+        robot.turn(90);
+        robot.forward(15);
+        auto.yellowPixel();
+
+    }
+
+    public void yellowPixel(){
+        auto.setColor(Auto.COLOR.RED);
+        auto.yellowPixel();
+
+    }
+
+
+
+
+    public void turnTest () {
+        for (int i=0; i < 4; i++) {
+            robot.turn(-90);
+            sleep(1000);
+        }
     }
 
     public void distanceTest () {
@@ -84,9 +166,9 @@ public class RoadRunnerTest extends LinearOpMode {
         for (distance = 12; distance <= 36; distance += 12) {
             drive.forward(distance);
             drive.back(distance);
-            drive.turn(Math.toRadians(90));
-            drive.strafeLeft(distance);
-            drive.strafeRight(distance);
+//            drive.turn(Math.toRadians(90));
+  //          drive.strafeLeft(distance);
+    //        drive.strafeRight(distance);
         }
     }
 }

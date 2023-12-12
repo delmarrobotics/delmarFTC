@@ -41,10 +41,10 @@ public class BlueRightAuto extends LinearOpMode {
         TrajectorySequence left1 = drive.trajectorySequenceBuilder(new Pose2d(0, 0, 0))
                 .forward(27.25)
                 .turn(Math.toRadians(-90))
-                .back(15.75)
+                .forward(8)
                 .build();
         TrajectorySequence left2 = drive.trajectorySequenceBuilder(left1.end())
-                .forward(15.75)
+                .back(8)
                 .turn(Math.toRadians(90))
                 .forward(23.5)
                 .turn(Math.toRadians(90))
@@ -53,17 +53,17 @@ public class BlueRightAuto extends LinearOpMode {
                 .build();
 
         TrajectorySequence right1 = drive.trajectorySequenceBuilder(new Pose2d(0, 0, 0))
-                .forward(27.25)
-                .turn(Math.toRadians(-90))
-                .forward(8)
+                .forward(30)
+                .turn(Math.toRadians(-110))
+                .forward(6.5)
                 .build();
         TrajectorySequence right2 = drive.trajectorySequenceBuilder(right1.end())
-                .back(8)
-                .turn(Math.toRadians(90))
+                .forward(6.5)
+                .turn(Math.toRadians(110))
                 .forward(23.5)
-                .turn(Math.toRadians(90))
-                .forward(70.5)
-                .strafeLeft(17.5)
+                .turn(Math.toRadians(110))
+                .forward(90)
+                .strafeLeft(29.5)
                 .build();
 
         TrajectorySequence center1 = drive.trajectorySequenceBuilder(new Pose2d(0, 0, 0))
@@ -97,7 +97,7 @@ public class BlueRightAuto extends LinearOpMode {
             drive.followTrajectorySequence(right1);
             auto.purplePixel(1, 0);
             drive.followTrajectorySequence(right2);
-            auto.yellowPixel();
+            //auto.yellowPixel();
 
         } else if (objectPosition == Auto.POSITION.center) {
             drive.followTrajectorySequence(center1);

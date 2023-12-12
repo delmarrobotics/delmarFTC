@@ -46,7 +46,7 @@ public class Robot {
     private static final double MAX_ROTATE_SPEED = 0.50;
 
     // Color sensor
-    static final float COLOR_SENSOR_GAIN = 1.75F;
+    static final float COLOR_SENSOR_GAIN = 2.2F;
     public enum COLOR { RED, BLUE}
 
     // drone launcher servo position
@@ -89,6 +89,7 @@ public class Robot {
 
     public HangingArm hangingArm = null;
     public PixelArm pixelArm = null;
+    private Drive drive = null;
 
     public Vision vision = null;
 
@@ -112,6 +113,8 @@ public class Robot {
         hangingArm = new HangingArm(opMode);
         pixelArm = new PixelArm(opMode);
         vision = new Vision(opMode);
+        drive = new Drive(opMode.hardwareMap);
+        drive.setRobot(this);
 
         initDriveTrain();
 
@@ -281,7 +284,7 @@ public class Robot {
         List<Double> wheelPositions = new ArrayList<>();
         for (DcMotor motor : motors) {
             int position = motor.getCurrentPosition();
-            wheelPositions.add((double)position * COUNTS_PER_INCH);
+            wheelPositions.add((double)position / COUNTS_PER_INCH);
         }
         return wheelPositions;
     }
@@ -428,7 +431,8 @@ public class Robot {
                     found = true;
                 }
             } else if (color == COLOR.RED) {
-                if ((hue >= 30 && hue <= 90) && saturation >= .5) {
+                //Logger.message("hue %f, saturation %f", hue, saturation);
+                if ((hue >= 0 && hue <= 90) && saturation >= .5) {
                     Logger.message("red line found");
                     found = true;
                 }
@@ -495,9 +499,9 @@ public class Robot {
 
     public void dropYellowPixel() {
         pixelArm.positionArm(PixelArm.ARM_POSITION.LOW);
-        opMode.sleep(1000);
-        dropPixel();
         opMode.sleep(1500);
+        dropPixel();
+        opMode.sleep(2000);
         pixelArm.positionArm(PixelArm.ARM_POSITION.HOME);
     }
 
@@ -534,13 +538,51 @@ public class Robot {
      * @return orientation in a range of -180 to 180
      */
     public double getOrientation(){
-
         YawPitchRollAngles orientation = imu.getRobotYawPitchRollAngles();
-        Logger.message("Yaw   (Z) %.2f Deg. (Heading)", orientation.getYaw(AngleUnit.DEGREES));
-        Logger.message("Pitch (X) %.2f Deg.", orientation.getPitch(AngleUnit.DEGREES));
-        Logger.message("Roll  (Y) %.2f Deg.\n", orientation.getRoll(AngleUnit.DEGREES));
+        //Logger.message("Yaw   (Z) %6.2f Deg. (Heading)", orientation.getYaw(AngleUnit.DEGREES));
+        //Logger.message("Pitch (X) %6.2f Deg.", orientation.getPitch(AngleUnit.DEGREES));
+        //Logger.message("Roll  (Y) %6.2f Deg.\n", orientation.getRoll(AngleUnit.DEGREES));
 
         return orientation.getYaw(AngleUnit.DEGREES);
+    }
+
+    public void resetOrientation() {
+        imu.resetYaw();
+    }
+
+    public void turn(double degrees) {
+        double start = getOrientation();
+        double target;
+
+        imu.resetYaw();
+        if (degrees > 0) {
+            moveRobot(0, 0, 1, 0.3);
+            while (opMode.opModeIsActive()) {
+                double current = getOrientation();
+                //Logger.message("degrees %6.1f  current %6.2f", degrees, current);
+                if (current >= degrees-1)
+                    break;
+            }
+        } else if (degrees < 0) {
+            moveRobot(0, 0, -1, 0.3);
+            while (opMode.opModeIsActive()) {
+                double current = getOrientation();
+                //Logger.message("degrees %6.1f  current %6.2f", degrees, current);
+                if (current <= degrees+1)
+                    break;
+            }
+        }
+        stopRobot();
+
+        Logger.message("degrees %6.1f  current %6.2f", degrees, getOrientation());
+    }
+
+    public void forward (double distance) {
+        drive.forward(distance);
+    }
+
+    public void back (double distance) {
+        drive.back(distance);
     }
 
 } // end of class

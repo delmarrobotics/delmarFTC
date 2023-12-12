@@ -14,7 +14,7 @@ public class Auto {
     public enum POSITION { left, center, right }
     public enum COLOR { RED, BLUE }
 
-    POSITION objectPosition = POSITION.center;  //ToDo remove, for testing
+    POSITION objectPosition = POSITION.left;  //ToDo remove, for testing
     COLOR color;
 
     LinearOpMode opMode;
@@ -85,30 +85,24 @@ public class Auto {
                 double range = robot.vision.aprilTagY();
                 double yaw = robot.vision.aprilTagYaw();
                 Logger.message("aprilTag: x %f  range %f  yaw %f", x, range, yaw);
-
-                TrajectorySequence traj1 = drive.trajectorySequenceBuilder(new Pose2d())
-                        .turn(Math.toRadians(yaw))
-                        //.forward(range-2)
-                        .build();
-                Logger.message("robot orientation %3.1f", robot.getOrientation());
-                drive.followTrajectorySequence(traj1);
+                robot.turn(yaw);
                 Logger.message("robot orientation %3.1f", robot.getOrientation());
 
                 if (color == COLOR.BLUE)
-                    robot.moveToColor(Robot.COLOR.BLUE, 1, 0, 0.2,3000);
+                    robot.moveToColor(Robot.COLOR.BLUE, 1, 0, 0.25, 2000);
                 else if (color == COLOR.RED)
-                    robot.moveToColor(Robot.COLOR.RED, 1, 0, 0.2,3000);
+                    robot.moveToColor(Robot.COLOR.RED, 1, 0, 0.25, 2000);
 
                 int id = robot.vision.aprilTagID();
                 if (id == Vision.BLUE_LEFT_TAG || id == Vision.RED_LEFT_TAG) {
                     if (objectPosition == POSITION.left) {
-                        strafe = x - 6;
+                        strafe = x - 7;
                         Logger.message("left tag, left position, strafe %f", strafe);
                     } else if (objectPosition == POSITION.center) {
-                        strafe = x;
+                        strafe = x -5;
                         Logger.message("left tag, center position, strafe %f", strafe);
                     } else {
-                        strafe = 6 + x;
+                        strafe = 9 + x;
                         Logger.message("left tag, right position, strafe %f", strafe);
                     }
                 } else if (id == Vision.BLUE_CENTER_TAG || id == Vision.RED_CENTER_TAG) {
@@ -136,21 +130,23 @@ public class Auto {
                     }
                 }
 
-                Trajectory traj2;
+                TrajectorySequence traj2;
                 if (strafe > 0) {
-                    traj2 = drive.trajectoryBuilder(new Pose2d())
+                    traj2 = drive.trajectorySequenceBuilder(new Pose2d())
                             .strafeRight(strafe)
+                            .forward(8)
                             .build();
-                    drive.followTrajectory(traj2);
+                    drive.followTrajectorySequence(traj2);
                 }
                 else if (strafe < 0 ) {
-                    traj2 = drive.trajectoryBuilder(new Pose2d())
+                    traj2 = drive.trajectorySequenceBuilder(new Pose2d())
                             .strafeLeft(-strafe)
+                            .forward(8)
                             .build();
-                    drive.followTrajectory(traj2);
+                    drive.followTrajectorySequence(traj2);
                 }
 
-                // robot.dropYellowPixel();  //ToDo uncomment
+                //robot.dropYellowPixel();  //ToDo uncomment
                 break;
 
             } else {

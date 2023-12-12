@@ -84,23 +84,30 @@ public class BlueLeftAuto extends LinearOpMode {
         objectPosition = auto.findTeamElement();
 
         if (objectPosition == Auto.POSITION.left) {
-            drive.followTrajectorySequence(left1);
-            auto.purplePixel(1, 0);
-            drive.followTrajectorySequence(left2);
-            auto.yellowPixel();
+            robot.forward(34);
+            robot.turn(90);
+            robot.forward(6.5);
+            sleep(500);
+            robot.dropPurplePixel();
+            robot.forward(15);
 
         } else if (objectPosition == Auto.POSITION.right) {
-            drive.followTrajectorySequence(right1);
-            auto.purplePixel(1, 0);
-            drive.followTrajectorySequence(right2);
-            auto.yellowPixel();
+            robot.forward(28);
+            robot.turn(90);
+            robot.back(15);
+            robot.dropPurplePixel();
+            robot.forward(30);
 
         } else if (objectPosition == Auto.POSITION.center) {
-            drive.followTrajectorySequence(center1);
-            auto.purplePixel(1, 0);
-            drive.followTrajectorySequence(center2);
-            auto.yellowPixel();
+            robot.forward(35);
+            sleep(500);
+            robot.dropPurplePixel();
+            robot.back(12);
+            robot.turn(90);
+            robot.forward(21.5);
         }
+
+        auto.yellowPixel();
 
         telemetry.addData("Run Time", runtime.toString());
     }

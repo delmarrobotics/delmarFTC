@@ -14,13 +14,19 @@ import java.util.List;
 
 public class Drive extends SampleMecanumDrive {
 
+    Robot robot;
+
     public Drive(HardwareMap hardwareMap) {
         super(hardwareMap);
     }
 
+    public void setRobot (Robot robot) {
+        this.robot = robot;
+    }
+
     public void forward (double distance) {
 
-        List<Double> before = getWheelPositions();
+        List<Double> before = robot.getWheelPositions();
         double beforeHeading = super.getRawExternalHeading();
 
         Trajectory trajectory = super.trajectoryBuilder(new Pose2d())
@@ -28,11 +34,11 @@ public class Drive extends SampleMecanumDrive {
                 .build();
         super.followTrajectory(trajectory);
 
-        List<Double> after = getWheelPositions();
+        List<Double> after = robot.getWheelPositions();
 
         Logger.message("distance %6.2f  heading %6.2f  leftFront %6.2f  leftRear %6.2f  rightRear %6.2f  rightFront %6.2f",
                 distance,
-                super.getRawExternalHeading() - beforeHeading,
+                Math.toDegrees(super.getRawExternalHeading() - beforeHeading),
                 after.get(0) - before.get(0),
                 after.get(1) - before.get(1),
                 after.get(2) - before.get(2),
@@ -41,7 +47,7 @@ public class Drive extends SampleMecanumDrive {
 
     public void back (double distance) {
 
-        List<Double> before = getWheelPositions();
+        List<Double> before = robot.getWheelPositions();
         double beforeHeading = super.getRawExternalHeading();
 
         Trajectory trajectory = super.trajectoryBuilder(new Pose2d())
@@ -49,7 +55,7 @@ public class Drive extends SampleMecanumDrive {
                 .build();
         super.followTrajectory(trajectory);
 
-        List<Double> after = getWheelPositions();
+        List<Double> after = robot.getWheelPositions();
 
         Logger.message("distance %6.2f  heading %6.2f  leftFront %6.2f  leftRear %6.2f  rightRear %6.2f  rightFront %6.2f",
                 distance,
@@ -62,7 +68,7 @@ public class Drive extends SampleMecanumDrive {
 
     public void strafeLeft (double distance) {
 
-        List<Double> before = getWheelPositions();
+        List<Double> before = robot.getWheelPositions();
         double beforeHeading = super.getRawExternalHeading();
 
         Trajectory trajectory = super.trajectoryBuilder(new Pose2d())
@@ -70,7 +76,7 @@ public class Drive extends SampleMecanumDrive {
                 .build();
         super.followTrajectory(trajectory);
 
-        List<Double> after = getWheelPositions();
+        List<Double> after = robot.getWheelPositions();
 
         Logger.message("distance %6.2f  heading %6.2f  leftFront %6.2f  leftRear %6.2f  rightRear %6.2f  rightFront %6.2f",
                 distance,
@@ -83,7 +89,7 @@ public class Drive extends SampleMecanumDrive {
 
     public void strafeRight (double distance) {
 
-        List<Double> before = getWheelPositions();
+        List<Double> before = robot.getWheelPositions();
         double beforeHeading = super.getRawExternalHeading();
 
         Trajectory trajectory = super.trajectoryBuilder(new Pose2d())
@@ -91,7 +97,7 @@ public class Drive extends SampleMecanumDrive {
                 .build();
         super.followTrajectory(trajectory);
 
-        List<Double> after = getWheelPositions();
+        List<Double> after = robot.getWheelPositions();
 
         Logger.message("distance %6.2f  heading %6.2f  leftFront %6.2f  leftRear %6.2f  rightRear %6.2f  rightFront %6.2f",
                 distance,
@@ -104,11 +110,12 @@ public class Drive extends SampleMecanumDrive {
 
     public void turn(double angle) {
 
-        double heading = super.getRawExternalHeading();
+        //double heading = super.getRawExternalHeading();
+        double heading = robot.getOrientation();
         super.turn(angle);
         Logger.message("angle %6.2f  heading %6.2f",
-                angle,
-                super.getRawExternalHeading() - heading);
+                Math.toDegrees(angle),
+                robot.getOrientation() - heading);
     }
 
 }
