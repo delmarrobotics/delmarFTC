@@ -340,27 +340,22 @@ public class Robot {
 
                 double rampPower = rampSpeed(leftFrontDrive.getCurrentPosition(), leftStart, newLeftTarget, speed);
 
-                leftFrontDrive.setPower(rampPower);
-                rightFrontDrive.setPower(rampPower);
-                leftBackDrive.setPower(rampPower);
-                rightBackDrive.setPower(rampPower);
+                double leftFrontPos = leftFrontDrive.getCurrentPosition();
+                double rightFrontPos = rightFrontDrive.getCurrentPosition();
+                double leftBackPos = leftBackDrive.getCurrentPosition();
+                double rightBackPos = rightBackDrive.getCurrentPosition();
+                double maxPos = Math.max(Math.max(Math.max(leftFrontPos, rightFrontPos), leftBackPos), rightBackPos);
 
-                /*
-                Logger.message("power: %4.2f %4.2f %4.2f %4.2f %4.2f     position: %6d %6d %6d %6d     busy: %b  %b  %b  %b",
-                        rampPower,
-                        leftFrontDrive.getPower(),
-                        rightFrontDrive.getPower(),
-                        leftBackDrive.getPower(),
-                        rightBackDrive.getPower(),
-                        leftFrontDrive.getCurrentPosition(),
-                        rightFrontDrive.getCurrentPosition(),
-                        leftBackDrive.getCurrentPosition(),
-                        rightBackDrive.getCurrentPosition(),
-                        leftFrontDrive.isBusy(),
-                        rightFrontDrive.isBusy(),
-                        leftBackDrive.isBusy(),
-                        rightBackDrive.isBusy());
-                 */
+                double scale = .0015;
+                double leftFrontScale = (maxPos - leftFrontPos) * scale;
+                double rightFrontScale = (maxPos - rightFrontPos) * scale;
+                double leftBackScale = (maxPos = leftBackPos) * scale;
+                double rightBackScale = (maxPos - rightBackPos) * scale;
+
+                leftFrontDrive.setPower(rampPower * leftFrontScale);
+                rightFrontDrive.setPower(rampPower * rightFrontScale);
+                leftBackDrive.setPower(rampPower * leftBackScale);
+                rightBackDrive.setPower(rampPower * rightBackScale);
 
                 if (! leftFrontDrive.isBusy())
                     break;
@@ -373,6 +368,20 @@ public class Robot {
                     break;
                 }
             }
+
+            Logger.message("power: %4.2f %4.2f %4.2f %4.2f     position: %6d %6d %6d %6d     busy: %b  %b  %b  %b",
+                    leftFrontDrive.getPower(),
+                    rightFrontDrive.getPower(),
+                    leftBackDrive.getPower(),
+                    rightBackDrive.getPower(),
+                    leftFrontDrive.getCurrentPosition(),
+                    rightFrontDrive.getCurrentPosition(),
+                    leftBackDrive.getCurrentPosition(),
+                    rightBackDrive.getCurrentPosition(),
+                    leftFrontDrive.isBusy(),
+                    rightFrontDrive.isBusy(),
+                    leftBackDrive.isBusy(),
+                    rightBackDrive.isBusy());
 
             // Stop all motion;
             for (DcMotor motor : motors)
