@@ -336,14 +336,27 @@ public class Robot {
         runtime.reset();
         while (opMode.opModeIsActive()) {
 
-            double rampPower = rampSpeed(leftFrontDrive.getCurrentPosition(), leftStart, newLeftTarget, speed, runtime.milliseconds());
-
             // Correct for drift
             double leftFrontPos = leftFrontDrive.getCurrentPosition();
             double rightFrontPos = rightFrontDrive.getCurrentPosition();
             double leftBackPos = leftBackDrive.getCurrentPosition();
             double rightBackPos = rightBackDrive.getCurrentPosition();
-            double maxPos = Math.max(Math.max(Math.max(leftFrontPos, rightFrontPos), leftBackPos), rightBackPos);
+            double rampPower;
+            double maxPos;
+
+            if (speed > 0) {
+                // Forward
+                maxPos = Math.max(Math.max(Math.max(leftFrontPos, rightFrontPos), leftBackPos), rightBackPos);
+                double ramUp = (runtime.milliseconds() / RAMP_TIME) * Math.max(speed - MIN_SPEED, 0) + MIN_SPEED;
+                double ramDown = (Math.pow((newLeftTarget - maxPos), 2) / Math.pow(RAMP_DISTANCE, 2)) * Math.max(speed - MIN_SPEED, 0) + MIN_SPEED;
+                rampPower = Math.min(Math.min(ramUp, ramDown), speed);
+            } else {
+                // Backward
+                maxPos = Math.min(Math.max(Math.max(leftFrontPos, rightFrontPos), leftBackPos), rightBackPos);
+                double ramUp = (runtime.milliseconds() / RAMP_TIME) * Math.min(speed + MIN_SPEED, 0) - MIN_SPEED;
+                double ramDown = (Math.pow((newLeftTarget - maxPos), 2) / Math.pow(RAMP_DISTANCE, 2)) * Math.min(speed - MIN_SPEED, 0) - MIN_SPEED;
+                rampPower = Math.min(Math.min(ramUp, ramDown), speed);
+            }
 
             double scale = .0015;
             double leftFrontAdjust = (maxPos - leftFrontPos) * scale;
