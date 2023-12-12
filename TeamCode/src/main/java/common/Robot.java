@@ -40,7 +40,7 @@ public class Robot {
     static final double COUNTS_PER_INCH =
             (COUNTS_PER_MOTOR_REV * DRIVE_GEAR_REDUCTION) / (WHEEL_DIAMETER_INCHES * Math.PI);
 
-    static final double RAMP_DISTANCE = COUNTS_PER_INCH * 5; // ramp down distance in encoder counts
+    static final double RAMP_DISTANCE = COUNTS_PER_INCH * 7; // ramp down distance in encoder counts
     static final double RAMP_TIME = 1000;                    // ramp up time in milliseconds
 
     public final double MIN_SPEED        = 0.25;
@@ -64,7 +64,7 @@ public class Robot {
     // Intake
     static final double INTAKE_HOME      = 0.32;
     static final double INTAKE_TARGET    = 0.98;
-    static final double SPINNER_SPEED    = 0.2;
+    public static final double SPINNER_SPEED    = 0.2;
 
     public boolean intakeUp         = true;
     public boolean intakeOn         = false;
@@ -79,7 +79,7 @@ public class Robot {
     private Servo   intakeRotate = null;
     private CRServo spinnerGray = null;
     private CRServo spinnerBlack = null;
-    private CRServo spinnerBucket = null;
+    public CRServo spinnerBucket = null;
 
     private NormalizedColorSensor colorSensor = null;
 
@@ -375,11 +375,11 @@ public class Robot {
                 if (! motor.isBusy())
                     break;;
 
-            if (runtime.milliseconds() >= timeout) {
+            if (timeout >0 && runtime.milliseconds() >= timeout) {
                 Logger.message("moveDistance: timed out");
                 break;
             }
-
+            /*
             Logger.message("moveDistance: power: %4.2f %4.2f %4.2f %4.2f    adjust: %4.2f %4.2f %4.2f %4.2f     position: %6d %6d %6d %6d",
                     leftFrontDrive.getPower(),
                     rightFrontDrive.getPower(),
@@ -393,6 +393,7 @@ public class Robot {
                     rightFrontDrive.getCurrentPosition(),
                     leftBackDrive.getCurrentPosition(),
                     rightBackDrive.getCurrentPosition());
+             */
         }
 
         // Stop all motion;
@@ -406,10 +407,10 @@ public class Robot {
         Logger.message("moveDistance: target  %6.2f %6.2f  traveled %6.2f %6.2f %6.2f %6.2f",
                 (double)newLeftTarget / COUNTS_PER_INCH,
                 (double)newRightTarget / COUNTS_PER_INCH,
-                (double)leftFrontDrive.getCurrentPosition() / COUNTS_PER_INCH,
-                (double)rightFrontDrive.getCurrentPosition() / COUNTS_PER_INCH,
-                (double)leftBackDrive.getCurrentPosition() / COUNTS_PER_INCH,
-                (double)rightBackDrive.getCurrentPosition() / COUNTS_PER_INCH);
+                (double)leftFrontDrive.getCurrentPosition() * COUNTS_PER_INCH,
+                (double)rightFrontDrive.getCurrentPosition() * COUNTS_PER_INCH,
+                (double)leftBackDrive.getCurrentPosition() * COUNTS_PER_INCH,
+                (double)rightBackDrive.getCurrentPosition() * COUNTS_PER_INCH);
         Logger.message("moveDistance: heading %6.2f", getOrientation());
     }
 
@@ -524,8 +525,11 @@ public class Robot {
     public void dropYellowPixel() {
         //pixelArm.positionArm(PixelArm.ARM_POSITION.LOW);
         //opMode.sleep(1500);
-        dropPixel();
-        opMode.sleep(2000);
+        //dropPixel();
+        spinnerBucket.setPower(-SPINNER_SPEED);
+        opMode.sleep(5000);
+        spinnerBucket.setPower(0);
+        opMode.sleep(1000);
         pixelArm.pixelWristMove(PixelArm.PIXEL_WRIST_HOME);
         pixelArm.positionArm(PixelArm.ARM_POSITION.HOME);
     }
@@ -584,7 +588,7 @@ public class Robot {
             moveRobot(0, 0, 1, 0.3);
             while (opMode.opModeIsActive()) {
                 double current = getOrientation();
-                //Logger.message("degrees %6.1f  current %6.2f", degrees, current);
+                Logger.message("turn: degrees %6.1f  current %6.2f", degrees, current);
                 if (current >= degrees-1)
                     break;
             }
@@ -592,18 +596,18 @@ public class Robot {
             moveRobot(0, 0, -1, 0.3);
             while (opMode.opModeIsActive()) {
                 double current = getOrientation();
-                //Logger.message("degrees %6.1f  current %6.2f", degrees, current);
+                Logger.message("turn: degrees %6.1f  current %6.2f", degrees, current);
                 if (current <= degrees+1)
                     break;
             }
         }
         stopRobot();
 
-        Logger.message("degrees %6.1f  current %6.2f", degrees, getOrientation());
+        Logger.message("turn: degrees %6.1f  current %6.2f", degrees, getOrientation());
     }
 
     public void forward (double distance) {
-        drive.forward(distance);
+        moveDistance(0.35, distance, distance, 0);
     }
 
     public void back (double distance) {

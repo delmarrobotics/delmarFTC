@@ -155,6 +155,8 @@ public class Auto {
 
                 robot.dropYellowPixel();
 
+                opMode.sleep(1000);
+
                 robot.back(3);
 
                 break;
