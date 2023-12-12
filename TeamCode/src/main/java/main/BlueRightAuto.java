@@ -89,6 +89,16 @@ public class BlueRightAuto extends LinearOpMode {
         objectPosition = auto.findTeamElement();
 
         if (objectPosition == Auto.POSITION.left) {
+            robot.forward(27);
+            robot.turn(-90);
+            robot.back(16);
+            sleep(500);
+            robot.dropPurplePixel();
+            robot.forward(16);
+            robot.turn(90);
+            robot.forward(24);
+            robot.forward(77);
+            robot.strafeLeft(40);
 
         } else if (objectPosition == Auto.POSITION.right) {
             robot.forward(30);
