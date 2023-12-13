@@ -77,13 +77,13 @@ public class RoadRunnerTest extends LinearOpMode {
 
         //robot.moveToColor(Robot.COLOR.RED, 1, 0, 0.25, 2000);
         //turnTest();
-        //blueRightRight();
+       //blueRightRight();
         //redRightRight();
         //redRightCenter();
         //redRightLeft();
         //yellowPixel();
-        //robot.moveDistance(0.35,30, 30, 10000);
-        redRightCenter();
+        //redRightCenter();
+        robot.moveDistance(Robot.DIRECTION.LEFT,.35,30, 0);
     }
 
     public void blueRightRight(){
@@ -128,7 +128,6 @@ public class RoadRunnerTest extends LinearOpMode {
         drive.forward(21.5);
         double heading = robot.getOrientation();
         Logger.message("forward heading %6.2f", heading);
-
         auto.yellowPixel();
 
     }

@@ -45,7 +45,7 @@ public class Robot {
     public final double MIN_SPEED        = 0.25;
     public final double MAX_SPEED        = 1;
     private static final double MAX_ROTATE_SPEED = 0.50;
-    private enum DIRECTION { FORWARD, BACK, LEFT, RIGHT }
+    public enum DIRECTION { FORWARD, BACK, LEFT, RIGHT }
 
     // Color sensor
     static final float COLOR_SENSOR_GAIN = 2.2F;
@@ -390,13 +390,13 @@ public class Robot {
         for (DcMotor motor : motors)
             motor.setMode(mode);
 
+        Logger.message("moveDistance: heading %6.2f", getOrientation());
         Logger.message("moveDistance: target  %6.2f  traveled %6.2f %6.2f %6.2f %6.2f",
                 (double)target / COUNTS_PER_INCH,
-                (double)leftFrontDrive.getCurrentPosition() * COUNTS_PER_INCH,
-                (double)rightFrontDrive.getCurrentPosition() * COUNTS_PER_INCH,
-                (double)leftBackDrive.getCurrentPosition() * COUNTS_PER_INCH,
-                (double)rightBackDrive.getCurrentPosition() * COUNTS_PER_INCH);
-        Logger.message("moveDistance: heading %6.2f", getOrientation());
+                (double)leftFrontDrive.getCurrentPosition() / COUNTS_PER_INCH,
+                (double)rightFrontDrive.getCurrentPosition() / COUNTS_PER_INCH,
+                (double)leftBackDrive.getCurrentPosition() / COUNTS_PER_INCH,
+                (double)rightBackDrive.getCurrentPosition() / COUNTS_PER_INCH);
     }
 
     /**
@@ -433,7 +433,7 @@ public class Robot {
             rightFrontSign =  1;
             leftBackSign   =  1;
             rightBackSign  = -1;
-        } else {                    // right
+        } else {                // DIRECTION.RIGHT
             leftFrontSign  =  1;
             rightFrontSign = -1;
             leftBackSign   = -1;
@@ -498,7 +498,7 @@ public class Robot {
                 Logger.message("moveDistance: timed out");
                 break;
             }
-
+            /*
             Logger.message("moveDistance: power: %4.2f %4.2f %4.2f %4.2f    adjust: %4.2f %4.2f %4.2f %4.2f     position: %6d %6d %6d %6d",
                     leftFrontDrive.getPower(),
                     rightFrontDrive.getPower(),
@@ -511,7 +511,7 @@ public class Robot {
                     leftFrontDrive.getCurrentPosition(),
                     rightFrontDrive.getCurrentPosition(),
                     leftBackDrive.getCurrentPosition(),
-                    rightBackDrive.getCurrentPosition());
+                    rightBackDrive.getCurrentPosition()); */
         }
 
         // Stop all motion;
@@ -524,10 +524,10 @@ public class Robot {
 
         Logger.message("moveDistance: target  %6.2f  traveled %6.2f %6.2f %6.2f %6.2f",
                 (double)target / COUNTS_PER_INCH,
-                (double)leftFrontDrive.getCurrentPosition() * COUNTS_PER_INCH,
-                (double)rightFrontDrive.getCurrentPosition() * COUNTS_PER_INCH,
-                (double)leftBackDrive.getCurrentPosition() * COUNTS_PER_INCH,
-                (double)rightBackDrive.getCurrentPosition() * COUNTS_PER_INCH);
+                (double)leftFrontDrive.getCurrentPosition() / COUNTS_PER_INCH,
+                (double)rightFrontDrive.getCurrentPosition() / COUNTS_PER_INCH,
+                (double)leftBackDrive.getCurrentPosition() / COUNTS_PER_INCH,
+                (double)rightBackDrive.getCurrentPosition() / COUNTS_PER_INCH);
         Logger.message("moveDistance: heading %6.2f", getOrientation());
     }
     /*
@@ -720,19 +720,19 @@ public class Robot {
     }
 
     public void forward (double distance) {
-        moveDistance(0.35, distance, 0);
+        moveDistance(DIRECTION.FORWARD,.35, distance, 0);
     }
 
     public void back (double distance) {
-        drive.back(distance);
+        moveDistance(DIRECTION.BACK,.35, distance, 0);
     }
 
     public void strafeLeft (double distance) {
-        drive.strafeLeft(distance);
+        moveDistance(DIRECTION.LEFT,.35, distance, 0);
     }
 
     public void strafeRight (double distance) {
-        drive.strafeRight(distance);
+        moveDistance(DIRECTION.RIGHT,.35, distance, 0);
     }
 
 } // end of class

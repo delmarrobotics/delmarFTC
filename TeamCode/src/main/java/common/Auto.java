@@ -149,9 +149,17 @@ public class Auto {
                 opMode.sleep(1000);
 
                 robot.back(3);
-v                if (color == COLOR.BLUE)
+                if (id == Vision.BLUE_LEFT_TAG)
+                    robot.strafeRight(23);
 
-                    break;
+                else if (id == Vision.RED_LEFT_TAG)
+                    robot.strafeRight(23);
+
+
+
+
+
+                break;
 
             } else {
                 //Logger.message("Tag not found");
