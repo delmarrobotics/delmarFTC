@@ -53,7 +53,7 @@ public class Robot {
 
     // drone launcher servo position
     static final double DRONE_ANGLE_DOWN = 0.48;
-    static final double DRONE_ANGLE_UP   = 0.28;
+    static final double DRONE_ANGLE_UP   = 0.30;
     static final double DRONE_FIRE_DOWN  = 0.063;
     static final double DRONE_FIRE_UP    = 0.16;
 
@@ -522,7 +522,8 @@ public class Robot {
         for (DcMotor motor : motors)
             motor.setMode(mode);
 
-        Logger.message("moveDistance: target  %6.2f  traveled %6.2f %6.2f %6.2f %6.2f",
+        Logger.message("moveDistance: %s  target  %6.2f  traveled %6.2f %6.2f %6.2f %6.2f",
+                direction,
                 (double)target / COUNTS_PER_INCH,
                 (double)leftFrontDrive.getCurrentPosition() / COUNTS_PER_INCH,
                 (double)rightFrontDrive.getCurrentPosition() / COUNTS_PER_INCH,
@@ -728,6 +729,7 @@ public class Robot {
     }
 
     public void strafeLeft (double distance) {
+        distance = Math.sqrt(Math.pow(distance,2 ) + Math.pow(distance,2));
         moveDistance(DIRECTION.LEFT,.35, distance, 0);
     }
 
