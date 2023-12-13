@@ -131,7 +131,7 @@ public class Auto {
                         Logger.message("right tag, center position, strafe %f", strafe);
                     } else {
                         strafe = x - 6;
-                        Logger.message("reight tag, right position, strafe %f", strafe);
+                        Logger.message("right tag, right position, strafe %f", strafe);
                     }
                 }
 
