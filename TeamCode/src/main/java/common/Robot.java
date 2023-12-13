@@ -643,9 +643,8 @@ public class Robot {
         //opMode.sleep(1500);
         //dropPixel();
         spinnerBucket.setPower(-SPINNER_SPEED);
-        opMode.sleep(5000);
+        opMode.sleep(2500);
         spinnerBucket.setPower(0);
-        opMode.sleep(1000);
         pixelArm.pixelWristMove(PixelArm.PIXEL_WRIST_HOME);
         pixelArm.positionArm(PixelArm.ARM_POSITION.HOME);
     }

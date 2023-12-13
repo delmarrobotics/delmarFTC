@@ -92,6 +92,7 @@ public class Auto {
                 Logger.message("robot orientation %3.1f", robot.getOrientation());
 
                 robot.pixelArm.positionArm(PixelArm.ARM_POSITION.LOW);
+                robot.pixelArm.pixelWristMove(PixelArm.PIXEL_ARM_OUT_LOW);
 
                 if (color == COLOR.BLUE)
                     robot.moveToColor(Robot.COLOR.BLUE, 1, 0, 0.25, 2000);
@@ -144,15 +145,13 @@ public class Auto {
                     robot.forward(8);
                 }
 
-                robot.pixelArm.pixelWristMove(PixelArm.PIXEL_ARM_OUT_LOW);
-
                 robot.dropYellowPixel();
-
                 opMode.sleep(1000);
 
                 robot.back(3);
+v                if (color == COLOR.BLUE)
 
-                break;
+                    break;
 
             } else {
                 //Logger.message("Tag not found");
