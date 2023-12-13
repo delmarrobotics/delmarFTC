@@ -108,6 +108,11 @@ public class MainTeleOp extends LinearOpMode {
 
             } else if (gamepad1.x) {
                 while (gamepad1.x) sleep(100);
+
+            } else if (gamepad1.right_bumper) {
+                // drop the purple pixel, in case it wasn't drop during autonomous
+                robot.dropPurplePixel();
+                while (gamepad1.right_bumper) sleep(100);
             }
 
             telemetry.update();

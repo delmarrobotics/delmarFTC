@@ -31,16 +31,16 @@ import java.util.List;
 
 public class Robot {
 
-    // Calculate the COUNTS_PER_INCH for the drive train.
-    static final double COUNTS_PER_MOTOR_REV = 28;              // HD Hex Motor Encoder
-    static final double DRIVE_GEAR_REDUCTION = 20;              // Gearing
+    // Drive train
+    static final double COUNTS_PER_MOTOR_REV  = 28;              // HD Hex Motor Encoder
+    static final double DRIVE_GEAR_REDUCTION  = 20;              // Gearing
     static final double WHEEL_DIAMETER_INCHES = (96 / 25.4);     // 96 mm while converted to inches
     static final double COUNTS_PER_INCH =
             (COUNTS_PER_MOTOR_REV * DRIVE_GEAR_REDUCTION) / (WHEEL_DIAMETER_INCHES * Math.PI);
 
-    static final double RAMP_DISTANCE = COUNTS_PER_INCH * 7; // ramp down distance in encoder counts
-    static final double RAMP_TIME = 1000;                    // ramp up time in milliseconds
-    static final double RAMP_MIN_SPEED = 0.2;
+    static final double RAMP_DISTANCE   = COUNTS_PER_INCH * 8;   // ramp down distance in encoder counts
+    static final double RAMP_TIME       = 1000;                  // ramp up time in milliseconds
+    static final double RAMP_MIN_SPEED  = 0.2;
 
     public final double MIN_SPEED        = 0.25;
     public final double MAX_SPEED        = 1;
@@ -64,10 +64,10 @@ public class Robot {
     // Intake
     static final double INTAKE_HOME      = 0.32;
     static final double INTAKE_TARGET    = 0.98;
-    public static final double SPINNER_SPEED    = 0.2;
+    static final double SPINNER_SPEED    = 0.2;
 
-    public boolean intakeUp         = true;
-    public boolean intakeOn         = false;
+    public boolean intakeUp              = true;
+    public boolean intakeOn              = false;
 
     // Define Motor and Servo objects  (Make them private so they can't be accessed externally)
     public DcMotor leftFrontDrive = null;   //  Used to control the left front drive wheel

@@ -3,12 +3,9 @@
  */
 package common;
 
-import com.acmerobotics.roadrunner.geometry.Pose2d;
-import com.acmerobotics.roadrunner.trajectory.Trajectory;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
 import org.firstinspires.ftc.teamcode.drive.SampleMecanumDrive;
-import org.firstinspires.ftc.teamcode.trajectorysequence.TrajectorySequence;
 
 public class Auto {
     public enum POSITION { left, center, right }
@@ -60,14 +57,13 @@ public class Auto {
      * @param y direction to search, right 1, left -1
      */
     public void purplePixel (double x, double y) {
-        /*
+
         if (color == COLOR.RED)
             robot.moveToColor(Robot.COLOR.RED, x, y, 0.2,3000);
         else
             robot.moveToColor(Robot.COLOR.BLUE, x, y, 0.2,3000);
-        robot.moveDistance(robot.MIN_SPEED, 1.5, 1.5, 2000);
+        robot.moveDistance(Robot.DIRECTION.FORWARD, 1.5, 1.5, 2000);
 
-         */
         robot.dropPurplePixel();
     }
 
@@ -146,18 +142,21 @@ public class Auto {
                 }
 
                 robot.dropYellowPixel();
-                opMode.sleep(1000);
 
                 robot.back(3);
                 if (id == Vision.BLUE_LEFT_TAG)
-                    robot.strafeRight(23);
-
+                    robot.strafeLeft(23);
+                else if (id == Vision.BLUE_CENTER_TAG)
+                    robot.strafeLeft(30);
+                else if (id == Vision.BLUE_RIGHT_TAG)
+                    robot.strafeLeft(37);
                 else if (id == Vision.RED_LEFT_TAG)
+                    robot.strafeRight(37);
+                else if (id == Vision.RED_CENTER_TAG)
+                    robot.strafeRight(30);
+                else if (id == Vision.RED_RIGHT_TAG)
                     robot.strafeRight(23);
-
-
-
-
+                robot.forward(12);
 
                 break;
 

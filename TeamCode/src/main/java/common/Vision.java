@@ -240,6 +240,7 @@ public class Vision {
                 break;
             opMode.sleep(100);
         }
+        Logger.message("findTeamElement: search time %f", searchTime.milliseconds());
 
         currentRecognitions = tfod.getRecognitions();
         if (currentRecognitions.size() == 0)

@@ -13,7 +13,7 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 public class PixelArm {
 
     public enum ARM_POSITION { HOME, LOW, MID, HIGH }
-    private enum PIXEL_ARM_STATE { NONE, MOVE_HOME, MOVE_LOW, MOVE_MID, MOVE_HIGH, DROP_PIXEL }
+    private enum PIXEL_ARM_STATE { NONE, MOVE_HOME, MOVE_LOW, MOVE_MID, MOVE_HIGH, DROP_PIXEL, ARM_UP }
 
     static final double PIXEL_ELBOW_SPEED = .75;
     static final double PIXEL_ARM_SPEED = .5;
@@ -164,6 +164,12 @@ public class PixelArm {
             if (pixelArm.isBusy())
                 return;
             Logger.message("pixel arm power off");
+            pixelArm.setPower(0);
+            state = PIXEL_ARM_STATE.NONE;
+
+        } else if (state == PIXEL_ARM_STATE.ARM_UP) {
+            if (stateTime.milliseconds() < 10000)
+                return;
             pixelArm.setPower(0);
             state = PIXEL_ARM_STATE.NONE;
         }
