@@ -164,7 +164,7 @@ public class Auto {
             } else {
                 //Logger.message("Tag not found");
                 if (retry == 0) {
-                    robot.moveDistance(robot.MIN_SPEED, -3, -3, 2000);
+                    robot.moveDistance(robot.MIN_SPEED, -3, 2000);
                     retry += 1;
                 }
             }
