@@ -10,14 +10,12 @@ package common;
  *
  */
 
-import static org.firstinspires.ftc.teamcode.drive.DriveConstants.encoderTicksToInches;
 
 import android.graphics.Color;
 
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.DcMotor;
-import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.IMU;
 import com.qualcomm.robotcore.hardware.NormalizedColorSensor;
@@ -42,10 +40,12 @@ public class Robot {
 
     static final double RAMP_DISTANCE = COUNTS_PER_INCH * 7; // ramp down distance in encoder counts
     static final double RAMP_TIME = 1000;                    // ramp up time in milliseconds
+    static final double RAMP_MIN_SPEED = 0.2;
 
     public final double MIN_SPEED        = 0.25;
     public final double MAX_SPEED        = 1;
     private static final double MAX_ROTATE_SPEED = 0.50;
+    private enum DIRECTION { FORWARD, BACK, LEFT, RIGHT }
 
     // Color sensor
     static final float COLOR_SENSOR_GAIN = 2.2F;
@@ -300,13 +300,10 @@ public class Robot {
      *  3) Driver stops the OpMode running.
      *
      * @param speed motor speed (-1 to 1)
-     * @param leftInches  distance to move in inches, positive for forward, negative for backward
-     * @param rightInches distance to move in inches, positive for forward, negative for backward
-     * @param timeout timeout in milliseconds
+     * @param inches  distance to move in inches, positive for forward, negative for backward
+     * @param timeout timeout in milliseconds, 0 for no timeout
      */
-    public void moveDistance(double speed, double leftInches, double rightInches, double timeout) {
-        int newLeftTarget;
-        int newRightTarget;
+    public void moveDistance(double speed, double inches, double timeout) {
 
         // Ensure that the OpMode is still active
         if (! opMode.opModeIsActive())  return;
@@ -320,66 +317,56 @@ public class Robot {
         }
 
         // Determine new target position, and pass to motor controller
-        newLeftTarget = leftFrontDrive.getCurrentPosition() + (int) (leftInches * COUNTS_PER_INCH);
-        newRightTarget = rightFrontDrive.getCurrentPosition() + (int) (rightInches * COUNTS_PER_INCH);
-        leftFrontDrive.setTargetPosition(newLeftTarget);
-        rightFrontDrive.setTargetPosition(newRightTarget);
-        leftBackDrive.setTargetPosition(newLeftTarget);
-        rightBackDrive.setTargetPosition(newRightTarget);
+        int target = (int) (inches * COUNTS_PER_INCH);
+        leftFrontDrive.setTargetPosition(target);
+        rightFrontDrive.setTargetPosition(target);
+        leftBackDrive.setTargetPosition(target);
+        rightBackDrive.setTargetPosition(target);
 
         // Turn On RUN_TO_POSITION
         for (DcMotor motor : motors)
             motor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
 
         // Looping until we move the desired distance
-        int leftStart = leftFrontDrive.getCurrentPosition();
         runtime.reset();
-        while (opMode.opModeIsActive()) {
+        boolean moving = true;
+        while (opMode.opModeIsActive() && moving) {
 
             // Correct for drift
-            double leftFrontPos = leftFrontDrive.getCurrentPosition();
-            double rightFrontPos = rightFrontDrive.getCurrentPosition();
-            double leftBackPos = leftBackDrive.getCurrentPosition();
-            double rightBackPos = rightBackDrive.getCurrentPosition();
-            double rampPower;
-            double maxPos;
+            double leftFrontPos = Math.abs(leftFrontDrive.getCurrentPosition());
+            double rightFrontPos = Math.abs(rightFrontDrive.getCurrentPosition());
+            double leftBackPos = Math.abs(leftBackDrive.getCurrentPosition());
+            double rightBackPos = Math.abs(rightBackDrive.getCurrentPosition());
+            double maxPos = Math.max(Math.max(Math.max(leftFrontPos, rightFrontPos), leftBackPos), rightBackPos);
 
-            if (speed > 0) {
-                // Forward
-                maxPos = Math.max(Math.max(Math.max(leftFrontPos, rightFrontPos), leftBackPos), rightBackPos);
-                double ramUp = (runtime.milliseconds() / RAMP_TIME) * Math.max(speed - MIN_SPEED, 0) + MIN_SPEED;
-                double ramDown = (Math.pow((newLeftTarget - maxPos), 2) / Math.pow(RAMP_DISTANCE, 2)) * Math.max(speed - MIN_SPEED, 0) + MIN_SPEED;
-                rampPower = Math.min(Math.min(ramUp, ramDown), speed);
-            } else {
-                // Backward
-                maxPos = Math.min(Math.min(Math.min(leftFrontPos, rightFrontPos), leftBackPos), rightBackPos);
-                double ramUp = (runtime.milliseconds() / RAMP_TIME) * Math.min(speed + MIN_SPEED, 0) - MIN_SPEED;
-                double ramDown = (Math.pow((newLeftTarget - maxPos), 2) / Math.pow(RAMP_DISTANCE, 2)) * Math.min(speed - MIN_SPEED, 0) - MIN_SPEED;
-                rampPower = Math.max(Math.max(ramUp, ramDown), speed);
+            double speedRange = Math.max(Math.abs(speed) - RAMP_MIN_SPEED, 0);
+            double ramUp = (runtime.milliseconds() / RAMP_TIME) * speedRange + RAMP_MIN_SPEED;
+            double ramDown = (Math.pow((Math.abs(target) - maxPos), 2) / Math.pow(RAMP_DISTANCE, 2)) * speedRange + RAMP_MIN_SPEED;
+            double rampPower = Math.min(Math.min(ramUp, ramDown), speed);
 
-                Logger.message("%6.0f  %6.0f  %6.0f  %6.0f  %6.0f  %6.0f  %6.0f  %6.0f  %6.0f", maxPos, leftFrontPos, rightFrontPos, leftBackPos, rightBackPos, ramUp, ramDown, speed, rampPower);
-            }
-
+            double sign = 1;
+            if (speed < 0)
+                sign = -1; // Backward
             double scale = .0015;
             double leftFrontAdjust = (maxPos - leftFrontPos) * scale;
             double rightFrontAdjust = (maxPos - rightFrontPos) * scale;
             double leftBackAdjust = (maxPos - leftBackPos) * scale;
             double rightBackAdjust = (maxPos - rightBackPos) * scale;
 
-            leftFrontDrive.setPower(rampPower + leftFrontAdjust);
-            rightFrontDrive.setPower(rampPower + rightFrontAdjust);
-            leftBackDrive.setPower(rampPower + leftBackAdjust);
-            rightBackDrive.setPower(rampPower + rightBackAdjust);
+            leftFrontDrive.setPower((rampPower + leftFrontAdjust) * sign);
+            rightFrontDrive.setPower((rampPower + rightFrontAdjust) * sign);
+            leftBackDrive.setPower((rampPower + leftBackAdjust) * sign);
+            rightBackDrive.setPower((rampPower + rightBackAdjust) * sign);
 
             for (DcMotor motor : motors)
                 if (! motor.isBusy())
-                    break;;
+                    moving = false;
 
-            if (timeout >0 && runtime.milliseconds() >= timeout) {
+            if (timeout > 0 && runtime.milliseconds() >= timeout) {
                 Logger.message("moveDistance: timed out");
                 break;
             }
-            /*
+
             Logger.message("moveDistance: power: %4.2f %4.2f %4.2f %4.2f    adjust: %4.2f %4.2f %4.2f %4.2f     position: %6d %6d %6d %6d",
                     leftFrontDrive.getPower(),
                     rightFrontDrive.getPower(),
@@ -393,7 +380,6 @@ public class Robot {
                     rightFrontDrive.getCurrentPosition(),
                     leftBackDrive.getCurrentPosition(),
                     rightBackDrive.getCurrentPosition());
-             */
         }
 
         // Stop all motion;
@@ -404,9 +390,8 @@ public class Robot {
         for (DcMotor motor : motors)
             motor.setMode(mode);
 
-        Logger.message("moveDistance: target  %6.2f %6.2f  traveled %6.2f %6.2f %6.2f %6.2f",
-                (double)newLeftTarget / COUNTS_PER_INCH,
-                (double)newRightTarget / COUNTS_PER_INCH,
+        Logger.message("moveDistance: target  %6.2f  traveled %6.2f %6.2f %6.2f %6.2f",
+                (double)target / COUNTS_PER_INCH,
                 (double)leftFrontDrive.getCurrentPosition() * COUNTS_PER_INCH,
                 (double)rightFrontDrive.getCurrentPosition() * COUNTS_PER_INCH,
                 (double)leftBackDrive.getCurrentPosition() * COUNTS_PER_INCH,
@@ -414,13 +399,144 @@ public class Robot {
         Logger.message("moveDistance: heading %6.2f", getOrientation());
     }
 
+    /**
+     *  Method to perform a relative move, based on encoder counts.
+     *  Encoders are not reset as the move is based on the current position.
+     *  Move will stop if any of three conditions occur:
+     *  1) Move gets to the desired position
+     *  2) Move runs out of time
+     *  3) Driver stops the OpMode running.
+     *
+     * @param speed motor speed (-1 to 1)
+     * @param inches  distance to move in inches, positive for forward, negative for backward
+     * @param timeout timeout in milliseconds, 0 for no timeout
+     */
+    public void moveDistance(DIRECTION direction, double speed, double inches, double timeout) {
 
-    private double rampSpeed(double current, double start, double end, double speed, double elasped) {
+        int leftFrontSign;
+        int rightFrontSign;
+        int leftBackSign;
+        int rightBackSign;
 
-        double power1 = (elasped / RAMP_TIME) * Math.max(MIN_SPEED, speed - MIN_SPEED) + MIN_SPEED;
+        if (direction == DIRECTION.FORWARD) {
+            leftFrontSign  = 1;
+            rightFrontSign = 1;
+            leftBackSign   = 1;
+            rightBackSign  = 1;
+        } else if (direction == DIRECTION.BACK) {
+            leftFrontSign  = -1;
+            rightFrontSign = -1;
+            leftBackSign   = -1;
+            rightBackSign  = -1;
+        } else if (direction == DIRECTION.LEFT) {
+            leftFrontSign  = -1;
+            rightFrontSign =  1;
+            leftBackSign   =  1;
+            rightBackSign  = -1;
+        } else {                    // right
+            leftFrontSign  =  1;
+            rightFrontSign = -1;
+            leftBackSign   = -1;
+            rightBackSign  =  1;
+        }
+
+        // Ensure that the OpMode is still active
+        if (! opMode.opModeIsActive())  return;
+
+        Logger.message("moveDistance: heading %6.2f", getOrientation());
+
+        DcMotor.RunMode mode = leftFrontDrive.getMode();
+        for (DcMotor motor : motors) {
+            motor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+            motor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        }
+
+        // Determine new target position, and pass to motor controller
+        int target = (int) (inches * COUNTS_PER_INCH);
+        leftFrontDrive.setTargetPosition(target * leftFrontSign);
+        rightFrontDrive.setTargetPosition(target * rightFrontSign);
+        leftBackDrive.setTargetPosition(target * leftBackSign);
+        rightBackDrive.setTargetPosition(target * rightBackSign);
+
+        // Turn On RUN_TO_POSITION
+        for (DcMotor motor : motors)
+            motor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+
+        // Looping until we move the desired distance
+        runtime.reset();
+        boolean moving = true;
+        while (opMode.opModeIsActive() && moving) {
+
+            // Correct for drift
+            double leftFrontPos = Math.abs(leftFrontDrive.getCurrentPosition());
+            double rightFrontPos = Math.abs(rightFrontDrive.getCurrentPosition());
+            double leftBackPos = Math.abs(leftBackDrive.getCurrentPosition());
+            double rightBackPos = Math.abs(rightBackDrive.getCurrentPosition());
+            double maxPos = Math.max(Math.max(Math.max(leftFrontPos, rightFrontPos), leftBackPos), rightBackPos);
+
+            double speedRange = Math.max(Math.abs(speed) - RAMP_MIN_SPEED, 0);
+            double ramUp = (runtime.milliseconds() / RAMP_TIME) * speedRange + RAMP_MIN_SPEED;
+            double ramDown = (Math.pow((Math.abs(target) - maxPos), 2) / Math.pow(RAMP_DISTANCE, 2)) * speedRange + RAMP_MIN_SPEED;
+            double rampPower = Math.min(Math.min(ramUp, ramDown), speed);
+
+            double scale = .0015;
+            double leftFrontAdjust = (maxPos - leftFrontPos) * scale;
+            double rightFrontAdjust = (maxPos - rightFrontPos) * scale;
+            double leftBackAdjust = (maxPos - leftBackPos) * scale;
+            double rightBackAdjust = (maxPos - rightBackPos) * scale;
+
+            leftFrontDrive.setPower((rampPower + leftFrontAdjust) * leftFrontSign);
+            rightFrontDrive.setPower((rampPower + rightFrontAdjust) * rightFrontSign);
+            leftBackDrive.setPower((rampPower + leftBackAdjust) * leftBackSign);
+            rightBackDrive.setPower((rampPower + rightBackAdjust) * rightBackSign);
+
+            for (DcMotor motor : motors)
+                if (! motor.isBusy())
+                    moving = false;
+
+            if (timeout > 0 && runtime.milliseconds() >= timeout) {
+                Logger.message("moveDistance: timed out");
+                break;
+            }
+
+            Logger.message("moveDistance: power: %4.2f %4.2f %4.2f %4.2f    adjust: %4.2f %4.2f %4.2f %4.2f     position: %6d %6d %6d %6d",
+                    leftFrontDrive.getPower(),
+                    rightFrontDrive.getPower(),
+                    leftBackDrive.getPower(),
+                    rightBackDrive.getPower(),
+                    leftFrontAdjust,
+                    rightFrontAdjust,
+                    leftBackAdjust,
+                    rightBackAdjust,
+                    leftFrontDrive.getCurrentPosition(),
+                    rightFrontDrive.getCurrentPosition(),
+                    leftBackDrive.getCurrentPosition(),
+                    rightBackDrive.getCurrentPosition());
+        }
+
+        // Stop all motion;
+        for (DcMotor motor : motors)
+            motor.setPower(0);
+
+        // Restore run mode to prior state
+        for (DcMotor motor : motors)
+            motor.setMode(mode);
+
+        Logger.message("moveDistance: target  %6.2f  traveled %6.2f %6.2f %6.2f %6.2f",
+                (double)target / COUNTS_PER_INCH,
+                (double)leftFrontDrive.getCurrentPosition() * COUNTS_PER_INCH,
+                (double)rightFrontDrive.getCurrentPosition() * COUNTS_PER_INCH,
+                (double)leftBackDrive.getCurrentPosition() * COUNTS_PER_INCH,
+                (double)rightBackDrive.getCurrentPosition() * COUNTS_PER_INCH);
+        Logger.message("moveDistance: heading %6.2f", getOrientation());
+    }
+    /*
+    private double rampSpeed(double current, double start, double end, double speed, double elapsed) {
+
+        double power1 = (elapsed / RAMP_TIME) * Math.max(MIN_SPEED, speed - MIN_SPEED) + MIN_SPEED;
         double power2 = ((end - current) / RAMP_DISTANCE) * Math.max(MIN_SPEED, speed - MIN_SPEED)  + MIN_SPEED;
         return Math.min(Math.min(power1, power2), speed);
-    }
+    }*\
 
     /**
      * Move the robot until the specified color is detected.
@@ -580,8 +696,6 @@ public class Robot {
     }
 
     public void turn(double degrees) {
-        double start = getOrientation();
-        double target;
 
         imu.resetYaw();
         if (degrees > 0) {
@@ -607,7 +721,7 @@ public class Robot {
     }
 
     public void forward (double distance) {
-        moveDistance(0.35, distance, distance, 0);
+        moveDistance(0.35, distance, 0);
     }
 
     public void back (double distance) {
@@ -618,5 +732,9 @@ public class Robot {
         drive.strafeLeft(distance);
     }
 
-    } // end of class
+    public void strafeRight (double distance) {
+        drive.strafeRight(distance);
+    }
+
+} // end of class
 

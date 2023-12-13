@@ -83,21 +83,12 @@ public class RedLeftAuto extends LinearOpMode {
         objectPosition = auto.findTeamElement();
 
         if (objectPosition == Auto.POSITION.left) {
-            drive.followTrajectorySequence(left1);
-            auto.purplePixel(1, 0);
-            drive.followTrajectorySequence(left2);
             auto.yellowPixel();
 
         } else if (objectPosition == Auto.POSITION.right) {
-            drive.followTrajectorySequence(right1);
-            auto.purplePixel(0, -1);
-            drive.followTrajectorySequence(right2);
             auto.yellowPixel();
 
         } else if (objectPosition == Auto.POSITION.center) {
-            drive.followTrajectorySequence(center1);
-            auto.purplePixel(1, 0);
-            drive.followTrajectorySequence(center2);
             auto.yellowPixel();
         }
 

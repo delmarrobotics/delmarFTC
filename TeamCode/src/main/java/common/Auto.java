@@ -135,20 +135,13 @@ public class Auto {
                     }
                 }
 
-                TrajectorySequence traj2;
                 if (strafe > 0) {
-                    traj2 = drive.trajectorySequenceBuilder(new Pose2d())
-                            .strafeRight(strafe)
-                            .forward(8)
-                            .build();
-                    drive.followTrajectorySequence(traj2);
+                    robot.strafeRight(strafe);
+                    robot.forward(8);
                 }
                 else if (strafe < 0 ) {
-                    traj2 = drive.trajectorySequenceBuilder(new Pose2d())
-                            .strafeLeft(-strafe)
-                            .forward(8)
-                            .build();
-                    drive.followTrajectorySequence(traj2);
+                    robot.strafeLeft(-strafe);
+                    robot.forward(8);
                 }
 
                 robot.pixelArm.pixelWristMove(PixelArm.PIXEL_ARM_OUT_LOW);
