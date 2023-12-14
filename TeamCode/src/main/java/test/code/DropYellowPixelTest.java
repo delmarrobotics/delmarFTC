@@ -21,5 +21,6 @@ public class DropYellowPixelTest extends LinearOpMode {
 
         auto.setColor(Auto.COLOR.RED);
         auto.dropYellowPixel();
+        sleep(5000);
     }
 }
