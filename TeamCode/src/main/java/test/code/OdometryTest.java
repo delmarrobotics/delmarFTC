@@ -1,5 +1,6 @@
 package test.code;
 
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
@@ -18,6 +19,7 @@ import common.Robot;
 /*
  * Test code for the hanging arm
  */
+@Disabled
 @TeleOp(name="Odometry Test", group="Test")
 @SuppressWarnings("unused")
 public class OdometryTest extends LinearOpMode {
