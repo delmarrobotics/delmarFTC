@@ -88,31 +88,38 @@ public class RedRightAuto extends LinearOpMode {
         objectPosition = auto.findTeamElement();
 
         if (objectPosition == Auto.POSITION.left) {
-            robot.forward(27);
+            robot.forward(24);
             robot.turn(90);
-            robot.forward(7);
-            sleep(500);
+            robot.forward(6);
             robot.dropPurplePixel();
-            robot.back(12);
-            robot.turn(90);
-            robot.turn(90);
-            robot.forward(15);
+            robot.back(10);
+            robot.turn(180);
+            robot.forward(33);
+            robot.strafeLeft(6);
+            robot.back(2);
+            robot.strafeRight(26);
+            robot.forward(12);
 
         } else if (objectPosition == Auto.POSITION.right) {
-            robot.forward(34);
+            robot.forward(30);
             robot.turn(-90);
-            robot.forward(6.5);
-            sleep(500);
+            robot.forward(6);
             robot.dropPurplePixel();
             robot.forward(15);
+            robot.strafeRight(4);
 
         } else if (objectPosition == Auto.POSITION.center) {
-            robot.forward(35);
-            sleep(500);
+            robot.forward(30.5);
             robot.dropPurplePixel();
-            robot.back(12);
+            robot.back(8);
             robot.turn(-90);
-            robot.forward(21.5);
+            robot.forward(20);
+            robot.strafeLeft(3);
+            robot.forward(17);
+            sleep(5000);
+            robot.back(2);
+            robot.strafeRight(20);
+            robot.forward(12);
         }
 
         auto.yellowPixel();

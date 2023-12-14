@@ -19,20 +19,20 @@ public class PixelArm {
     static final double PIXEL_ARM_SPEED = .5;
 
     // Position for all the pixel arm servos and motor encoders
-    static final int    PIXEL_ELBOW_DOWN      = 0;
-    static final int    PIXEL_ELBOW_UP_LOW    = -1930;
-    static final int    PIXEL_ELBOW_UP_MID    = -2230;
-    static final int    PIXEL_ELBOW_UP_HIGH   = -2700;
+    public static final int    PIXEL_ELBOW_DOWN      = 0;
+    public static final int    PIXEL_ELBOW_UP_LOW    = -2000;
+    public static final int    PIXEL_ELBOW_UP_MID    = -2230;
+    public static final int    PIXEL_ELBOW_UP_HIGH   = -2700;
 
-    static final int    PIXEL_ARM_IN          = 0;
-    static final int    PIXEL_ARM_OUT_LOW     = 1200;
-    static final int    PIXEL_ARM_OUT_MID     = 2100;
-    static final int    PIXEL_ARM_OUT_HIGH    = 2982;
+    public static final int    PIXEL_ARM_IN          = 0;
+    public static final int    PIXEL_ARM_OUT_LOW     = 1280;
+    public static final int    PIXEL_ARM_OUT_MID     = 2100;
+    public static final int    PIXEL_ARM_OUT_HIGH    = 2982;
 
-    static final double PIXEL_WRIST_HOME      = 0.64;
-    static final double PIXEL_WRIST_DROP_LOW  = 0.445;
-    static final double PIXEL_WRIST_DROP_MID  = 0.445;
-    static final double PIXEL_WRIST_DROP_HIGH = 0.445;
+    public static final double PIXEL_WRIST_HOME      = 0.64;
+    public static final double PIXEL_WRIST_DROP_LOW  = 0.48;
+    public static final double PIXEL_WRIST_DROP_MID  = 0.445;
+    public static final double PIXEL_WRIST_DROP_HIGH = 0.445;
 
     private DcMotor pixelElbow = null;
     private DcMotor pixelArm   = null;

@@ -11,7 +11,7 @@ public class Auto {
     public enum POSITION { left, center, right }
     public enum COLOR { RED, BLUE }
 
-    POSITION objectPosition = POSITION.left;  //ToDo remove, for testing
+    public POSITION objectPosition = POSITION.left;  //ToDo remove, for testing
     COLOR color;
 
     LinearOpMode opMode;
@@ -78,7 +78,7 @@ public class Auto {
         while (opMode.opModeIsActive()) {
             if (robot.vision.findAprilTag(-1)) {
 
-                robot.pixelArm.pixelElbowMove(PixelArm.PIXEL_ARM_OUT_LOW);
+                //robot.pixelArm.pixelElbowMove(PixelArm.PIXEL_ELBOW_UP_LOW);
 
                 double x = robot.vision.aprilTagX();
                 double range = robot.vision.aprilTagY();
@@ -87,8 +87,10 @@ public class Auto {
                 robot.turn(yaw);
                 Logger.message("robot orientation %3.1f", robot.getOrientation());
 
-                robot.pixelArm.positionArm(PixelArm.ARM_POSITION.LOW);
-                robot.pixelArm.pixelWristMove(PixelArm.PIXEL_ARM_OUT_LOW);
+                if (true) return;;
+
+                //robot.pixelArm.positionArm(PixelArm.ARM_POSITION.LOW);
+                //robot.pixelArm.pixelWristMove(PixelArm.PIXEL_ARM_OUT_LOW);
 
                 if (color == COLOR.BLUE)
                     robot.moveToColor(Robot.COLOR.BLUE, 1, 0, 0.25, 2000);
@@ -140,6 +142,7 @@ public class Auto {
                     robot.strafeLeft(-strafe);
                     robot.forward(8);
                 }
+                if (true) return;    //ToDo remove
 
                 robot.dropYellowPixel();
 

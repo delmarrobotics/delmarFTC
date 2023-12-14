@@ -38,14 +38,14 @@ public class Robot {
     static final double COUNTS_PER_INCH =
             (COUNTS_PER_MOTOR_REV * DRIVE_GEAR_REDUCTION) / (WHEEL_DIAMETER_INCHES * Math.PI);
 
-    static final double RAMP_DISTANCE   = COUNTS_PER_INCH * 8;   // ramp down distance in encoder counts
+    static final double RAMP_DISTANCE   = COUNTS_PER_INCH * 12;   // ramp down distance in encoder counts
     static final double RAMP_TIME       = 1000;                  // ramp up time in milliseconds
     static final double RAMP_MIN_SPEED  = 0.2;
 
     public final double MIN_SPEED        = 0.25;
     public final double MAX_SPEED        = 1;
     private static final double MAX_ROTATE_SPEED = 0.50;
-    public enum DIRECTION { FORWARD, BACK, LEFT, RIGHT }
+    public enum DIRECTION { FORWARD, BACK, LEFT, RIGHT, TURN_LEFT, TURN_RIGHT }
 
     // Color sensor
     static final float COLOR_SENSOR_GAIN = 2.2F;
@@ -407,16 +407,17 @@ public class Robot {
      *  2) Move runs out of time
      *  3) Driver stops the OpMode running.
      *
+     * @param direction direction to move
      * @param speed motor speed (-1 to 1)
      * @param inches  distance to move in inches, positive for forward, negative for backward
      * @param timeout timeout in milliseconds, 0 for no timeout
      */
     public void moveDistance(DIRECTION direction, double speed, double inches, double timeout) {
 
-        int leftFrontSign;
-        int rightFrontSign;
-        int leftBackSign;
-        int rightBackSign;
+        int leftFrontSign = 0;
+        int rightFrontSign = 0;
+        int leftBackSign = 0;
+        int rightBackSign = 0;
 
         if (direction == DIRECTION.FORWARD) {
             leftFrontSign  = 1;
@@ -433,11 +434,21 @@ public class Robot {
             rightFrontSign =  1;
             leftBackSign   =  1;
             rightBackSign  = -1;
-        } else {                // DIRECTION.RIGHT
+        } else if (direction == DIRECTION.RIGHT) {
             leftFrontSign  =  1;
             rightFrontSign = -1;
             leftBackSign   = -1;
             rightBackSign  =  1;
+        } else if (direction == DIRECTION.TURN_LEFT) {
+            leftFrontSign  = -1;
+            rightFrontSign =  1;
+            leftBackSign   = -1;
+            rightBackSign  =  1;
+        } else if (direction == DIRECTION.TURN_RIGHT){
+            leftFrontSign  =  1;
+            rightFrontSign = -1;
+            leftBackSign   =  1;
+            rightBackSign  = -1;
         }
 
         // Ensure that the OpMode is still active
@@ -698,6 +709,18 @@ public class Robot {
     public void turn(double degrees) {
 
         imu.resetYaw();
+        double circumference = 2 * Math.PI * 24.9/2;
+        double inches = Math.abs(degrees) / 360 * circumference;
+        if (degrees > 0)
+            moveDistance(Robot.DIRECTION.TURN_LEFT, 0.4,  inches, 0 );
+        else
+            moveDistance(DIRECTION.TURN_RIGHT, 0.4,  inches, 0 );
+
+        Logger.message("turn: degrees %6.1f  current %6.2f", degrees, getOrientation());
+
+        /*
+        imu.resetYaw();
+        opMode.sleep(200);
         if (degrees > 0) {
             moveRobot(0, 0, 1, 0.3);
             while (opMode.opModeIsActive()) {
@@ -716,25 +739,26 @@ public class Robot {
             }
         }
         stopRobot();
-
-        Logger.message("turn: degrees %6.1f  current %6.2f", degrees, getOrientation());
+         */
     }
 
     public void forward (double distance) {
-        moveDistance(DIRECTION.FORWARD,.35, distance, 0);
+        moveDistance(DIRECTION.FORWARD,.4, distance, 0);
     }
 
     public void back (double distance) {
-        moveDistance(DIRECTION.BACK,.35, distance, 0);
+
+        moveDistance(DIRECTION.BACK,.4, distance, 0);
     }
 
     public void strafeLeft (double distance) {
         distance = Math.sqrt(Math.pow(distance,2 ) + Math.pow(distance,2));
-        moveDistance(DIRECTION.LEFT,.35, distance, 0);
+        moveDistance(DIRECTION.LEFT,.4, distance, 0);
     }
 
     public void strafeRight (double distance) {
-        moveDistance(DIRECTION.RIGHT,.35, distance, 0);
+        distance = Math.sqrt(Math.pow(distance,2 ) + Math.pow(distance,2));
+        moveDistance(DIRECTION.RIGHT,.4, distance, 0);
     }
 
 } // end of class

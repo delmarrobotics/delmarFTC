@@ -99,7 +99,7 @@ public class BlueLeftAuto extends LinearOpMode {
             robot.forward(30);
 
         } else if (objectPosition == Auto.POSITION.center) {
-            robot.forward(35);
+            robot.forward(31.5);
             sleep(500);
             robot.dropPurplePixel();
             robot.back(12);
