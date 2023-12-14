@@ -208,17 +208,30 @@ public class Vision {
         return targetFound;
     }
 
-    public int aprilTagID() { return desiredTag.id; }
+    public int aprilTagID() {
+        if (desiredTag != null)
+            return desiredTag.id;
+        return 0;
+    }
 
     public double aprilTagX() {
-        return desiredTag.ftcPose.x;
+
+        if (desiredTag != null)
+            return desiredTag.ftcPose.x;
+        return 0;
     }
 
     public double aprilTagY(){
-        return desiredTag.ftcPose.y;
+        if (desiredTag != null)
+            return desiredTag.ftcPose.y;
+        return 0;
     }
 
-    public double aprilTagYaw() { return desiredTag.ftcPose.yaw; }
+    public double aprilTagYaw() {
+        if (desiredTag != null)
+            return desiredTag.ftcPose.yaw;
+        return 0;
+    }
 
     /**
      * Find the object with the highest confidence.
