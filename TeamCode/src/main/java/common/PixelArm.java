@@ -210,7 +210,7 @@ public class PixelArm {
 
         if (position == ARM_POSITION.LOW) {
             pixelElbowMove(PIXEL_ELBOW_UP_LOW);
-            opMode.sleep(750);
+            opMode.sleep(500);
             pixelArmMove((PIXEL_ARM_OUT_LOW));
             pixelWristMove(PIXEL_WRIST_DROP_LOW);
         } else if (position == ARM_POSITION.MID) {

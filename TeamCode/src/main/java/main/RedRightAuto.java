@@ -15,6 +15,7 @@ import org.firstinspires.ftc.teamcode.drive.SampleMecanumDrive;
 import org.firstinspires.ftc.teamcode.trajectorysequence.TrajectorySequence;
 
 import common.Auto;
+import common.PixelArm;
 import common.Robot;
 
 @Autonomous(name="Red Right Start", group="Main")
@@ -94,11 +95,20 @@ public class RedRightAuto extends LinearOpMode {
             robot.dropPurplePixel();
             robot.back(10);
             robot.turn(180);
-            robot.forward(33);
+            robot.forward(22);
             robot.strafeLeft(6);
-            robot.back(2);
-            robot.strafeRight(26);
-            robot.forward(12);
+            auto.dropYellowPixel();
+            auto.park();
+
+        } else if (objectPosition == Auto.POSITION.center) {
+            robot.forward(30.5);
+            robot.dropPurplePixel();
+            robot.back(8);
+            robot.turn(-90);
+            robot.forward(26);
+            robot.strafeLeft(3);
+            auto.dropYellowPixel();
+            auto.park();//robot.forward(12);
 
         } else if (objectPosition == Auto.POSITION.right) {
             robot.forward(30);
@@ -106,23 +116,10 @@ public class RedRightAuto extends LinearOpMode {
             robot.forward(6);
             robot.dropPurplePixel();
             robot.forward(15);
-            robot.strafeRight(4);
-
-        } else if (objectPosition == Auto.POSITION.center) {
-            robot.forward(30.5);
-            robot.dropPurplePixel();
-            robot.back(8);
-            robot.turn(-90);
-            robot.forward(20);
-            robot.strafeLeft(3);
-            robot.forward(17);
-            sleep(5000);
-            robot.back(2);
-            robot.strafeRight(20);
-            robot.forward(12);
+            robot.strafeRight(7);
+            auto.dropYellowPixel();
+            auto.park();
         }
-
-        auto.yellowPixel();
 
         telemetry.addData("Run Time", runtime.toString());
     }

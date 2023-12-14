@@ -62,10 +62,10 @@ public class BlueLeft {
 
         meepMeep.setBackground(MeepMeep.Background.FIELD_CENTERSTAGE_JUICE_DARK)
                 .setDarkMode(true)
-                .setBackgroundAlpha(0.95f)
+                //.setBackgroundAlpha(0.95f)
                 //.addEntity(LeftElement)
-                //.addEntity(CenterElement)
-                .addEntity(RightElement)
+                .addEntity(CenterElement)
+                //.addEntity(RightElement)
                 .start();
     }
 }

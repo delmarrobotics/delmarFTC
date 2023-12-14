@@ -79,15 +79,8 @@ public class RoadRunnerTest extends LinearOpMode {
         auto.setColor(Auto.COLOR.RED);
         auto.objectPosition = Auto.POSITION.right;
         redRightRight();
-
         //redRightLeft();
         //redRightCenter();
-
-        //blueRightRight();
-
-        //yellowPixel();
-        //turnTest();
-        //robot.moveToColor(Robot.COLOR.RED, 1, 0, 0.25, 2000);
     }
 
     public void redRightLeft() {
@@ -97,47 +90,52 @@ public class RoadRunnerTest extends LinearOpMode {
         robot.dropPurplePixel();
         robot.back(10);
         robot.turn(180);
-        robot.forward(33);
+        robot.forward(22);
         robot.strafeLeft(6);
+        robot.pixelArm.positionArm(PixelArm.ARM_POSITION.LOW);
+        robot.moveToColor(Robot.COLOR.RED, 1, 0, 0.25, 2000);
+        auto.adjustYaw();
+        robot.forward(7);
+        robot.dropYellowPixel();
+        robot.back(2);
+        robot.pixelArm.positionArm(PixelArm.ARM_POSITION.HOME);
+        robot.strafeRight(25);
+        //robot.forward(12);
     }
 
     public void redRightCenter() {
-        auto.setColor(Auto.COLOR.RED);
         robot.forward(30.5);
         robot.dropPurplePixel();
         robot.back(8);
         robot.turn(-90);
-        robot.forward(20);
+        robot.forward(26);
         robot.strafeLeft(3);
-        robot.forward(17);
-        sleep(10000);
+        robot.pixelArm.positionArm(PixelArm.ARM_POSITION.LOW);
+        robot.moveToColor(Robot.COLOR.RED, 1, 0, 0.25, 2000);
+        auto.adjustYaw();
+        robot.forward(7);
+        robot.dropYellowPixel();
         robot.back(2);
         robot.strafeRight(20);
-        robot.forward(12);
-
-        /*
-        robot.pixelArm.pixelElbowMove(PixelArm.PIXEL_ELBOW_UP_LOW);
-        robot.pixelArm.pixelArmMove(PixelArm.PIXEL_ARM_OUT_LOW);
-        robot.pixelArm.pixelWristMove(PixelArm.PIXEL_WRIST_DROP_LOW);
-        robot.pixelArm.pixelWristMove(PixelArm.PIXEL_WRIST_HOME);
-        robot.pixelArm.pixelArmMove(PixelArm.PIXEL_ARM_IN);
-        robot.pixelArm.pixelElbowMove(PixelArm.PIXEL_ELBOW_DOWN);
-        sleep(5000);
-         */
+        //robot.forward(12);
     }
 
     public void redRightRight(){
-
-        auto.setColor(Auto.COLOR.RED);
         robot.forward(30);
         robot.turn(-90);
         robot.forward(6);
         robot.dropPurplePixel();
         robot.forward(15);
         robot.strafeRight(7);
+        robot.pixelArm.positionArm(PixelArm.ARM_POSITION.LOW);
         robot.moveToColor(Robot.COLOR.RED, 1, 0, 0.25, 2000);
-        auto.yellowPixel();
+        auto.adjustYaw();
         robot.forward(7);
+        robot.dropYellowPixel();
+        robot.back(2);
+        robot.pixelArm.positionArm(PixelArm.ARM_POSITION.HOME);
+        robot.strafeRight(15);
+        //robot.forward(12);
     }
 
 

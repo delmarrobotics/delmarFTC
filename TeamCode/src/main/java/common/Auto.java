@@ -67,6 +67,52 @@ public class Auto {
         robot.dropPurplePixel();
     }
 
+    public void adjustYaw() {
+        if (robot.vision.findAprilTag(-1)) {
+            double x = robot.vision.aprilTagX();
+            double range = robot.vision.aprilTagY();
+            double yaw = robot.vision.aprilTagYaw();
+            Logger.message("aprilTag: x %f  range %f  yaw %f", x, range, yaw);
+            robot.turn(yaw);
+            Logger.message("robot orientation %3.1f", robot.getOrientation());
+        }
+    }
+
+    public void dropYellowPixel() {
+        robot.pixelArm.positionArm(PixelArm.ARM_POSITION.LOW);
+        if (color == COLOR.BLUE)
+            robot.moveToColor(Robot.COLOR.BLUE, 1, 0, 0.25, 2000);
+        else if (color == COLOR.RED)
+            robot.moveToColor(Robot.COLOR.RED, 1, 0, 0.25, 2000);
+        adjustYaw();
+        robot.forward(7);
+        robot.dropYellowPixel();
+        robot.back(2);
+        robot.pixelArm.positionArm(PixelArm.ARM_POSITION.HOME);
+    }
+
+    public void park() {
+        robot.back(2);
+
+        if (color == COLOR.BLUE) {
+            if (objectPosition == POSITION.left)
+                robot.strafeLeft(7);
+            else if (objectPosition == POSITION.center)
+                robot.strafeLeft(15);
+            else if (objectPosition == POSITION.right)
+                robot.strafeLeft(20);
+        } else if (color == COLOR.RED) {
+            if (objectPosition == POSITION.left)
+                robot.strafeRight(20);
+            else if (objectPosition == POSITION.center)
+                robot.strafeRight(15);
+            else if (objectPosition == POSITION.right)
+                robot.strafeRight(7);
+        }
+        //robot.forward(12);
+    }
+
+
     /**
      * Drop the yellow pixel on the backdrop.
      */
@@ -144,7 +190,7 @@ public class Auto {
                 }
                 if (true) return;    //ToDo remove
 
-                robot.dropYellowPixel();
+                //robot.dropYellowPixel();
 
                 robot.back(3);
                 if (id == Vision.BLUE_LEFT_TAG)

@@ -651,12 +651,10 @@ public class Robot {
     }
 
     public void dropYellowPixel() {
-        //pixelArm.positionArm(PixelArm.ARM_POSITION.LOW);
-        //opMode.sleep(1500);
-        //dropPixel();
         spinnerBucket.setPower(-SPINNER_SPEED);
         opMode.sleep(2500);
         spinnerBucket.setPower(0);
+
         pixelArm.pixelWristMove(PixelArm.PIXEL_WRIST_HOME);
         pixelArm.positionArm(PixelArm.ARM_POSITION.HOME);
     }

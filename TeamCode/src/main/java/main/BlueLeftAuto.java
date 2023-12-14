@@ -15,6 +15,7 @@ import org.firstinspires.ftc.teamcode.drive.SampleMecanumDrive;
 import org.firstinspires.ftc.teamcode.trajectorysequence.TrajectorySequence;
 
 import common.Auto;
+import common.PixelArm;
 import common.Robot;
 
 @Autonomous(name="Blue Left Start", group="Main")
@@ -84,27 +85,36 @@ public class BlueLeftAuto extends LinearOpMode {
         objectPosition = auto.findTeamElement();
 
         if (objectPosition == Auto.POSITION.left) {
-            robot.forward(34);
+            robot.forward(30);
             robot.turn(90);
-            robot.forward(6.5);
-            sleep(500);
+            robot.forward(6);
             robot.dropPurplePixel();
             robot.forward(15);
-
-        } else if (objectPosition == Auto.POSITION.right) {
-            robot.forward(28);
-            robot.turn(90);
-            robot.back(15);
-            robot.dropPurplePixel();
-            robot.forward(30);
+            robot.strafeRight(7);
+            auto.dropYellowPixel();
+            auto.park();
 
         } else if (objectPosition == Auto.POSITION.center) {
-            robot.forward(31.5);
-            sleep(500);
+            robot.forward(30.5);
             robot.dropPurplePixel();
-            robot.back(12);
+            robot.back(8);
             robot.turn(90);
-            robot.forward(21.5);
+            robot.forward(26);
+            robot.strafeRight(3);
+            auto.dropYellowPixel();
+            auto.park();
+
+        } else if (objectPosition == Auto.POSITION.right) {
+            robot.forward(24);
+            robot.turn(-90);
+            robot.forward(6);
+            robot.dropPurplePixel();
+            robot.back(10);
+            robot.turn(180);
+            robot.forward(22);
+            robot.strafeRight(6);
+            auto.dropYellowPixel();
+            auto.park();
         }
 
         auto.yellowPixel();
