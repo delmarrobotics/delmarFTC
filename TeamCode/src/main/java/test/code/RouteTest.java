@@ -6,7 +6,7 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 
 import common.Robot;
 
-@TeleOp(name="Route", group="Test")
+@TeleOp(name="Route Test", group="Test")
 public class RouteTest extends LinearOpMode {
 
     Robot robot = null;
@@ -16,6 +16,10 @@ public class RouteTest extends LinearOpMode {
     public void runOpMode() {
         robot = new Robot(this);
         robot.init();
+
+        telemetry.addLine("push start");
+        telemetry.update();
+
         waitForStart();
 
         double inches = 12;
@@ -45,15 +49,15 @@ public class RouteTest extends LinearOpMode {
             if (gamepad1.left_bumper) {
                 runtime.reset();
                 while (gamepad1.left_bumper) {
-                    inches -= (double) increment(.5, 1, 5);
+                    inches -= (double) increment(.5, 1, 2);
                     telemetry.addData("inches", " %4.2f", inches);
                     telemetry.update();
                 }
             }
             if (gamepad1.right_bumper) {
                 runtime.reset();
-                while (gamepad1.left_bumper) {
-                    inches += (double) increment(.5, 1, 5);
+                while (gamepad1.right_bumper) {
+                    inches += (double) increment(.5, 1, 2);
                     telemetry.addData("inches", " %4.2f", inches);
                     telemetry.update();
                 }
