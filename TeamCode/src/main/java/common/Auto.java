@@ -3,6 +3,8 @@
  */
 package common;
 
+import android.util.Log;
+
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
 import org.firstinspires.ftc.teamcode.drive.SampleMecanumDrive;
@@ -10,6 +12,9 @@ import org.firstinspires.ftc.teamcode.drive.SampleMecanumDrive;
 public class Auto {
     public enum POSITION { left, center, right }
     public enum COLOR { RED, BLUE }
+
+    boolean PARK_ENABLED = true;
+    boolean DROP_PIXEL = true;
 
     public POSITION objectPosition = POSITION.left;  //ToDo remove, for testing
     COLOR color;
@@ -67,18 +72,10 @@ public class Auto {
         robot.dropPurplePixel();
     }
 
-    public void adjustYaw() {
-        if (robot.vision.findAprilTag(-1)) {
-            double x = robot.vision.aprilTagX();
-            double range = robot.vision.aprilTagY();
-            double yaw = robot.vision.aprilTagYaw();
-            Logger.message("aprilTag: x %f  range %f  yaw %f", x, range, yaw);
-            robot.turn(yaw);
-            Logger.message("robot orientation %3.1f", robot.getOrientation());
-        }
-    }
-
     public void dropYellowPixel() {
+
+        if (! DROP_PIXEL) return;
+
         robot.pixelArm.positionArm(PixelArm.ARM_POSITION.LOW);
         if (color == COLOR.BLUE)
             robot.moveToColor(Robot.COLOR.BLUE, 1, 0, 0.25, 2000);
@@ -92,8 +89,10 @@ public class Auto {
     }
 
     public void park() {
-        robot.back(2);
 
+        if ( ! PARK_ENABLED) return;
+
+        robot.back(2);
         if (color == COLOR.BLUE) {
             if (objectPosition == POSITION.left)
                 robot.strafeLeft(7);
@@ -110,6 +109,74 @@ public class Auto {
                 robot.strafeRight(7);
         }
         //robot.forward(12);
+    }
+
+    public void adjustYaw() {
+        if (robot.vision.findAprilTag(-1)) {
+            double x = robot.vision.aprilTagX();
+            double range = robot.vision.aprilTagY();
+            double yaw = robot.vision.aprilTagYaw();
+            Logger.message("adjustYaw: aprilTag: x %f  range %f  yaw %f", x, range, yaw);
+            robot.turn(yaw);
+            Logger.message("adjustYaw: robot orientation %3.1f", robot.getOrientation());
+        } else {
+            Logger.message("adjustYaw: no aprilTag found");
+        }
+    }
+
+    public void StrafeToDropPosition () {
+
+        double strafe = 0;
+        double x = robot.vision.aprilTagX();
+
+        if (robot.vision.findAprilTag(-1)) {
+
+            int id = robot.vision.aprilTagID();
+            if (id == Vision.BLUE_LEFT_TAG || id == Vision.RED_LEFT_TAG) {
+                if (objectPosition == POSITION.left) {
+                    strafe = x - 7;
+                    Logger.message("left tag, left position, strafe %f", strafe);
+                } else if (objectPosition == POSITION.center) {
+                    strafe = x -5;
+                    Logger.message("left tag, center position, strafe %f", strafe);
+                } else {
+                    strafe = 9 + x;
+                    Logger.message("left tag, right position, strafe %f", strafe);
+                }
+            } else if (id == Vision.BLUE_CENTER_TAG || id == Vision.RED_CENTER_TAG) {
+                if (objectPosition == POSITION.left) {
+                    strafe = x - 12;
+                    Logger.message("center tag, left position, strafe %f", strafe);
+                } else if (objectPosition == POSITION.center) {
+                    strafe = x - 6;
+                    Logger.message("center tag, center position, strafe %f", strafe);
+                } else {
+                    strafe = x;
+                    Logger.message("center tag, right position, strafe %f", strafe);
+                }
+
+            }  else if (id == Vision.BLUE_RIGHT_TAG || id == Vision.RED_RIGHT_TAG) {
+                if (objectPosition == POSITION.left) {
+                    strafe = x - 18;
+                    Logger.message("right tag, left position, strafe %f", strafe);
+                } else if (objectPosition == POSITION.center) {
+                    strafe = x - 12;
+                    Logger.message("right tag, center position, strafe %f", strafe);
+                } else {
+                    strafe = x - 6;
+                    Logger.message("right tag, right position, strafe %f", strafe);
+                }
+            }
+
+            if (strafe > 0) {
+                robot.strafeRight(strafe);
+                robot.forward(8);
+            }
+            else if (strafe < 0 ) {
+                robot.strafeLeft(-strafe);
+                robot.forward(8);
+            }
+        }
     }
 
 
