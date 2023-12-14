@@ -6,10 +6,10 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import common.Auto;
 import common.Robot;
 
-@TeleOp(name="Drop Yellow Pixel Test", group="Tesr")
+@TeleOp(name="Drop Yellow Pixel Test", group="Test")
 public class DropYellowPixelTest extends LinearOpMode {
 
-    private Robot robot = null;
+    Robot robot = null;
     Auto auto;
 
     public void runOpMode() {
