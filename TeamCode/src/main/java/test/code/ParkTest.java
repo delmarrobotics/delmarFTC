@@ -8,7 +8,7 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 import common.Auto;
 import common.Robot;
 
-@TeleOp(name="Park Test", group="Tesr")
+@TeleOp(name="Park Test", group="Test")
 public class ParkTest extends LinearOpMode {
 
     private Robot robot = null;
