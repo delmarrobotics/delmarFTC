@@ -123,7 +123,7 @@ public class Auto {
         }
     }
 
-    public void StrafeToDropPosition () {
+    public void strafeToDropPosition () {
 
         double strafe = 0;
         double x = robot.vision.aprilTagX();
@@ -139,7 +139,7 @@ public class Auto {
                     strafe = x -5;
                     Logger.message("left tag, center position, strafe %f", strafe);
                 } else {
-                    strafe = 9 + x;
+                    strafe = 6 + x;
                     Logger.message("left tag, right position, strafe %f", strafe);
                 }
             } else if (id == Vision.BLUE_CENTER_TAG || id == Vision.RED_CENTER_TAG) {
@@ -212,13 +212,13 @@ public class Auto {
                 int id = robot.vision.aprilTagID();
                 if (id == Vision.BLUE_LEFT_TAG || id == Vision.RED_LEFT_TAG) {
                     if (objectPosition == POSITION.left) {
-                        strafe = x - 7;
+                        strafe = x - 6;
                         Logger.message("left tag, left position, strafe %f", strafe);
                     } else if (objectPosition == POSITION.center) {
-                        strafe = x -5;
+                        strafe = x;
                         Logger.message("left tag, center position, strafe %f", strafe);
                     } else {
-                        strafe = 9 + x;
+                        strafe = 6 + x;
                         Logger.message("left tag, right position, strafe %f", strafe);
                     }
                 } else if (id == Vision.BLUE_CENTER_TAG || id == Vision.RED_CENTER_TAG) {
