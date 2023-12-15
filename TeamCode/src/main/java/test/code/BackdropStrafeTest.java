@@ -1,15 +1,13 @@
 package test.code;
 
-import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
-import com.qualcomm.robotcore.util.ElapsedTime;
 
 import common.Auto;
 import common.Robot;
 
-@TeleOp(name="Park Test", group="Test")
-public class ParkTest extends LinearOpMode {
+@TeleOp(name="Backdrop Strafe Test", group="Test")
+public class BackdropStrafeTest extends LinearOpMode {
 
     private Robot robot = null;
     Auto auto;
@@ -28,15 +26,15 @@ public class ParkTest extends LinearOpMode {
 
             if (gamepad1.x) {
                 auto.objectPosition = Auto.POSITION.left;
-                auto.park();
+                auto.strafeToDropPosition();
             }
             if (gamepad1.a) {
                 auto.objectPosition = Auto.POSITION.center;
-                auto.park();
+                auto.strafeToDropPosition();
             }
             if (gamepad1.b) {
                 auto.objectPosition = Auto.POSITION.right;
-                auto.park();
+                auto.strafeToDropPosition();
             }
         }
     }
