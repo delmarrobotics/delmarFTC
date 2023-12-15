@@ -83,14 +83,13 @@ public class RedLeftAuto extends LinearOpMode {
         objectPosition = auto.findTeamElement();
 
         if (objectPosition == Auto.POSITION.left) {
-            robot.forward(24);
-            robot.strafeLeft(12);
-            sleep(500);
+            robot.forward(25);
+            robot.strafeLeft(13);
             robot.dropPurplePixel();
-            robot.forward(21);
+            robot.forward(24);
             robot.turn(-90);
-            robot.forward(90);
-            robot.strafeRight(40);
+            robot.forward(77+8.5);
+            robot.strafeRight(24);
 
         } else if (objectPosition == Auto.POSITION.center) {
             robot.forward(30);
@@ -101,16 +100,15 @@ public class RedLeftAuto extends LinearOpMode {
             robot.strafeRight(24);
 
         } else if (objectPosition == Auto.POSITION.right) {
-            robot.forward(27);
-            robot.turn(90);
-            robot.back(16);
-            sleep(500);
-            robot.dropPurplePixel();
-            robot.forward(16);
-            robot.turn(-90);
             robot.forward(24);
+            robot.turn(90);
+            robot.back(14);
+            robot.dropPurplePixel();
+            robot.forward(14);
+            robot.turn(-90);
+            robot.forward(25);
             robot.forward(77);
-            robot.strafeRight(40);
+            robot.strafeRight(24);
 
         }
         auto.yellowPixel();

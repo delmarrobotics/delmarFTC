@@ -96,7 +96,7 @@ public class BlueRightAuto extends LinearOpMode {
             robot.back(10);
             robot.turn(-90);
             robot.forward(25);
-            robot.forward(77);
+            robot.forward(77-4);
             robot.strafeLeft(24);
 
         } else if (objectPosition == Auto.POSITION.center) {
@@ -108,13 +108,12 @@ public class BlueRightAuto extends LinearOpMode {
             robot.strafeLeft(24);
 
         } else if (objectPosition == Auto.POSITION.right) {
-            robot.forward(12);
+            robot.forward(25);
             robot.strafeLeft(8.5);
-            robot.forward(13);
             robot.dropPurplePixel();
             robot.forward(24);
             robot.turn(90);
-            robot.forward(77);
+            robot.forward(77+8.5);
             robot.strafeLeft(24);
         }
 
