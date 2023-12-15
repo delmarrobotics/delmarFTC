@@ -88,7 +88,7 @@ public class RedLeftAuto extends LinearOpMode {
             robot.dropPurplePixel();
             robot.forward(24);
             robot.turn(-90);
-            robot.forward(77+8.5);
+            robot.forward(67+13);
             robot.strafeRight(24);
 
         } else if (objectPosition == Auto.POSITION.center) {
@@ -96,7 +96,7 @@ public class RedLeftAuto extends LinearOpMode {
             robot.dropPurplePixel();
             robot.forward(19);
             robot.turn(-90);
-            robot.forward(77);
+            robot.forward(67);
             robot.strafeRight(24);
 
         } else if (objectPosition == Auto.POSITION.right) {
@@ -104,14 +104,17 @@ public class RedLeftAuto extends LinearOpMode {
             robot.turn(90);
             robot.back(14);
             robot.dropPurplePixel();
-            robot.forward(14);
+            robot.forward(24);
             robot.turn(-90);
             robot.forward(25);
-            robot.forward(77);
+            robot.turn(-90);
+            robot.forward(67+10);
             robot.strafeRight(24);
-
         }
-        auto.yellowPixel();
+
+        auto.strafeToDropPosition();;
+        auto.dropYellowPixel();
+        auto.parkCenter();
 
         telemetry.addData("Run Time", runtime.toString());
     }

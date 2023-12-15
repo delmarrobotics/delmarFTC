@@ -53,7 +53,7 @@ public class Robot {
 
     // drone launcher servo position
     static final double DRONE_ANGLE_DOWN = 0.48;
-    static final double DRONE_ANGLE_UP   = 0.30 ;
+    static final double DRONE_ANGLE_UP   = 0.40;
     static final double DRONE_FIRE_DOWN  = 0.063;
     static final double DRONE_FIRE_UP    = 0.16;
 
@@ -366,7 +366,7 @@ public class Robot {
                 Logger.message("moveDistance: timed out");
                 break;
             }
-
+            /*
             Logger.message("moveDistance: power: %4.2f %4.2f %4.2f %4.2f    adjust: %4.2f %4.2f %4.2f %4.2f     position: %6d %6d %6d %6d",
                     leftFrontDrive.getPower(),
                     rightFrontDrive.getPower(),
@@ -379,7 +379,7 @@ public class Robot {
                     leftFrontDrive.getCurrentPosition(),
                     rightFrontDrive.getCurrentPosition(),
                     leftBackDrive.getCurrentPosition(),
-                    rightBackDrive.getCurrentPosition());
+                    rightBackDrive.getCurrentPosition()); */
         }
 
         // Stop all motion;
@@ -454,7 +454,7 @@ public class Robot {
         // Ensure that the OpMode is still active
         if (! opMode.opModeIsActive())  return;
 
-        Logger.message("moveDistance: heading %6.2f", getOrientation());
+        //Logger.message("moveDistance: heading %6.2f", getOrientation());
 
         DcMotor.RunMode mode = leftFrontDrive.getMode();
         for (DcMotor motor : motors) {
@@ -540,7 +540,7 @@ public class Robot {
                 (double)rightFrontDrive.getCurrentPosition() / COUNTS_PER_INCH,
                 (double)leftBackDrive.getCurrentPosition() / COUNTS_PER_INCH,
                 (double)rightBackDrive.getCurrentPosition() / COUNTS_PER_INCH);
-        Logger.message("moveDistance: heading %6.2f", getOrientation());
+        //Logger.message("moveDistance: heading %6.2f", getOrientation());
     }
     /*
     private double rampSpeed(double current, double start, double end, double speed, double elapsed) {
@@ -715,7 +715,7 @@ public class Robot {
         else
             moveDistance(DIRECTION.TURN_RIGHT, 0.4,  inches, 0 );
 
-        Logger.message("turn: degrees %6.1f  current %6.2f", degrees, getOrientation());
+        //Logger.message("turn: degrees %6.1f  current %6.2f", degrees, getOrientation());
 
         /*
         imu.resetYaw();

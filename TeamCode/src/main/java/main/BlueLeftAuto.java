@@ -114,11 +114,10 @@ public class BlueLeftAuto extends LinearOpMode {
             robot.dropPurplePixel();
             robot.forward(40);
             robot.strafeRight(6);
-            //auto.dropYellowPixel();
-            //auto.park();
         }
 
-        auto.yellowPixel();
+        auto.dropYellowPixel();
+        auto.parkCenter();
 
         telemetry.addData("Run Time", runtime.toString());
     }

@@ -113,6 +113,25 @@ public class Auto {
         robot.forward(12);
     }
 
+    public void parkCenter () {
+        if (color == COLOR.BLUE) {
+            if (objectPosition == POSITION.left)
+                robot.strafeRight(30);
+            else if (objectPosition == POSITION.center)
+                robot.strafeRight(24);
+            else if (objectPosition == POSITION.right)
+                robot.strafeRight(18 );
+        } else if (color == COLOR.RED) {
+            if (objectPosition == POSITION.left)
+                robot.strafeLeft(18);
+            else if (objectPosition == POSITION.center)
+                robot.strafeLeft(24);
+            else if (objectPosition == POSITION.right)
+                robot.strafeLeft(30);
+        }
+        robot.forward(12);
+    }
+
     public void adjustYaw() {
         if (robot.vision.findAprilTag(-1)) {
             double x = robot.vision.aprilTagX();
@@ -122,24 +141,24 @@ public class Auto {
             robot.turn(yaw);
             Logger.message("adjustYaw: robot orientation %3.1f", robot.getOrientation());
         } else {
-            Logger.message("adjustYaw: no aprilTag found");
+             Logger.message("adjustYaw: no aprilTag found");
         }
     }
 
     public void strafeToDropPosition () {
 
         double strafe = 0;
-        double x = robot.vision.aprilTagX();
 
         if (robot.vision.findAprilTag(-1)) {
 
+            double x = robot.vision.aprilTagX();
             int id = robot.vision.aprilTagID();
             if (id == Vision.BLUE_LEFT_TAG || id == Vision.RED_LEFT_TAG) {
                 if (objectPosition == POSITION.left) {
                     strafe = x - 7;
                     Logger.message("left tag, left position, strafe %f", strafe);
                 } else if (objectPosition == POSITION.center) {
-                    strafe = x -5;
+                    strafe = 6;
                     Logger.message("left tag, center position, strafe %f", strafe);
                 } else {
                     strafe = 6 + x;

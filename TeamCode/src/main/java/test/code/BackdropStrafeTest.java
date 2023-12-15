@@ -17,6 +17,11 @@ public class BackdropStrafeTest extends LinearOpMode {
         robot.init();
         auto = new Auto(this, robot, null);
 
+        while (! robot.vision.cameraReady())
+            sleep(100);
+        sleep(1000);
+
+
         waitForStart();
 
         // run until the end of the match (driver presses STOP)
