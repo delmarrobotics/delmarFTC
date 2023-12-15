@@ -92,6 +92,14 @@ public class RedLeftAuto extends LinearOpMode {
             robot.forward(90);
             robot.strafeRight(40);
 
+        } else if (objectPosition == Auto.POSITION.center) {
+            robot.forward(30);
+            robot.dropPurplePixel();
+            robot.forward(19);
+            robot.turn(-90);
+            robot.forward(77);
+            robot.strafeRight(24);
+
         } else if (objectPosition == Auto.POSITION.right) {
             robot.forward(27);
             robot.turn(90);
@@ -104,13 +112,6 @@ public class RedLeftAuto extends LinearOpMode {
             robot.forward(77);
             robot.strafeRight(40);
 
-        } else if (objectPosition == Auto.POSITION.center) {
-            robot.forward(30.5);
-            robot.dropPurplePixel();
-            robot.forward(19);
-            robot.turn(-90);
-            robot.forward(77);
-            robot.strafeRight(40);
         }
         auto.yellowPixel();
 
