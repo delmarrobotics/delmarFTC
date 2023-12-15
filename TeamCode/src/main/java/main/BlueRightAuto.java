@@ -89,25 +89,23 @@ public class BlueRightAuto extends LinearOpMode {
         objectPosition = auto.findTeamElement();
 
         if (objectPosition == Auto.POSITION.left) {
-            robot.forward(27);
-            robot.turn(-90);
-            robot.back(16);
-            sleep(500);
-            robot.dropPurplePixel();
-            robot.forward(16);
-            robot.turn(90);
             robot.forward(24);
+            robot.turn(90);
+            robot.forward(6);
+            robot.dropPurplePixel();
+            robot.back(10);
+            robot.turn(-90);
+            robot.forward(25);
             robot.forward(77);
-            robot.strafeLeft(40);
+            robot.strafeLeft(24);
 
         } else if (objectPosition == Auto.POSITION.center) {
             robot.forward(30);
             robot.dropPurplePixel();
             robot.forward(19);
             robot.turn(90);
-
             robot.forward(77);
-            robot.strafeLeft(40);
+            robot.strafeLeft(24);
 
         } else if (objectPosition == Auto.POSITION.right) {
             robot.forward(12);
@@ -116,9 +114,8 @@ public class BlueRightAuto extends LinearOpMode {
             robot.dropPurplePixel();
             robot.forward(24);
             robot.turn(90);
-
             robot.forward(77);
-            robot.strafeLeft(40);
+            robot.strafeLeft(24);
         }
 
         auto.yellowPixel();
