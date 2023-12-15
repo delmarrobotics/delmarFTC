@@ -559,7 +559,7 @@ public class Robot {
      * @param speed drive speed
      * @param timeout timeout in milliseconds
      */
-    public void moveToColor(COLOR color, double x, double y, double speed, double timeout){
+    public boolean moveToColor(COLOR color, double x, double y, double speed, double timeout){
 
         boolean found = false;
         float[] hsvValues = new float[3];
@@ -596,6 +596,7 @@ public class Robot {
             }
         }
         stopRobot();
+        return found;
     }
 
     /**
