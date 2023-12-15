@@ -81,8 +81,8 @@ public class Auto {
             robot.moveToColor(Robot.COLOR.BLUE, 1, 0, 0.25, 2000);
         else if (color == COLOR.RED)
             robot.moveToColor(Robot.COLOR.RED, 1, 0, 0.25, 2000);
-        adjustYaw();
-        robot.forward(7.5   );
+        //adjustYaw();
+        robot.forward(7.5);
         robot.dropYellowPixel();
         robot.back(3);
         robot.pixelArm.positionArm(PixelArm.ARM_POSITION.HOME);
@@ -92,7 +92,6 @@ public class Auto {
 
         if ( ! PARK_ENABLED) return;
 
-        robot.back(2);
         if (color == COLOR.BLUE) {
             if (objectPosition == POSITION.left)
                 robot.strafeLeft(18);

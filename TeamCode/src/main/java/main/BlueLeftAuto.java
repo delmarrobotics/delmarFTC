@@ -109,15 +109,13 @@ public class BlueLeftAuto extends LinearOpMode {
 
         } else if (objectPosition == Auto.POSITION.right) {
             robot.forward(24);
-            robot.turn(-90);
-            robot.forward(6);
+            robot.turn(90);
+            robot.back(14);
             robot.dropPurplePixel();
-            robot.back(10);
-            robot.turn(180);
-            robot.forward(22);
+            robot.forward(40);
             robot.strafeRight(6);
-            auto.dropYellowPixel();
-            auto.park();
+            //auto.dropYellowPixel();
+            //auto.park();
         }
 
         auto.yellowPixel();
