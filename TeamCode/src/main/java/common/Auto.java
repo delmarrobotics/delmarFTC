@@ -82,9 +82,9 @@ public class Auto {
         else if (color == COLOR.RED)
             robot.moveToColor(Robot.COLOR.RED, 1, 0, 0.25, 2000);
         adjustYaw();
-        robot.forward(7);
+        robot.forward(7.5   );
         robot.dropYellowPixel();
-        robot.back(2);
+        robot.back(3);
         robot.pixelArm.positionArm(PixelArm.ARM_POSITION.HOME);
     }
 
@@ -95,20 +95,20 @@ public class Auto {
         robot.back(2);
         if (color == COLOR.BLUE) {
             if (objectPosition == POSITION.left)
-                robot.strafeLeft(7);
+                robot.strafeLeft(18);
             else if (objectPosition == POSITION.center)
-                robot.strafeLeft(15);
+                robot.strafeLeft(24);
             else if (objectPosition == POSITION.right)
-                robot.strafeLeft(20);
+                robot.strafeLeft(30);
         } else if (color == COLOR.RED) {
             if (objectPosition == POSITION.left)
-                robot.strafeRight(20);
+                robot.strafeRight(30);
             else if (objectPosition == POSITION.center)
-                robot.strafeRight(15);
+                robot.strafeRight(24);
             else if (objectPosition == POSITION.right)
-                robot.strafeRight(7);
+                robot.strafeRight(18 );
         }
-        //robot.forward(12);
+        robot.forward(12);
     }
 
     public void adjustYaw() {

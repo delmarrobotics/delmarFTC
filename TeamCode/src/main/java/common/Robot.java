@@ -53,7 +53,7 @@ public class Robot {
 
     // drone launcher servo position
     static final double DRONE_ANGLE_DOWN = 0.48;
-    static final double DRONE_ANGLE_UP   = 0.30;
+    static final double DRONE_ANGLE_UP   = 0.30 ;
     static final double DRONE_FIRE_DOWN  = 0.063;
     static final double DRONE_FIRE_UP    = 0.16;
 
@@ -646,7 +646,7 @@ public class Robot {
      */
     public void dropPurplePixel(){
         dropper.setPosition(DROPPER_OPEN);
-        opMode.sleep(500);
+        opMode.sleep(1000);
         dropper.setPosition(DROPPER_CLOSE);
     }
 
@@ -750,12 +750,14 @@ public class Robot {
     }
 
     public void strafeLeft (double distance) {
-        distance = Math.sqrt(Math.pow(distance,2 ) + Math.pow(distance,2));
+        //distance = Math.sqrt(Math.pow(distance,2 ) + Math.pow(distance,2));
+        distance *= 1.11;
         moveDistance(DIRECTION.LEFT,.4, distance, 0);
     }
 
     public void strafeRight (double distance) {
-        distance = Math.sqrt(Math.pow(distance,2 ) + Math.pow(distance,2));
+        //distance = Math.sqrt(Math.pow(distance,2 ) + Math.pow(distance,2));
+        distance *= 1.11;
         moveDistance(DIRECTION.RIGHT,.4, distance, 0);
     }
 

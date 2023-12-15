@@ -20,7 +20,7 @@ public class PixelArm {
 
     // Position for all the pixel arm servos and motor encoders
     public static final int    PIXEL_ELBOW_DOWN      = 0;
-    public static final int    PIXEL_ELBOW_UP_LOW    = -2000;
+    public static final int    PIXEL_ELBOW_UP_LOW    = -1870;  //-2000;
     public static final int    PIXEL_ELBOW_UP_MID    = -2230;
     public static final int    PIXEL_ELBOW_UP_HIGH   = -2700;
 
@@ -30,7 +30,7 @@ public class PixelArm {
     public static final int    PIXEL_ARM_OUT_HIGH    = 2982;
 
     public static final double PIXEL_WRIST_HOME      = 0.64;
-    public static final double PIXEL_WRIST_DROP_LOW  = 0.48;
+    public static final double PIXEL_WRIST_DROP_LOW  = 0.44;   // 0.48;
     public static final double PIXEL_WRIST_DROP_MID  = 0.445;
     public static final double PIXEL_WRIST_DROP_HIGH = 0.445;
 

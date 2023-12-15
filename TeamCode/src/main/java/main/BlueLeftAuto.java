@@ -11,6 +11,7 @@ import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
+import org.checkerframework.checker.propkey.qual.PropertyKeyBottom;
 import org.firstinspires.ftc.teamcode.drive.SampleMecanumDrive;
 import org.firstinspires.ftc.teamcode.trajectorysequence.TrajectorySequence;
 
@@ -85,12 +86,14 @@ public class BlueLeftAuto extends LinearOpMode {
         objectPosition = auto.findTeamElement();
 
         if (objectPosition == Auto.POSITION.left) {
-            robot.forward(30);
-            robot.turn(90);
-            robot.forward(6);
+            robot.forward(12);
+            robot.strafeLeft(13);
+            robot.forward(13);
             robot.dropPurplePixel();
+            robot.back(8);
+            robot.turn(90);
             robot.forward(15);
-            robot.strafeRight(7);
+            robot.strafeRight(1);
             auto.dropYellowPixel();
             auto.park();
 

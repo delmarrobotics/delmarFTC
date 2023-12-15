@@ -101,22 +101,24 @@ public class RedRightAuto extends LinearOpMode {
             auto.park();
 
         } else if (objectPosition == Auto.POSITION.center) {
-            robot.forward(30.5);
+            robot.forward(30);
             robot.dropPurplePixel();
             robot.back(8);
             robot.turn(-90);
-            robot.forward(26);
-            robot.strafeLeft(3);
+            robot.forward(22);
+            robot.strafeLeft(4);
             auto.dropYellowPixel();
-            auto.park();//robot.forward(12);
+            auto.park();
 
         } else if (objectPosition == Auto.POSITION.right) {
-            robot.forward(30);
-            robot.turn(-90);
-            robot.forward(6);
+            robot.forward(12);
+            robot.strafeRight(8.5);
+            robot.forward(13);
             robot.dropPurplePixel();
+            robot.back(8);
+            robot.turn(-90);
             robot.forward(15);
-            robot.strafeRight(7);
+            robot.strafeLeft(1);
             auto.dropYellowPixel();
             auto.park();
         }
