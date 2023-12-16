@@ -12,27 +12,30 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 
 public class PixelArm {
 
-    public enum ARM_POSITION { HOME, LOW, MID, HIGH }
-    private enum PIXEL_ARM_STATE { NONE, MOVE_HOME, MOVE_LOW, MOVE_MID, MOVE_HIGH, DROP_PIXEL, ARM_UP }
+    public enum ARM_POSITION { HOME, LOW, MID, HIGH, YELLOW }
+    private enum PIXEL_ARM_STATE { NONE, MOVE_HOME, MOVE_YELLOW, MOVE_LOW, MOVE_MID, MOVE_HIGH, DROP_PIXEL, ARM_UP }
 
     static final double PIXEL_ELBOW_SPEED = .75;
     static final double PIXEL_ARM_SPEED = .5;
 
     // Position for all the pixel arm servos and motor encoders
     public static final int    PIXEL_ELBOW_DOWN      = 0;
+    public static final int    PIXEL_ELBOW_UP_YELLOW = -1650;  //-2000;
     public static final int    PIXEL_ELBOW_UP_LOW    = -1870;  //-2000;
     public static final int    PIXEL_ELBOW_UP_MID    = -2230;
     public static final int    PIXEL_ELBOW_UP_HIGH   = -2700;
 
     public static final int    PIXEL_ARM_IN          = 0;
+    public static final int    PIXEL_ARM_OUT_YELLOW  = 1080;
     public static final int    PIXEL_ARM_OUT_LOW     = 1280;
     public static final int    PIXEL_ARM_OUT_MID     = 2100;
     public static final int    PIXEL_ARM_OUT_HIGH    = 2982;
 
-    public static final double PIXEL_WRIST_HOME      = 0.64;
-    public static final double PIXEL_WRIST_DROP_LOW  = 0.44;   // 0.48;
-    public static final double PIXEL_WRIST_DROP_MID  = 0.445;
-    public static final double PIXEL_WRIST_DROP_HIGH = 0.445;
+    public static final double PIXEL_WRIST_HOME         = 0.64;
+    public static final double PIXEL_WRIST_DROP_YELLOW  = 0.44;   // 0.48;
+    public static final double PIXEL_WRIST_DROP_LOW     = 0.44;   // 0.48;
+    public static final double PIXEL_WRIST_DROP_MID     = 0.445;
+    public static final double PIXEL_WRIST_DROP_HIGH    = 0.445;
 
     private DcMotor pixelElbow = null;
     private DcMotor pixelArm   = null;
@@ -208,7 +211,12 @@ public class PixelArm {
 
     public void positionArm(ARM_POSITION position) {
 
-        if (position == ARM_POSITION.LOW) {
+        if (position == ARM_POSITION.YELLOW) {
+            pixelElbowMove(PIXEL_ELBOW_UP_YELLOW);
+            opMode.sleep(500);
+            pixelArmMove((PIXEL_ARM_OUT_YELLOW));
+            pixelWristMove(PIXEL_WRIST_DROP_YELLOW);
+        } else if (position == ARM_POSITION.LOW) {
             pixelElbowMove(PIXEL_ELBOW_UP_LOW);
             opMode.sleep(500);
             pixelArmMove((PIXEL_ARM_OUT_LOW));

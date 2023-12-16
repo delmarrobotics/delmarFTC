@@ -178,11 +178,24 @@ public class Vision {
 
     public boolean findAprilTag (int tagID) {
 
+        double timeout = 2000;
+        List<AprilTagDetection> currentDetections;
         boolean targetFound = false;
         desiredTag  = null;
 
+        searchTime.reset();
+        while (true) {
+            currentDetections = aprilTag.getDetections();
+            if (currentDetections.size() != 0)
+                break;
+            if (timeout == 0 || searchTime.milliseconds() >= timeout)
+                break;
+            opMode.sleep(100);
+        }
+        Logger.message("findAprilTag: search time %6.0f", searchTime.milliseconds());
+
         // Step through the list of detected tags and look for a matching tag
-        List<AprilTagDetection> currentDetections = aprilTag.getDetections();
+        //List<AprilTagDetection> currentDetections = aprilTag.getDetections();
         for (AprilTagDetection detection : currentDetections) {
             // Look to see if we have size info on this tag.
             if (detection.metadata != null) {
@@ -197,12 +210,19 @@ public class Vision {
         }
 
         if (targetFound) {
-            Logger.addLine(String.format("\n==== (ID %d) %s", desiredTag.id, desiredTag.metadata.name));
-            Logger.addLine(String.format("XYZ %6.1f %6.1f %6.1f  (inch)", desiredTag.ftcPose.x, desiredTag.ftcPose.y, desiredTag.ftcPose.z));
-            Logger.addLine(String.format("PRY %6.1f %6.1f %6.1f  (deg)", desiredTag.ftcPose.pitch, desiredTag.ftcPose.roll, desiredTag.ftcPose.yaw));
-            Logger.addLine(String.format("RBE %6.1f %6.1f %6.1f  (inch, deg, deg)", desiredTag.ftcPose.range, desiredTag.ftcPose.bearing, desiredTag.ftcPose.elevation));
+            Logger.message("findAprilTag: found %S (ID %d)  x %6.2f  y %6.2f  yaw %6.2f",
+                    desiredTag.metadata.name,
+                    desiredTag.id,
+                    desiredTag.ftcPose.x,
+                    desiredTag.ftcPose.y,
+                    desiredTag.ftcPose.yaw);
+
+            //Logger.addLine(String.format("\n==== (ID %d) %s", desiredTag.id, desiredTag.metadata.name));
+            //Logger.addLine(String.format("XYZ %6.1f %6.1f %6.1f  (inch)", desiredTag.ftcPose.x, desiredTag.ftcPose.y, desiredTag.ftcPose.z));
+            //Logger.addLine(String.format("PRY %6.1f %6.1f %6.1f  (deg)", desiredTag.ftcPose.pitch, desiredTag.ftcPose.roll, desiredTag.ftcPose.yaw));
+            //Logger.addLine(String.format("RBE %6.1f %6.1f %6.1f  (inch, deg, deg)", desiredTag.ftcPose.range, desiredTag.ftcPose.bearing, desiredTag.ftcPose.elevation));
         } else {
-            Logger.addLine(String.format("Tag not found"));
+            Logger.message("findAprilTag: Tag %d not found", tagID);
         }
 
         return targetFound;
@@ -253,7 +273,7 @@ public class Vision {
                 break;
             opMode.sleep(100);
         }
-        Logger.message("findTeamElement: search time %f", searchTime.milliseconds());
+        Logger.message("findTeamElement: search time %6.0f", searchTime.milliseconds());
 
         currentRecognitions = tfod.getRecognitions();
         if (currentRecognitions.size() == 0)

@@ -15,6 +15,7 @@ import org.firstinspires.ftc.teamcode.drive.SampleMecanumDrive;
 import org.firstinspires.ftc.teamcode.trajectorysequence.TrajectorySequence;
 
 import common.Auto;
+import common.Logger;
 import common.Robot;
 
 @Autonomous(name="Red Left Start", group="Main")
@@ -71,8 +72,12 @@ public class RedLeftAuto extends LinearOpMode {
                 .strafeRight(30)
                 .build();
 
+        telemetry.addLine("waiting for camera");
+        telemetry.update();
         while (! robot.vision.cameraReady())
             sleep(100);
+        telemetry.addLine("camera ready, press start");
+        telemetry.update();
         sleep(1000);
 
         // Wait for the game to start (driver presses PLAY)
@@ -113,9 +118,9 @@ public class RedLeftAuto extends LinearOpMode {
         }
 
         auto.strafeToDropPosition();;
-        auto.dropYellowPixel();
-        auto.parkCenter();
+ //       auto.dropYellowPixel();
+ //       auto.parkCenter();
 
-        telemetry.addData("Run Time", runtime.toString());
+        Logger.message("Run Time %s", runtime.toString());
     }
 }

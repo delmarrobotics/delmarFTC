@@ -75,8 +75,9 @@ public class BlueLeftAuto extends LinearOpMode {
         telemetry.update();
         while (! robot.vision.cameraReady())
             sleep(100);
+        telemetry.addLine("camera ready, press start");
+        telemetry.update();
         sleep(1000);
-        telemetry.addLine("camera ready");
 
         // Wait for the game to start (driver presses PLAY)
         waitForStart();
@@ -94,30 +95,27 @@ public class BlueLeftAuto extends LinearOpMode {
             robot.turn(90);
             robot.forward(15);
             robot.strafeRight(1);
-            auto.dropYellowPixel();
-            auto.park();
 
         } else if (objectPosition == Auto.POSITION.center) {
             robot.forward(30.5);
             robot.dropPurplePixel();
             robot.back(8);
             robot.turn(90);
-            robot.forward(26);
+            robot.forward(25);
             robot.strafeRight(3);
-            auto.dropYellowPixel();
-            auto.park();
 
         } else if (objectPosition == Auto.POSITION.right) {
             robot.forward(24);
             robot.turn(90);
             robot.back(14);
             robot.dropPurplePixel();
-            robot.forward(40);
+            robot.forward(38);
             robot.strafeRight(6);
         }
 
+        auto.strafeToDropPosition();
         auto.dropYellowPixel();
-        auto.parkCenter();
+        auto.parkCorner();
 
         telemetry.addData("Run Time", runtime.toString());
     }

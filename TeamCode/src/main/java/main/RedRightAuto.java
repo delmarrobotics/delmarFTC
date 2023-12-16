@@ -77,8 +77,12 @@ public class RedRightAuto extends LinearOpMode {
                 .strafeLeft(23.5)
                 .build();
 
+        telemetry.addLine("waiting for camera");
+        telemetry.update();
         while (! robot.vision.cameraReady())
             sleep(100);
+        telemetry.addLine("camera ready, press start");
+        telemetry.update();
         sleep(1000);
 
         // Wait for the game to start (driver presses PLAY)
@@ -97,8 +101,6 @@ public class RedRightAuto extends LinearOpMode {
             robot.turn(180);
             robot.forward(22);
             robot.strafeLeft(6);
-            auto.dropYellowPixel();
-            auto.park();
 
         } else if (objectPosition == Auto.POSITION.center) {
             robot.forward(30);
@@ -107,8 +109,6 @@ public class RedRightAuto extends LinearOpMode {
             robot.turn(-90);
             robot.forward(22);
             robot.strafeLeft(4);
-            auto.dropYellowPixel();
-            auto.park();
 
         } else if (objectPosition == Auto.POSITION.right) {
             robot.forward(12);
@@ -119,9 +119,11 @@ public class RedRightAuto extends LinearOpMode {
             robot.turn(-90);
             robot.forward(15);
             robot.strafeLeft(1);
-            auto.dropYellowPixel();
-            auto.park();
         }
+
+        auto.strafeToDropPosition();
+        auto.dropYellowPixel();
+        auto.parkCenter();
 
         telemetry.addData("Run Time", runtime.toString());
     }

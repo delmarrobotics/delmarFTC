@@ -55,43 +55,28 @@ public class Auto {
         return objectPosition;
     }
 
-    /**
-     * Drop the purple pixel on the spike mark.
-     *
-     * @param x direction to search, forward  1, backward -1
-     * @param y direction to search, right 1, left -1
-     */
-    public void purplePixel (double x, double y) {
-
-        if (color == COLOR.RED)
-            robot.moveToColor(Robot.COLOR.RED, x, y, 0.2,3000);
-        else
-            robot.moveToColor(Robot.COLOR.BLUE, x, y, 0.2,3000);
-        robot.moveDistance(Robot.DIRECTION.FORWARD, 1.5, 1.5, 2000);
-
-        robot.dropPurplePixel();
-    }
-
     public void dropYellowPixel() {
-
 
         if (! DROP_PIXEL) return;
 
         boolean found = false;
-        robot.pixelArm.positionArm(PixelArm.ARM_POSITION.LOW);
+        robot.pixelArm.positionArm(PixelArm.ARM_POSITION.YELLOW);
         if (color == COLOR.BLUE)
-            found = robot.moveToColor(Robot.COLOR.BLUE, 1, 0, 0.25, 2000);
+            found = robot.moveToColor(Robot.COLOR.BLUE, 1, 0, 0.2, 2000);
         else if (color == COLOR.RED)
-            found = robot.moveToColor(Robot.COLOR.RED, 1, 0, 0.25, 2000);
+            found = robot.moveToColor(Robot.COLOR.RED, 1, 0, 0.2, 2000);
         //adjustYaw();
         if (found)
             robot.forward(7.5);
         robot.dropYellowPixel();
         robot.back(3);
-        robot.pixelArm.positionArm(PixelArm.ARM_POSITION.HOME);
+        robot.pixelArm.pixelWristMove(PixelArm.PIXEL_WRIST_HOME);
+        robot.pixelArm.pixelArmMove(PixelArm.PIXEL_ARM_IN);
+//        robot.pixelArm.pixelElbowMove(PixelArm.PIXEL_ELBOW_DOWN);
+
     }
 
-    public void park() {
+    public void parkCorner() {
 
         if ( ! PARK_ENABLED) return;
 
@@ -110,6 +95,7 @@ public class Auto {
             else if (objectPosition == POSITION.right)
                 robot.strafeRight(18 );
         }
+        robot.pixelArm.pixelElbowMove(PixelArm.PIXEL_ELBOW_DOWN);
         robot.forward(12);
     }
 
@@ -129,6 +115,7 @@ public class Auto {
             else if (objectPosition == POSITION.right)
                 robot.strafeLeft(30);
         }
+        robot.pixelArm.pixelElbowMove(PixelArm.PIXEL_ELBOW_DOWN);
         robot.forward(12);
     }
 
@@ -155,13 +142,13 @@ public class Auto {
             int id = robot.vision.aprilTagID();
             if (id == Vision.BLUE_LEFT_TAG || id == Vision.RED_LEFT_TAG) {
                 if (objectPosition == POSITION.left) {
-                    strafe = x - 7;
+                    strafe = x - 6.5;
                     Logger.message("left tag, left position, strafe %f", strafe);
                 } else if (objectPosition == POSITION.center) {
-                    strafe = 6;
+                    strafe = x;
                     Logger.message("left tag, center position, strafe %f", strafe);
                 } else {
-                    strafe = 6 + x;
+                    strafe = 6.5 + x;
                     Logger.message("left tag, right position, strafe %f", strafe);
                 }
             } else if (id == Vision.BLUE_CENTER_TAG || id == Vision.RED_CENTER_TAG) {

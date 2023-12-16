@@ -77,15 +77,19 @@ public class BlueRightAuto extends LinearOpMode {
                 .strafeLeft(23.5)
                 .build();
 
-        auto.setColor(Auto.COLOR.BLUE);
 
+        telemetry.addLine("waiting for camera");
+        telemetry.update();
         while (! robot.vision.cameraReady())
             sleep(100);
+        telemetry.addLine("camera ready, press start");
+        telemetry.update();
         sleep(1000);
 
         waitForStart();
         runtime.reset();
 
+        auto.setColor(Auto.COLOR.BLUE);
         objectPosition = auto.findTeamElement();
 
         if (objectPosition == Auto.POSITION.left) {
@@ -96,7 +100,8 @@ public class BlueRightAuto extends LinearOpMode {
             robot.back(10);
             robot.turn(-90);
             robot.forward(25);
-            robot.forward(77-4);
+            robot.turn(90);
+            robot.forward(67+4);
             robot.strafeLeft(24);
 
         } else if (objectPosition == Auto.POSITION.center) {
@@ -104,21 +109,23 @@ public class BlueRightAuto extends LinearOpMode {
             robot.dropPurplePixel();
             robot.forward(19);
             robot.turn(90);
-            robot.forward(77);
+            robot.forward(67);
             robot.strafeLeft(24);
 
         } else if (objectPosition == Auto.POSITION.right) {
             robot.forward(25);
-            robot.strafeLeft(8.5);
+            robot.strafeRight(8.5);
             robot.dropPurplePixel();
             robot.forward(24);
             robot.turn(90);
-            robot.forward(77+8.5);
+            robot.forward(67+8.5);
             robot.strafeLeft(24);
         }
 
-        auto.yellowPixel();
+        auto.strafeToDropPosition();
+        auto.dropYellowPixel();
+        auto.parkCenter();
 
-        telemetry.addData("Run Time", runtime.toString());
+        Logger.message("Run Time %s", runtime.toString());
     }
 }

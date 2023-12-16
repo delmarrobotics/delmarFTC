@@ -53,7 +53,7 @@ public class Robot {
 
     // drone launcher servo position
     static final double DRONE_ANGLE_DOWN = 0.48;
-    static final double DRONE_ANGLE_UP   = 0.40;
+    static final double DRONE_ANGLE_UP   = 0.29;
     static final double DRONE_FIRE_DOWN  = 0.063;
     static final double DRONE_FIRE_UP    = 0.16;
 
@@ -577,9 +577,9 @@ public class Robot {
             Color.colorToHSV(colors.toColor(), hsvValues);
             float hue = hsvValues[0];
             float saturation = hsvValues[1];
-
+            //Logger.message("hue %f saturation %f", hue, saturation);
             if (color == COLOR.BLUE) {
-                if (hue >= 190 && hue <= 230 && saturation >= .7) {
+                if (hue >= 190 && hue <= 230 && saturation >= .5) {
                     Logger.message("blue line found");
                     found = true;
                 }
@@ -647,7 +647,7 @@ public class Robot {
      */
     public void dropPurplePixel(){
         dropper.setPosition(DROPPER_OPEN);
-        opMode.sleep(1000);
+        opMode.sleep(500);
         dropper.setPosition(DROPPER_CLOSE);
     }
 
@@ -655,9 +655,6 @@ public class Robot {
         spinnerBucket.setPower(-SPINNER_SPEED);
         opMode.sleep(2500);
         spinnerBucket.setPower(0);
-
-        pixelArm.pixelWristMove(PixelArm.PIXEL_WRIST_HOME);
-        pixelArm.positionArm(PixelArm.ARM_POSITION.HOME);
     }
 
     public void dropPixel () {
