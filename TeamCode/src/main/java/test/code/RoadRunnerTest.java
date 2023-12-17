@@ -30,6 +30,7 @@
 package test.code;
 
 import com.acmerobotics.roadrunner.geometry.Pose2d;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
@@ -47,7 +48,7 @@ import common.Robot;
  */
 
 @TeleOp(name="RoadRunner Test", group="Test")
-
+@Disabled
 public class RoadRunnerTest extends LinearOpMode {
 
     // Declare OpMode members.

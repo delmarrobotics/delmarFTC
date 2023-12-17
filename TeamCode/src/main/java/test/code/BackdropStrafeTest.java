@@ -1,5 +1,6 @@
 package test.code;
 
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
@@ -7,6 +8,7 @@ import common.Auto;
 import common.Robot;
 
 @TeleOp(name="Backdrop Strafe Test", group="Test")
+@Disabled
 public class BackdropStrafeTest extends LinearOpMode {
 
     private Robot robot = null;

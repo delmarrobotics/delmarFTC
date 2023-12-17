@@ -1,5 +1,6 @@
 package test.code;
 
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.util.ElapsedTime;
@@ -10,6 +11,7 @@ import common.Robot;
  * Test code for the hanging arm
  */
 @TeleOp(name="Drive To Line Test", group="Test")
+@Disabled
 @SuppressWarnings("unused")
 public class DriveToLineTest extends LinearOpMode {
 

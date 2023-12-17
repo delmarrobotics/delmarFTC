@@ -2,6 +2,7 @@ package test.code;
 
 import com.acmerobotics.roadrunner.geometry.Pose2d;
 import com.acmerobotics.roadrunner.trajectory.Trajectory;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
@@ -17,6 +18,7 @@ import common.Vision;
  * Test code for the hanging arm
  */
 @TeleOp(name="Drive To April Tag", group="Test")
+@Disabled
 @SuppressWarnings("unused")
 public class DriveToAprilTag extends LinearOpMode {
 
