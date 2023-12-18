@@ -169,6 +169,11 @@ public class Vision {
         visionPortal.setProcessorEnabled(aprilTag, true);
     }
 
+    public void disableVision() {
+        visionPortal.setProcessorEnabled(tfod, false);
+        visionPortal.setProcessorEnabled(aprilTag, false);
+    }
+
     public void enableBothVision() {
         visionPortal.setProcessorEnabled(tfod, true);
         visionPortal.setProcessorEnabled(aprilTag, true);

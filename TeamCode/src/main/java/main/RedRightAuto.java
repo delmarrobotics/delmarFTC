@@ -123,7 +123,7 @@ public class RedRightAuto extends LinearOpMode {
 
         auto.strafeToDropPosition();
         auto.dropYellowPixel();
-        auto.parkCenter();
+        auto.parkCorner();
 
         telemetry.addData("Run Time", runtime.toString());
     }

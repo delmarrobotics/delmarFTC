@@ -118,8 +118,10 @@ public class RedLeftAuto extends LinearOpMode {
         }
 
         auto.strafeToDropPosition();;
- //       auto.dropYellowPixel();
- //       auto.parkCenter();
+        auto.dropYellowPixel();
+        auto.parkCenter();
+
+        robot.vision.disableVision();
 
         Logger.message("Run Time %s", runtime.toString());
     }
