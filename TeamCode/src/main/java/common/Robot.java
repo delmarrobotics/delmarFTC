@@ -291,6 +291,15 @@ public class Robot {
         return wheelPositions;
     }
 
+    public void printWheelPosition() {
+        Logger.message("%6.0f  %6.0f  %6.0f",
+                leftFrontDrive.getCurrentPosition(),
+                rightFrontDrive.getCurrentPosition(),
+                leftBackDrive.getCurrentPosition(),
+                rightBackDrive.getCurrentPosition()
+        );
+    }
+
     /**
      *  Method to perform a relative move, based on encoder counts.
      *  Encoders are not reset as the move is based on the current position.

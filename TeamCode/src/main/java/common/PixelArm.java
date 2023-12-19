@@ -20,7 +20,7 @@ public class PixelArm {
 
     // Position for all the pixel arm servos and motor encoders
     public static final int    PIXEL_ELBOW_DOWN      = 0;
-    public static final int    PIXEL_ELBOW_UP_YELLOW = -1650;  //-2000;
+    public static final int    PIXEL_ELBOW_UP_YELLOW = -1750;  //-2000;
     public static final int    PIXEL_ELBOW_UP_LOW    = -1870;  //-2000;
     public static final int    PIXEL_ELBOW_UP_MID    = -2230;
     public static final int    PIXEL_ELBOW_UP_HIGH   = -2700;

@@ -50,7 +50,10 @@ public class DriveWithTriggerTest extends LinearOpMode {
 
       telemetry.addData("Status", "Run Time: " + runtime);
       telemetry.update();
+      if (gamepad1.a){
+        robot.printWheelPosition();
       }
+    }
   }
 
   public void moveRobot(double x, double y, double yaw, double speed) {
