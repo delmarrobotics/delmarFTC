@@ -53,7 +53,6 @@ public class RoadRunnerTest extends LinearOpMode {
 
     // Declare OpMode members.
     public Robot robot = null;
-    private Drive drive = null;
     Auto auto;
 
     @Override
@@ -65,10 +64,7 @@ public class RoadRunnerTest extends LinearOpMode {
         robot = new Robot(this);
         robot.init();
 
-        drive = new Drive(hardwareMap);
-        drive.setRobot(robot);
-
-        auto = new Auto(this, robot, drive);
+        auto = new Auto(this, robot, null);
 
         while (! robot.vision.cameraReady())
             sleep(100);
@@ -157,18 +153,6 @@ public class RoadRunnerTest extends LinearOpMode {
          */
     }
 
-
-
-
-    public void yellowPixel(){
-        auto.setColor(Auto.COLOR.RED);
-        auto.yellowPixel();
-
-    }
-
-
-
-
     public void turnTest () {
         for (int i=0; i < 12; i++) {
             robot.turn(-90);
@@ -179,8 +163,8 @@ public class RoadRunnerTest extends LinearOpMode {
     public void distanceTest () {
         double distance = 24;
         for (distance = 12; distance <= 36; distance += 12) {
-            drive.forward(distance);
-            drive.back(distance);
+            robot.forward(distance);
+            robot.back(distance);
 //            drive.turn(Math.toRadians(90));
   //          drive.strafeLeft(distance);
     //        drive.strafeRight(distance);
