@@ -1,121 +1,535 @@
+/*
+ * This this contains the class that controls the robot's drive train
+ */
+
 package common;
 
-import com.acmerobotics.roadrunner.geometry.Pose2d;
-import com.acmerobotics.roadrunner.trajectory.Trajectory;
-import com.qualcomm.robotcore.hardware.HardwareMap;
+import android.graphics.Color;
 
-import org.firstinspires.ftc.teamcode.drive.SampleMecanumDrive;
+import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
+import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.DcMotorEx;
+import com.qualcomm.robotcore.hardware.DcMotorSimple;
+import com.qualcomm.robotcore.hardware.DistanceSensor;
+import com.qualcomm.robotcore.hardware.IMU;
+import com.qualcomm.robotcore.hardware.NormalizedColorSensor;
+import com.qualcomm.robotcore.hardware.NormalizedRGBA;
+import com.qualcomm.robotcore.util.ElapsedTime;
 
+import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
+import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
+import org.firstinspires.ftc.robotcore.external.navigation.YawPitchRollAngles;
+
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
-/*
-*
-*/
+public class Drive  {
 
-public class Drive extends SampleMecanumDrive {
+    static final boolean LOG_VERBOSE = false;
 
-    Robot robot;
+    // Drive train
+    static final double COUNTS_PER_MOTOR_REV  = 28;              // HD Hex Motor Encoder
+    static final double DRIVE_GEAR_REDUCTION  = 20;              // Gearing
+    static final double WHEEL_DIAMETER_INCHES = (96 / 25.4);     // 96 mm while converted to inches
+    static final double COUNTS_PER_INCH =
+            (COUNTS_PER_MOTOR_REV * DRIVE_GEAR_REDUCTION) / (WHEEL_DIAMETER_INCHES * Math.PI);
 
-    public Drive(HardwareMap hardwareMap) {
-        super(hardwareMap);
+    static final double RAMP_DISTANCE   = COUNTS_PER_INCH * 12;   // ramp down distance in encoder counts
+    static final double RAMP_TIME       = 1000;                  // ramp up time in milliseconds
+    static final double RAMP_MIN_SPEED  = 0.2;
+
+    public final double MIN_SPEED        = 0.25;
+    public final double MAX_SPEED        = 1;
+    private static final double MAX_ROTATE_SPEED = 0.50;
+    public enum DIRECTION { FORWARD, BACK, LEFT, RIGHT, TURN_LEFT, TURN_RIGHT }
+
+    // Color sensor
+    static final float COLOR_SENSOR_GAIN = 2.2F;
+    public enum COLOR { RED, BLUE }
+
+    //  Drive train motors
+    public DcMotorEx leftFrontDrive = null;   //  Used to control the left front drive wheel
+    public DcMotorEx rightFrontDrive = null;  //  Used to control the right front drive wheel
+    public DcMotorEx leftBackDrive = null;    //  Used to control the left back drive wheel
+    public DcMotorEx rightBackDrive = null;   //  Used to control the right back drive wheel
+
+    private IMU imu;
+    private NormalizedColorSensor colorSensor = null;
+    private DistanceSensor sensorDistance;
+
+    private final ElapsedTime elapsedTime = new ElapsedTime();
+
+    List<DcMotorEx> motors;
+    LinearOpMode opMode;
+
+    public Drive(LinearOpMode opMode) {
+        this.opMode = opMode;
+        init();
     }
 
-    public void setRobot (Robot robot) {
-        this.robot = robot;
+    /**
+     * Initialize the drive train motors.
+     */
+    private void init() {
+        try {
+            leftFrontDrive = opMode.hardwareMap.get(DcMotorEx.class, Config.LEFT_FRONT);
+            rightFrontDrive = opMode.hardwareMap.get(DcMotorEx.class, Config.RIGHT_FRONT);
+            leftBackDrive = opMode.hardwareMap.get(DcMotorEx.class, Config.LEFT_BACK);
+            rightBackDrive = opMode.hardwareMap.get(DcMotorEx.class, Config.RIGHT_BACK);
+
+            imu = opMode.hardwareMap.get(IMU.class, "imu");
+
+            colorSensor = opMode.hardwareMap.get(NormalizedColorSensor.class, Config.COLOR_SENSOR);
+            colorSensor.setGain(COLOR_SENSOR_GAIN);
+
+        } catch (Exception e) {
+            Logger.error(e, "Hardware not found");
+        }
+
+        leftFrontDrive.setDirection(DcMotorSimple.Direction.FORWARD);
+        rightFrontDrive.setDirection(DcMotorSimple.Direction.FORWARD);
+        leftBackDrive.setDirection(DcMotorSimple.Direction.REVERSE);
+        rightBackDrive.setDirection(DcMotorSimple.Direction.REVERSE);
+
+        motors = Arrays.asList(leftFrontDrive, rightFrontDrive, leftBackDrive, rightBackDrive);
+
+        for (DcMotor motor : motors) {
+            motor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        }
+    }
+
+
+    /**
+     * Move robot according to desired axes motions
+     *
+     * @param x   Positive is forward
+     * @param y   Positive is strafe left
+     * @param yaw Positive Yaw is counter-clockwise
+     */
+    public void moveRobot(double x, double y, double yaw) {
+
+        double leftFrontPower = x - y - yaw;
+        double rightFrontPower = x + y + yaw;
+        double leftBackPower = x + y - yaw;
+        double rightBackPower = x - y + yaw;
+
+        // Normalize wheel powers to be less than 1.0
+        double max = Math.max(Math.abs(leftFrontPower), Math.abs(rightFrontPower));
+        max = Math.max(max, Math.abs(leftBackPower));
+        max = Math.max(max, Math.abs(rightBackPower));
+
+        if (max > 1.0) {
+            leftFrontPower /= max;
+            rightFrontPower /= max;
+            leftBackPower /= max;
+            rightBackPower /= max;
+        }
+
+        // Send powers to the wheels.
+        leftFrontDrive.setPower(leftFrontPower);
+        rightFrontDrive.setPower(rightFrontPower);
+        leftBackDrive.setPower(leftBackPower);
+        rightBackDrive.setPower(rightBackPower);
+    }
+
+
+    public void moveRobot(double x, double y, double yaw, double speed) {
+
+        double leftFrontPower;
+        double rightFrontPower;
+        double leftBackPower;
+        double rightBackPower;
+
+
+        if (x == 0 && y == 0 && yaw == 0 ) {
+            leftFrontPower = 0;
+            rightFrontPower = 0;
+            leftBackPower = 0;
+            rightBackPower = 0;
+
+        } else {
+            leftFrontPower = x - y - yaw;
+            rightFrontPower = x + y + yaw;
+            leftBackPower = x + y - yaw;
+            rightBackPower = x - y + yaw;
+
+            // Normalize wheel powers to be less than 1.0
+            double max = Math.max(Math.abs(leftFrontPower), Math.abs(rightFrontPower));
+            max = Math.max(max, Math.abs(leftBackPower));
+            max = Math.max(max, Math.abs(rightBackPower));
+
+            if (speed == 0)
+                speed = MIN_SPEED;
+            else if (speed > MAX_SPEED) {
+                speed = MAX_SPEED;
+            }
+            if (x == 0 && y == 0 && (yaw > 0 || yaw < 0)) {
+                if (speed > MAX_ROTATE_SPEED)
+                    speed = MAX_ROTATE_SPEED;
+            }
+
+            double scale = (1 / max) * speed;
+
+            leftFrontPower *= scale;
+            rightFrontPower *= scale;
+            leftBackPower *= scale;
+            rightBackPower *= scale;
+
+            //Logger.message("power %f %f %f %f %f", speed, leftFrontPower, rightFrontPower, leftBackPower, rightBackPower);
+        }
+
+        // Send powers to the wheels.
+        leftFrontDrive.setPower(leftFrontPower);
+        rightFrontDrive.setPower(rightFrontPower);
+        leftBackDrive.setPower(leftBackPower);
+        rightBackDrive.setPower(rightBackPower);
+    }
+
+
+
+    /**
+     *  Method to perform a relative move, based on encoder counts.
+     *  Encoders are not reset as the move is based on the current position.
+     *  Move will stop if any of three conditions occur:
+     *  1) Move gets to the desired position
+     *  2) Move runs out of time
+     *  3) Driver stops the OpMode running.
+     *
+     * @param direction direction to move
+     * @param speed motor speed (-1 to 1)
+     * @param inches  distance to move in inches, positive for forward, negative for backward
+     * @param timeout timeout in milliseconds, 0 for no timeout
+     */
+    public void moveDistance(Robot.DIRECTION direction, double speed, double inches, double timeout) {
+
+        int leftFrontSign = 0;
+        int rightFrontSign = 0;
+        int leftBackSign = 0;
+        int rightBackSign = 0;
+
+        if (direction == Robot.DIRECTION.FORWARD) {
+            leftFrontSign  = 1;
+            rightFrontSign = 1;
+            leftBackSign   = 1;
+            rightBackSign  = 1;
+        } else if (direction == Robot.DIRECTION.BACK) {
+            leftFrontSign  = -1;
+            rightFrontSign = -1;
+            leftBackSign   = -1;
+            rightBackSign  = -1;
+        } else if (direction == Robot.DIRECTION.LEFT) {
+            leftFrontSign  = -1;
+            rightFrontSign =  1;
+            leftBackSign   =  1;
+            rightBackSign  = -1;
+        } else if (direction == Robot.DIRECTION.RIGHT) {
+            leftFrontSign  =  1;
+            rightFrontSign = -1;
+            leftBackSign   = -1;
+            rightBackSign  =  1;
+        } else if (direction == Robot.DIRECTION.TURN_LEFT) {
+            leftFrontSign  = -1;
+            rightFrontSign =  1;
+            leftBackSign   = -1;
+            rightBackSign  =  1;
+        } else if (direction == Robot.DIRECTION.TURN_RIGHT){
+            leftFrontSign  =  1;
+            rightFrontSign = -1;
+            leftBackSign   =  1;
+            rightBackSign  = -1;
+        }
+
+        // Ensure that the OpMode is still active
+        if (! opMode.opModeIsActive())  return;
+
+        //Logger.message("moveDistance: heading %6.2f", getOrientation());
+
+        DcMotor.RunMode mode = leftFrontDrive.getMode();
+        for (DcMotor motor : motors) {
+            motor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+            motor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        }
+
+        // Determine new target position, and pass to motor controller
+        int target = (int) (inches * COUNTS_PER_INCH);
+        leftFrontDrive.setTargetPosition(target * leftFrontSign);
+        rightFrontDrive.setTargetPosition(target * rightFrontSign);
+        leftBackDrive.setTargetPosition(target * leftBackSign);
+        rightBackDrive.setTargetPosition(target * rightBackSign);
+
+        // Turn On RUN_TO_POSITION
+        for (DcMotor motor : motors)
+            motor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+
+        // Looping until we move the desired distance
+        elapsedTime.reset();
+        boolean moving = true;
+        while (opMode.opModeIsActive() && moving) {
+
+            // Correct for drift
+            double leftFrontPos = Math.abs(leftFrontDrive.getCurrentPosition());
+            double rightFrontPos = Math.abs(rightFrontDrive.getCurrentPosition());
+            double leftBackPos = Math.abs(leftBackDrive.getCurrentPosition());
+            double rightBackPos = Math.abs(rightBackDrive.getCurrentPosition());
+            double maxPos = Math.max(Math.max(Math.max(leftFrontPos, rightFrontPos), leftBackPos), rightBackPos);
+
+            double speedRange = Math.max(Math.abs(speed) - RAMP_MIN_SPEED, 0);
+            double ramUp = (elapsedTime.milliseconds() / RAMP_TIME) * speedRange + RAMP_MIN_SPEED;
+            double ramDown = (Math.pow((Math.abs(target) - maxPos), 2) / Math.pow(RAMP_DISTANCE, 2)) * speedRange + RAMP_MIN_SPEED;
+            double rampPower = Math.min(Math.min(ramUp, ramDown), speed);
+
+            double scale = .0015;
+            double leftFrontAdjust = (maxPos - leftFrontPos) * scale;
+            double rightFrontAdjust = (maxPos - rightFrontPos) * scale;
+            double leftBackAdjust = (maxPos - leftBackPos) * scale;
+            double rightBackAdjust = (maxPos - rightBackPos) * scale;
+
+            leftFrontDrive.setPower((rampPower + leftFrontAdjust) * leftFrontSign);
+            rightFrontDrive.setPower((rampPower + rightFrontAdjust) * rightFrontSign);
+            leftBackDrive.setPower((rampPower + leftBackAdjust) * leftBackSign);
+            rightBackDrive.setPower((rampPower + rightBackAdjust) * rightBackSign);
+
+            for (DcMotor motor : motors)
+                if (! motor.isBusy())
+                    moving = false;
+
+            if (timeout > 0 && elapsedTime.milliseconds() >= timeout) {
+                Logger.message("moveDistance: timed out");
+                break;
+            }
+
+            if (LOG_VERBOSE)
+                Logger.message("moveDistance: power: %4.2f %4.2f %4.2f %4.2f    adjust: %4.2f %4.2f %4.2f %4.2f     position: %6d %6d %6d %6d     velocity: %4.2f %4.2f %4.2f %4.2f",
+                        leftFrontDrive.getPower(),
+                        rightFrontDrive.getPower(),
+                        leftBackDrive.getPower(),
+                        rightBackDrive.getPower(),
+                        leftFrontAdjust,
+                        rightFrontAdjust,
+                        leftBackAdjust,
+                        rightBackAdjust,
+                        leftFrontDrive.getCurrentPosition(),
+                        rightFrontDrive.getCurrentPosition(),
+                        leftBackDrive.getCurrentPosition(),
+                        rightBackDrive.getCurrentPosition(),
+                        leftFrontDrive.getVelocity(),
+                        rightFrontDrive.getVelocity(),
+                        leftBackDrive.getVelocity(),
+                        rightBackDrive.getVelocity());
+        }
+
+        // Stop all motion;
+        for (DcMotor motor : motors)
+            motor.setPower(0);
+
+        // Restore run mode to prior state
+        for (DcMotor motor : motors)
+            motor.setMode(mode);
+
+        Logger.message("%s  target  %6.2f  traveled %6.2f %6.2f %6.2f %6.2f  heading %6.2f  time %6.2f",
+                direction,
+                (double)target / COUNTS_PER_INCH,
+                (double)leftFrontDrive.getCurrentPosition() / COUNTS_PER_INCH,
+                (double)rightFrontDrive.getCurrentPosition() / COUNTS_PER_INCH,
+                (double)leftBackDrive.getCurrentPosition() / COUNTS_PER_INCH,
+                (double)rightBackDrive.getCurrentPosition() / COUNTS_PER_INCH,
+                getOrientation(),
+                elapsedTime.seconds());
+    }
+
+    /**
+     * Move the robot until the specified color is detected.
+     *
+     * @param color the color to detect
+     * @param x positive for forward, negative for backwards
+     * @param y positive for strafe left ???, negative for strafe right ???
+     * @param speed drive speed
+     * @param timeout timeout in milliseconds
+     */
+    public boolean moveToColor(Robot.COLOR color, double x, double y, double speed, double timeout){
+
+        boolean found = false;
+        float[] hsvValues = new float[3];
+        ElapsedTime elapsedTime = new ElapsedTime();
+
+        resetEncoders();
+        moveRobot(x, y, 0, speed);
+        elapsedTime.reset();
+
+        while (! found) {
+            // Get the normalized colors from the sensor
+            NormalizedRGBA colors = colorSensor.getNormalizedColors();
+
+            // Convert to HSV color space
+            Color.colorToHSV(colors.toColor(), hsvValues);
+            float hue = hsvValues[0];
+            float saturation = hsvValues[1];
+            //Logger.message("hue %f saturation %f", hue, saturation);
+            if (color == Robot.COLOR.BLUE) {
+                if (hue >= 190 && hue <= 230 && saturation >= .5) {
+                    Logger.message("blue line found");
+                    found = true;
+                }
+            } else if (color == Robot.COLOR.RED) {
+                //Logger.message("hue %f, saturation %f", hue, saturation);
+                if ((hue >= 0 && hue <= 90) && saturation >= .5) {
+                    Logger.message("red line found");
+                    found = true;
+                }
+            }
+            if (elapsedTime.milliseconds() > timeout){
+                Logger.message("no line found");
+                break;
+            }
+        }
+        stopRobot();
+        return found;
+    }
+
+    /**
+     * Move forward until the distance sensor detects an object at the specified distance
+     *
+     * @param inches  distance for the object to stop
+     * @param speed   speed to move forward
+     * @param timeout timeout in milliseconds
+     * @return true if an object was detected at the specified distance
+     */
+    public boolean moveToObject (double inches, double speed, double timeout) {
+        boolean found = false;
+        ElapsedTime elapsedTime = new ElapsedTime();
+
+        resetEncoders();
+        moveRobot(1, 0, 0, speed);
+        elapsedTime.reset();
+
+        while (! found) {
+            double distance = sensorDistance.getDistance(DistanceUnit.INCH);
+
+            if (distance <= inches) {
+                stopRobot();
+                Logger.message("object found");
+                found = true;
+            }
+
+            if (elapsedTime.milliseconds() > timeout){
+                stopRobot();
+                Logger.warning("no object found");
+                break;
+            }
+        }
+
+        return found;
+    }
+
+    /**
+     * Stop all the drive train motors.
+     */
+    public void stopRobot() {
+        leftFrontDrive.setPower(0);
+        rightFrontDrive.setPower(0);
+        leftBackDrive.setPower(0);
+        rightBackDrive.setPower(0);
+    }
+
+
+    public void resetEncoders() {
+
+        for (DcMotor motor : motors) {
+            DcMotor.RunMode mode = leftFrontDrive.getMode();
+            motor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+            motor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+            motor.setMode(mode);
+        }
+    }
+
+    public List<Double> getWheelPositions() {
+
+        List<Double> wheelPositions = new ArrayList<>();
+        for (DcMotor motor : motors) {
+            int position = motor.getCurrentPosition();
+            wheelPositions.add((double)position / COUNTS_PER_INCH);
+        }
+        return wheelPositions;
+    }
+
+    public double getDistanceTraveled() {
+        double traveled = 0;
+
+        for (DcMotor motor : motors)
+            traveled += motor.getCurrentPosition();
+        return traveled / motors.size() / COUNTS_PER_INCH;
+    }
+
+    /**
+     *  Return the current orientation of the robot.
+     * @return orientation in a range of -180 to 180
+     */
+    public double getOrientation(){
+        YawPitchRollAngles orientation = imu.getRobotYawPitchRollAngles();
+        //Logger.message("Yaw   (Z) %6.2f Deg. (Heading)", orientation.getYaw(AngleUnit.DEGREES));
+
+        return orientation.getYaw(AngleUnit.DEGREES);
+    }
+
+    public void resetOrientation() {
+        imu.resetYaw();
     }
 
     public void forward (double distance) {
-
-        List<Double> before = robot.getWheelPositions();
-        double beforeHeading = super.getRawExternalHeading();
-
-        Trajectory trajectory = super.trajectoryBuilder(new Pose2d())
-                .forward(distance)
-                .build();
-        super.followTrajectory(trajectory);
-
-        List<Double> after = robot.getWheelPositions();
-
-        Logger.message("distance %6.2f  heading %6.2f  leftFront %6.2f  leftRear %6.2f  rightRear %6.2f  rightFront %6.2f",
-                distance,
-                Math.toDegrees(super.getRawExternalHeading() - beforeHeading),
-                after.get(0) - before.get(0),
-                after.get(1) - before.get(1),
-                after.get(2) - before.get(2),
-                after.get(3) - before.get(3));
+        moveDistance(Robot.DIRECTION.FORWARD,.4, distance, 0);
     }
 
     public void back (double distance) {
 
-        List<Double> before = robot.getWheelPositions();
-        double beforeHeading = super.getRawExternalHeading();
-
-        Trajectory trajectory = super.trajectoryBuilder(new Pose2d())
-                .back(distance)
-                .build();
-        super.followTrajectory(trajectory);
-
-        List<Double> after = robot.getWheelPositions();
-
-        Logger.message("distance %6.2f  heading %6.2f  leftFront %6.2f  leftRear %6.2f  rightRear %6.2f  rightFront %6.2f",
-                distance,
-                super.getRawExternalHeading() - beforeHeading,
-                after.get(0) - before.get(0),
-                after.get(1) - before.get(1),
-                after.get(2) - before.get(2),
-                after.get(3) - before.get(3));
+        moveDistance(Robot.DIRECTION.BACK,.4, distance, 0);
     }
 
     public void strafeLeft (double distance) {
-
-        List<Double> before = robot.getWheelPositions();
-        double beforeHeading = super.getRawExternalHeading();
-
-        Trajectory trajectory = super.trajectoryBuilder(new Pose2d())
-                .strafeLeft(distance)
-                .build();
-        super.followTrajectory(trajectory);
-
-        List<Double> after = robot.getWheelPositions();
-
-        Logger.message("distance %6.2f  heading %6.2f  leftFront %6.2f  leftRear %6.2f  rightRear %6.2f  rightFront %6.2f",
-                distance,
-                super.getRawExternalHeading() - beforeHeading,
-                after.get(0) - before.get(0),
-                after.get(1) - before.get(1),
-                after.get(2) - before.get(2),
-                after.get(3) - before.get(3));
+        //distance = Math.sqrt(Math.pow(distance,2 ) + Math.pow(distance,2));
+        distance *= 1.11;
+        moveDistance(Robot.DIRECTION.LEFT,.4, distance, 0);
     }
 
     public void strafeRight (double distance) {
-
-        List<Double> before = robot.getWheelPositions();
-        double beforeHeading = super.getRawExternalHeading();
-
-        Trajectory trajectory = super.trajectoryBuilder(new Pose2d())
-                .strafeRight(distance)
-                .build();
-        super.followTrajectory(trajectory);
-
-        List<Double> after = robot.getWheelPositions();
-
-        Logger.message("distance %6.2f  heading %6.2f  leftFront %6.2f  leftRear %6.2f  rightRear %6.2f  rightFront %6.2f",
-                distance,
-                super.getRawExternalHeading() - beforeHeading,
-                after.get(0) - before.get(0),
-                after.get(1) - before.get(1),
-                after.get(2) - before.get(2),
-                after.get(3) - before.get(3));
+        //distance = Math.sqrt(Math.pow(distance,2 ) + Math.pow(distance,2));
+        distance *= 1.11;
+        moveDistance(Robot.DIRECTION.RIGHT,.4, distance, 0);
     }
 
-    public void turn(double angle) {
+    public void turn(double degrees) {
 
-        //double heading = super.getRawExternalHeading();
-        double heading = robot.getOrientation();
-        super.turn(angle);
-        Logger.message("angle %6.2f  heading %6.2f",
-                Math.toDegrees(angle),
-                robot.getOrientation() - heading);
+        double circumference = 2 * Math.PI * 24.9/2;
+        double inches = Math.abs(degrees) / 360 * circumference;
+        if (degrees > 0)
+            moveDistance(Robot.DIRECTION.TURN_LEFT, 0.4,  inches, 0 );
+        else
+            moveDistance(Robot.DIRECTION.TURN_RIGHT, 0.4,  inches, 0 );
     }
 
-}
+    public void turnWithIMU(double degrees) {
+        imu.resetYaw();
+        opMode.sleep(200);
+        if (degrees > 0) {
+            moveRobot(0, 0, 1, 0.3);
+            while (opMode.opModeIsActive()) {
+                double current = getOrientation();
+                Logger.message("turn: degrees %6.1f  current %6.2f", degrees, current);
+                if (current >= degrees-1)
+                    break;
+            }
+        } else if (degrees < 0) {
+            moveRobot(0, 0, -1, 0.3);
+            while (opMode.opModeIsActive()) {
+                double current = getOrientation();
+                Logger.message("turn: degrees %6.1f  current %6.2f", degrees, current);
+                if (current <= degrees+1)
+                    break;
+            }
+        }
+        stopRobot();
+    }
+
+
+} // end of class
+
