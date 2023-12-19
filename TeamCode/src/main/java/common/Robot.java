@@ -115,8 +115,7 @@ public class Robot {
         hangingArm = new HangingArm(opMode);
         pixelArm = new PixelArm(opMode);
         vision = new Vision(opMode);
-        drive = new Drive(opMode.hardwareMap);
-        drive.setRobot(this);
+        //drive = new Drive(opMode.hardwareMap);
 
         initDriveTrain();
 
@@ -513,6 +512,9 @@ public class Robot {
             for (DcMotor motor : motors)
                 if (! motor.isBusy())
                     moving = false;
+
+            if (! opMode.opModeIsActive())
+                return;
 
             if (timeout > 0 && runtime.milliseconds() >= timeout) {
                 Logger.message("moveDistance: timed out");
