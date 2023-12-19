@@ -1,26 +1,70 @@
+/*
+ * This file contains support for TensorFlow object recognition and AprilTag recognition
+ */
 package common;
 
+import android.graphics.Bitmap;
+import android.graphics.Canvas;
 
+import com.acmerobotics.dashboard.FtcDashboard;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
+import org.firstinspires.ftc.robotcore.external.function.Consumer;
+import org.firstinspires.ftc.robotcore.external.function.Continuation;
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
 import org.firstinspires.ftc.robotcore.external.hardware.camera.controls.ExposureControl;
 import org.firstinspires.ftc.robotcore.external.hardware.camera.controls.GainControl;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
+import org.firstinspires.ftc.robotcore.external.stream.CameraStreamSource;
 import org.firstinspires.ftc.robotcore.external.tfod.Recognition;
+import org.firstinspires.ftc.robotcore.internal.camera.calibration.CameraCalibration;
 import org.firstinspires.ftc.vision.VisionPortal;
+import org.firstinspires.ftc.vision.VisionProcessor;
 import org.firstinspires.ftc.vision.apriltag.AprilTagDetection;
 import org.firstinspires.ftc.vision.apriltag.AprilTagProcessor;
 import org.firstinspires.ftc.vision.tfod.TfodProcessor;
+import org.opencv.android.Utils;
+import org.opencv.core.Mat;
 
 import java.util.List;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicReference;
 
-/*
-* This file contains support for TensorFlow object recognition and AprilTag recognition
-*/
 public class Vision {
+
+    public static class CameraStreamProcessor implements VisionProcessor, CameraStreamSource {
+        private final AtomicReference<Bitmap> lastFrame =
+                new AtomicReference<>(Bitmap.createBitmap(1, 1, Bitmap.Config.RGB_565));
+
+        @Override
+        public void init(int width, int height, CameraCalibration calibration) {
+            lastFrame.set(Bitmap.createBitmap(width, height, Bitmap.Config.RGB_565));
+        }
+
+        @Override
+        public Object processFrame(Mat frame, long captureTimeNanos) {
+            Bitmap b = Bitmap.createBitmap(frame.width(), frame.height(), Bitmap.Config.RGB_565);
+            Utils.matToBitmap(frame, b);
+            lastFrame.set(b);
+            return null;
+        }
+
+        @Override
+        public void onDrawFrame(Canvas canvas, int onscreenWidth, int onscreenHeight,
+                                float scaleBmpPxToCanvasPx, float scaleCanvasDensity,
+                                Object userContext) {
+            // do nothing
+        }
+
+        @Override
+        public void getFrameBitmap(Continuation<? extends Consumer<Bitmap>> continuation) {
+            continuation.dispatch(bitmapConsumer -> bitmapConsumer.accept(lastFrame.get()));
+        }
+    }
+
+    private boolean DASHBOARD_STREAM = true;
+
     private static final String TFOD_MODEL_FILE = "TeamElement1.tflite";
     private static final String[] LABELS = { "Team Element" };
 
@@ -29,32 +73,32 @@ public class Vision {
     public static final int BLUE_CENTER_TAG = 2;
     public static final int BLUE_RIGHT_TAG  = 3;
 
-    public static final int RED_LEFT_TAG    = 4;   // ToDo check ids
+    public static final int RED_LEFT_TAG    = 4;
     public static final int RED_CENTER_TAG  = 5;
     public static final int RED_RIGHT_TAG   = 6;
 
-    private TfodProcessor tfod;             // TensorFlow Object Detection processor
-    private AprilTagProcessor aprilTag;     // AprilTag Detection processor
-    private VisionPortal visionPortal;      // Instance of the vision portal.
 
-    private int gain = 16;                 // camera gain
-    private int exposure = 16;             // camera exposure
+    private TfodProcessor tfod;              // TensorFlow Object Detection processor
+    private AprilTagProcessor aprilTag;      // AprilTag Detection processor
+    private CameraStreamProcessor dashboard; // FTC dashboard camera stream (for debugging)
+    private VisionPortal visionPortal;       // Instance of the vision portal.
 
-    Recognition element = null;            // recognized team element
+    Recognition element = null;              // recognized team element
 
     private AprilTagDetection desiredTag = null;     // Used to hold the data for a detected AprilTag
 
     private final ElapsedTime searchTime = new ElapsedTime();
+
 
     public LinearOpMode opMode;
 
     // Constructor
     public Vision (LinearOpMode opMode) {
         this.opMode = opMode;
-        initTfod();
+        init();
     }
 
-    private void initTfod() {
+    private void init() {
 
         // Create the TensorFlow processor by using a builder.
         tfod = new TfodProcessor.Builder()
@@ -65,20 +109,20 @@ public class Vision {
                 //   Use setModelAssetName() if the custom TF Model is built in as an asset (AS only).
                 //   Use setModelFileName() if you have downloaded a custom team model to the Robot Controller.
                 //.setModelAssetName(TFOD_MODEL_ASSET)
-                .setModelFileName(TFOD_MODEL_FILE)
+                .setModelFileName(TFOD_MODEL_FILE)      // custom team model downloaded to the Robot Controller
+                .setModelLabels(LABELS)                 // set parameters for custom models.
 
                 // The following default settings are available to un-comment and edit as needed to
-                // set parameters for custom models.
-                .setModelLabels(LABELS)
                 //.setIsModelTensorFlow2(true)
                 //.setIsModelQuantized(true)
                 //.setModelInputSize(300)
                 //.setModelAspectRatio(16.0 / 9.0)
-
                 .build();
 
         aprilTag = new AprilTagProcessor.Builder()
                 .build();
+
+        dashboard = new CameraStreamProcessor();
 
 
         // Create the vision portal by using a builder.
@@ -101,7 +145,7 @@ public class Vision {
         //builder.setAutoStopLiveView(false);
 
         // Set and enable the processor.
-        builder.addProcessors(tfod, aprilTag);
+        builder.addProcessors(tfod, aprilTag, dashboard);
 
         // Build the Vision Portal, using the above settings.
         visionPortal = builder.build();
@@ -111,6 +155,8 @@ public class Vision {
 
         // Disable or re-enable the TFOD processor at any time.
         //visionPortal.setProcessorEnabled(tfod, true);
+
+        visionPortal.setProcessorEnabled(dashboard, false);
 
     }   // end method initTfod()
 
@@ -159,14 +205,12 @@ public class Vision {
 
     }   // end method telemetryAprilTag()
 
-    public void enableTensorFlow() {
-        visionPortal.setProcessorEnabled(aprilTag, false);
-        visionPortal.setProcessorEnabled(tfod, true);
+    public void enableTensorFlow(boolean enabled) {
+        visionPortal.setProcessorEnabled(tfod, enabled);
     }
 
-    public void enableAprilTag() {
-        visionPortal.setProcessorEnabled(tfod, false);
-        visionPortal.setProcessorEnabled(aprilTag, true);
+    public void enableAprilTag(boolean enabled) {
+        visionPortal.setProcessorEnabled(aprilTag, enabled);
     }
 
     public void disableVision() {
@@ -174,11 +218,12 @@ public class Vision {
         visionPortal.setProcessorEnabled(aprilTag, false);
     }
 
-    public void enableBothVision() {
-        visionPortal.setProcessorEnabled(tfod, true);
-        visionPortal.setProcessorEnabled(aprilTag, true);
-        opMode.telemetry.addData("activeVisionPortal", "tfod %b  aprilTag %b",
-                visionPortal.getProcessorEnabled(tfod), visionPortal.getProcessorEnabled(aprilTag));
+    public void enableCameraStream(boolean enabled) {
+        visionPortal.setProcessorEnabled(dashboard, enabled);
+        if (enabled)
+            FtcDashboard.getInstance().startCameraStream(dashboard, 0);
+        else
+            FtcDashboard.getInstance().stopCameraStream();
     }
 
     public boolean findAprilTag (int tagID) {
@@ -320,6 +365,8 @@ public class Vision {
 
     public void calibrateCamera() {
 
+        int gain = 16;                 // camera gain
+        int exposure = 16;             // camera exposure
         float confidence = 0;
         int bestExposure = 0;
         int bestGain = 0;
