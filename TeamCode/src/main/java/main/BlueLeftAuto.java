@@ -36,87 +36,62 @@ public class BlueLeftAuto extends LinearOpMode {
         Robot robot = new Robot(this);
         robot.init();
 
-        SampleMecanumDrive drive = new SampleMecanumDrive(hardwareMap);
-
-        Auto auto = new Auto(this, robot, drive);
-
-        TrajectorySequence left1 = drive.trajectorySequenceBuilder(new Pose2d(0, 0, 0))
-                .forward(31.25)
-                .turn(Math.toRadians(90))
-                .forward(10)
-                .build();
-        TrajectorySequence left2 = drive.trajectorySequenceBuilder(left1.end())
-                .forward(26.5)
-                .strafeLeft(10)
-                .build();
-
-        TrajectorySequence right1 = drive.trajectorySequenceBuilder(new Pose2d(0, 0, 0))
-                .forward(27.25)
-                .turn(Math.toRadians(-90))
-                .forward(8)
-                .build();
-        TrajectorySequence right2 = drive.trajectorySequenceBuilder(right1.end())
-                .back(8)
-                .turn(Math.toRadians(-180))
-                .forward(36.5)
-                .strafeRight(6)
-                .build();
-
-        TrajectorySequence center1 = drive.trajectorySequenceBuilder(new Pose2d(0, 0, 0))
-                .forward(31.25)
-                .build();
-        TrajectorySequence center2 = drive.trajectorySequenceBuilder(center1.end())
-                .back(6)
-                .turn(Math.toRadians(90))
-                .forward(36.5)
-                .build();
+        Auto auto = new Auto(this, robot, null);
 
         telemetry.addLine("waiting for camera");
         telemetry.update();
-        while (! robot.vision.cameraReady())
+
+        while (!robot.vision.cameraReady())
             sleep(100);
+        sleep(200);    // ToDo needed?
+
         telemetry.addLine("camera ready, press start");
         telemetry.update();
-        sleep(1000);
+
+        robot.vision.enableCameraStream(true);    // ToDo for debugging
 
         // Wait for the game to start (driver presses PLAY)
         waitForStart();
-        runtime.reset();
 
-        auto.setColor(Auto.COLOR.BLUE);
-        objectPosition = auto.findTeamElement();
+        if (opModeIsActive()) {
 
-        if (objectPosition == Auto.POSITION.left) {
-            robot.forward(12);
-            robot.strafeLeft(13);
-            robot.forward(13);
-            robot.dropPurplePixel();
-            robot.back(8);
-            robot.turn(90);
-            robot.forward(15);
-            robot.strafeRight(1);
+            runtime.reset();
 
-        } else if (objectPosition == Auto.POSITION.center) {
-            robot.forward(30.5);
-            robot.dropPurplePixel();
-            robot.back(8);
-            robot.turn(90);
-            robot.forward(25);
-            robot.strafeRight(3);
+            auto.setColor(Auto.COLOR.BLUE);
+            objectPosition = auto.findTeamElement();
 
-        } else if (objectPosition == Auto.POSITION.right) {
-            robot.forward(24);
-            robot.turn(90);
-            robot.back(14);
-            robot.dropPurplePixel();
-            robot.forward(38);
-            robot.strafeRight(6);
+            if (objectPosition == Auto.POSITION.left) {
+                robot.forward(12);
+                robot.strafeLeft(13);
+                robot.forward(13);
+                robot.dropPurplePixel();
+                robot.back(8);
+                robot.turn(90);
+                robot.forward(15);
+                robot.strafeRight(1);
+
+            } else if (objectPosition == Auto.POSITION.center) {
+                robot.forward(30.5);
+                robot.dropPurplePixel();
+                robot.back(8);
+                robot.turn(90);
+                robot.forward(25);
+                robot.strafeRight(3);
+
+            } else if (objectPosition == Auto.POSITION.right) {
+                robot.forward(24);
+                robot.turn(90);
+                robot.back(14);
+                robot.dropPurplePixel();
+                robot.forward(38);
+                robot.strafeRight(6);
+            }
+
+            auto.strafeToDropPosition();
+            auto.dropYellowPixel();
+            auto.parkCorner();
+
+            telemetry.addData("Run Time", runtime.toString());
         }
-
-        auto.strafeToDropPosition();
-        auto.dropYellowPixel();
-        auto.parkCorner();
-
-        telemetry.addData("Run Time", runtime.toString());
     }
 }
