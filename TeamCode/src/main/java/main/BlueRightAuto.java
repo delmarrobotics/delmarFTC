@@ -84,7 +84,8 @@ public class BlueRightAuto extends LinearOpMode {
             sleep(100);
         telemetry.addLine("camera ready, press start");
         telemetry.update();
-        sleep(1000);
+
+        robot.vision.enableCameraStream(true);    // ToDo for debugging
 
         waitForStart();
         runtime.reset();

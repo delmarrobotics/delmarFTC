@@ -78,7 +78,8 @@ public class RedLeftAuto extends LinearOpMode {
             sleep(100);
         telemetry.addLine("camera ready, press start");
         telemetry.update();
-        sleep(1000);
+        
+        robot.vision.enableCameraStream(true);    // ToDo for debugging
 
         // Wait for the game to start (driver presses PLAY)
         waitForStart();
