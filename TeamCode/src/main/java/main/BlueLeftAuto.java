@@ -43,9 +43,7 @@ public class BlueLeftAuto extends LinearOpMode {
 
         while (!robot.vision.cameraReady())
             sleep(100);
-        sleep(200);    // ToDo needed?
-
-        telemetry.addLine("camera ready, press start");
+        telemetry.addLine("camera ready, press start"); //sleep(200) not needed here
         telemetry.update();
 
         robot.vision.enableCameraStream(true);    // ToDo for debugging
