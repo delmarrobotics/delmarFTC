@@ -44,6 +44,13 @@ public class PixelArm {
     private PIXEL_ARM_STATE state  = PIXEL_ARM_STATE.NONE;
     private final ElapsedTime stateTime = new ElapsedTime();
 
+    private boolean aPressed = false;
+    private boolean bPressed = false;
+    private boolean xPressed = false;
+    private boolean yPressed = false;
+
+    private boolean pixelArmActive = false;
+
     public LinearOpMode opMode;
 
     public PixelArm(LinearOpMode opMode) {
@@ -129,7 +136,15 @@ public class PixelArm {
         pixelWrist.setPosition(position);
     }
 
+    public void enablePixelArm (boolean enable) {
+        pixelArmActive = enable;
+    }
+
+
     public void run () {
+
+        if (pixelArmActive)
+            control();
 
         if (state == PIXEL_ARM_STATE.NONE)
             return;
@@ -282,29 +297,41 @@ public class PixelArm {
         Gamepad gamepad = opMode.gamepad2;
         boolean handled = true;
 
-        run();   // ToDo remove when subvlass from thread
+        run();   // ToDo remove when subclass from thread
 
-        if (gamepad.a) {
+        if (gamepad.a && !aPressed) {
             // Move the arm to the lower drop position
             positionArmAsyn(ARM_POSITION.LOW);
-            while (gamepad.a) opMode.sleep(100);
+            aPressed = true;
+        } else {
+            aPressed = false;
+        }
 
-        } else if (gamepad.b) {
+        if (gamepad.b && !bPressed) {
             // Move the arm to the middle drop position
             positionArmAsyn(ARM_POSITION.MID);
-            while (gamepad.b) opMode.sleep(100);
+            bPressed = true;
+        } else {
+            bPressed = false;
+        }
 
-        } else if (gamepad.x) {
+        if (gamepad.x && !xPressed) {
             // Move the arm to the higher drop position
             positionArmAsyn(ARM_POSITION.HIGH);
-            while (gamepad.x) opMode.sleep(100);
+            xPressed = true;
+        } else {
+            xPressed = false;
+        }
 
-        } else if (gamepad.y) {
-            // Move the arm to the home position
+        if (gamepad.x && !yPressed) {
+            // Move the arm to the higher drop position
             positionArmAsyn(ARM_POSITION.HOME);
-            while (gamepad.y) opMode.sleep(100);
+            yPressed = true;
+        } else {
+            yPressed = false;
+        }
 
-        } else if (gamepad.left_stick_y != 0) {
+        if (gamepad.left_stick_y != 0) {
             // manually move the pixel arm elbow
             pixelElbow.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
             if (gamepad.left_stick_y > 0)
