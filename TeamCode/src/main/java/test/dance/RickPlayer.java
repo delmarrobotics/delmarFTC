@@ -1,9 +1,9 @@
-package common;
+package test.dance;
 
 import android.media.MediaPlayer;
 
 public class RickPlayer {
-
+/*
   public LinearOpMode opMode;
 
   //The player handling the audio
@@ -29,4 +29,6 @@ public class RickPlayer {
       catch (IOException e) {}
     }
   }
+
+ */
 }
