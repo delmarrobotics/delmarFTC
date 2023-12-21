@@ -11,6 +11,7 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.DistanceSensor;
+import com.qualcomm.robotcore.hardware.Gamepad;
 import com.qualcomm.robotcore.hardware.IMU;
 import com.qualcomm.robotcore.hardware.NormalizedColorSensor;
 import com.qualcomm.robotcore.hardware.NormalizedRGBA;
@@ -24,7 +25,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-public class Drive  {
+public class Drive extends Thread {
 
     static final boolean LOG_VERBOSE = false;
 
@@ -60,11 +61,15 @@ public class Drive  {
 
     private final ElapsedTime elapsedTime = new ElapsedTime();
 
+    private boolean running = true;
+
+
     List<DcMotorEx> motors;
     LinearOpMode opMode;
 
     public Drive(LinearOpMode opMode) {
         this.opMode = opMode;
+        this.setName("Drive");
         init();
     }
 
@@ -97,6 +102,33 @@ public class Drive  {
         for (DcMotor motor : motors) {
             motor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         }
+    }
+
+    /**
+     * Drive the robot with gamepad 1 joysticks one a separate thread
+     */
+    public void run() {
+
+        while (!opMode.isStarted())
+            yield();
+
+        Logger.message("robot drive thread started");
+
+        while (running && opMode.opModeIsActive()) {
+            if (running) {
+                // POV Mode uses left stick to go forward, and right stick to rotate, left trigger accelerate.
+                Gamepad gamepad = opMode.gamepad1;
+                double drive  = -gamepad.left_stick_y  / 2.0;  // Reduce drive rate to 50%.
+                double strafe = -gamepad.left_stick_x  / 2.0;  // Reduce strafe rate to 50%.
+                double yaw   = -gamepad.right_stick_x / 3.0;  // Reduce rotate rate to 33%.
+                double speed = gamepad.left_trigger;
+                moveRobot(drive, strafe, yaw, speed);
+            }
+            else {
+                yield();
+            }
+        }
+        Logger.message("robot drive thread stopped");
     }
 
 
