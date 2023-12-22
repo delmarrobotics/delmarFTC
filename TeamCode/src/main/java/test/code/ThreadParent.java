@@ -48,13 +48,14 @@ public class ThreadParent extends LinearOpMode {
       while (opModeIsActive()) {
 
         if (gamepad1.a)
-            servo = hardwareMap.get(Servo.class, "zzz");
-        if (gamepad1.x)
-          child.end();
+            while (gamepad1.a) sleep(100);
 
-        telemetry.addData("Parent", "time: %8.0f", runtime.seconds());
-        telemetry.update();
-        sleep(2000);
+        if (gamepad1.x)
+          drive.moveToObject(3,0.3, 3000);
+
+        //telemetry.addData("Parent", "time: %8.0f", runtime.seconds());
+        //telemetry.update();
+        //sleep(2000);
       }
   }
 }
