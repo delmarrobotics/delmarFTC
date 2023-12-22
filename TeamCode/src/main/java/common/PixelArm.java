@@ -299,34 +299,42 @@ public class PixelArm {
 
         run();   // ToDo remove when subclass from thread
 
-        if (gamepad.a && !aPressed) {
+        if (gamepad.a) {
             // Move the arm to the lower drop position
-            positionArmAsyn(ARM_POSITION.LOW);
-            aPressed = true;
+            if (! aPressed) {
+                positionArmAsyn(ARM_POSITION.LOW);
+                aPressed = true;
+            }
         } else {
             aPressed = false;
         }
 
-        if (gamepad.b && !bPressed) {
+        if (gamepad.b) {
             // Move the arm to the middle drop position
-            positionArmAsyn(ARM_POSITION.MID);
-            bPressed = true;
+            if (!bPressed) {
+                positionArmAsyn(ARM_POSITION.MID);
+                bPressed = true;
+            }
         } else {
             bPressed = false;
         }
 
-        if (gamepad.x && !xPressed) {
+        if (gamepad.x) {
             // Move the arm to the higher drop position
-            positionArmAsyn(ARM_POSITION.HIGH);
-            xPressed = true;
+            if (!xPressed) {
+                positionArmAsyn(ARM_POSITION.HIGH);
+                xPressed = true;
+            }
         } else {
             xPressed = false;
         }
 
-        if (gamepad.x && !yPressed) {
+        if (gamepad.y) {
             // Move the arm to the higher drop position
-            positionArmAsyn(ARM_POSITION.HOME);
-            yPressed = true;
+            if (!yPressed) {
+                positionArmAsyn(ARM_POSITION.HOME);
+                yPressed = true;
+            }
         } else {
             yPressed = false;
         }
