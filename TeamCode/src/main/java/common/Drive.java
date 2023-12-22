@@ -30,24 +30,26 @@ public class Drive extends Thread {
     static final boolean LOG_VERBOSE = false;
 
     // Drive train
-    static final double COUNTS_PER_MOTOR_REV  = 28;              // HD Hex Motor Encoder
-    static final double DRIVE_GEAR_REDUCTION  = 20;              // Gearing
+    static final double COUNTS_PER_MOTOR_REV = 28;              // HD Hex Motor Encoder
+    static final double DRIVE_GEAR_REDUCTION = 20;              // Gearing
     static final double WHEEL_DIAMETER_INCHES = (96 / 25.4);     // 96 mm while converted to inches
     static final double COUNTS_PER_INCH =
             (COUNTS_PER_MOTOR_REV * DRIVE_GEAR_REDUCTION) / (WHEEL_DIAMETER_INCHES * Math.PI);
 
-    static final double RAMP_DISTANCE   = COUNTS_PER_INCH * 12;   // ramp down distance in encoder counts
-    static final double RAMP_TIME       = 1000;                  // ramp up time in milliseconds
-    static final double RAMP_MIN_SPEED  = 0.2;
+    static final double RAMP_DISTANCE = COUNTS_PER_INCH * 12;   // ramp down distance in encoder counts
+    static final double RAMP_TIME = 1000;                  // ramp up time in milliseconds
+    static final double RAMP_MIN_SPEED = 0.2;
 
-    public final double MIN_SPEED        = 0.25;
-    public final double MAX_SPEED        = 1;
+    public final double MIN_SPEED = 0.25;
+    public final double MAX_SPEED = 1;
     private static final double MAX_ROTATE_SPEED = 0.50;
-    public enum DIRECTION { FORWARD, BACK, LEFT, RIGHT, TURN_LEFT, TURN_RIGHT }
+
+    public enum DIRECTION {FORWARD, BACK, LEFT, RIGHT, TURN_LEFT, TURN_RIGHT}
 
     // Color sensor
     static final float COLOR_SENSOR_GAIN = 2.2F;
-    public enum COLOR { RED, BLUE }
+
+    public enum COLOR {RED, BLUE}
 
     //  Drive train motors
     public DcMotorEx leftFrontDrive = null;   //  Used to control the left front drive wheel
@@ -57,11 +59,12 @@ public class Drive extends Thread {
 
     private IMU imu;
     private NormalizedColorSensor colorSensor = null;
-    private DistanceSensor sensorDistance;
+    private DistanceSensor distanceSensor;
 
     private final ElapsedTime elapsedTime = new ElapsedTime();
 
     private boolean running = true;
+    private boolean moving = false;
 
 
     List<DcMotorEx> motors;
@@ -87,6 +90,8 @@ public class Drive extends Thread {
 
             colorSensor = opMode.hardwareMap.get(NormalizedColorSensor.class, Config.COLOR_SENSOR);
             colorSensor.setGain(COLOR_SENSOR_GAIN);
+
+            distanceSensor = opMode.hardwareMap.get(DistanceSensor.class, Config.DISTANCE_SENSOR);
 
         } catch (Exception e) {
             Logger.error(e, "Hardware not found");
@@ -116,13 +121,21 @@ public class Drive extends Thread {
 
         while (running && opMode.opModeIsActive()) {
             if (running) {
-                // POV Mode uses left stick to go forward, and right stick to rotate, left trigger accelerate.
+
+                // Left stick to go forward back and strafe. Right stick to rotate. Left trigger accelerate.
                 Gamepad gamepad = opMode.gamepad1;
-                double drive  = -gamepad.left_stick_y  / 2.0;  // Reduce drive rate to 50%.
-                double strafe = -gamepad.left_stick_x  / 2.0;  // Reduce strafe rate to 50%.
-                double yaw   = -gamepad.right_stick_x / 3.0;  // Reduce rotate rate to 33%.
+                double x = -gamepad.left_stick_y / 2.0;  // Reduce drive rate to 50%.
+                double y = -gamepad.left_stick_x / 2.0;  // Reduce strafe rate to 50%.
+                double yaw = -gamepad.right_stick_x / 3.0;  // Reduce rotate rate to 33%.
                 double speed = gamepad.left_trigger;
-                moveRobot(drive, strafe, yaw, speed);
+
+                if (x != 0 && y != 0 && yaw != 0) {
+                    moveRobot(x, y, yaw, speed);
+                    moving = true;
+                } else if (moving) {
+                    stopRobot();
+                    moving = false;
+                }
             }
             else {
                 yield();
@@ -208,7 +221,7 @@ public class Drive extends Thread {
             leftBackPower *= scale;
             rightBackPower *= scale;
 
-            //Logger.message("power %f %f %f %f %f", speed, leftFrontPower, rightFrontPower, leftBackPower, rightBackPower);
+            Logger.message("power %f %f %f %f %f", speed, leftFrontPower, rightFrontPower, leftBackPower, rightBackPower);
         }
 
         // Send powers to the wheels.
@@ -436,7 +449,8 @@ public class Drive extends Thread {
         elapsedTime.reset();
 
         while (! found) {
-            double distance = sensorDistance.getDistance(DistanceUnit.INCH);
+            double distance = distanceSensor.getDistance(DistanceUnit.INCH);
+            Logger.message("distance %f ", distance);
 
             if (distance <= inches) {
                 stopRobot();
