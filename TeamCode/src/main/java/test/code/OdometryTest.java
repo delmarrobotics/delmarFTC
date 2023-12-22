@@ -19,7 +19,7 @@ import common.Robot;
 /*
  * Test code for the hanging arm
  */
-@Disabled
+
 @TeleOp(name="Odometry Test", group="Test")
 @SuppressWarnings("unused")
 public class OdometryTest extends LinearOpMode {
