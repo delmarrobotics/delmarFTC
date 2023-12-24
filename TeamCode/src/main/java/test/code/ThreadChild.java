@@ -7,7 +7,6 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 import common.Logger;
-import common.Process;
 
 public class ThreadChild extends Thread {
 
