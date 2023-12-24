@@ -1,10 +1,12 @@
 /*
  *
  */
-package common;
+package test.unused;
 
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.util.ElapsedTime;
+
+import common.Logger;
 
 public class Process implements Runnable {
 //public class ThreadChild extends Thread {
