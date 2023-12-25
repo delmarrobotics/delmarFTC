@@ -24,15 +24,16 @@ import org.firstinspires.ftc.robotcore.external.navigation.YawPitchRollAngles;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Locale;
 
 public class Drive extends Thread {
 
-    static final boolean LOG_VERBOSE = false;
+    static final boolean LOG_VERBOSE = true;
 
     // Drive train
     static final double COUNTS_PER_MOTOR_REV = 28;              // HD Hex Motor Encoder
     static final double DRIVE_GEAR_REDUCTION = 20;              // Gearing
-    static final double WHEEL_DIAMETER_INCHES = (96 / 25.4);     // 96 mm while converted to inches
+    static final double WHEEL_DIAMETER_INCHES = (96 / 25.4);     // 96 mm wheels converted to inches
     static final double COUNTS_PER_INCH =
             (COUNTS_PER_MOTOR_REV * DRIVE_GEAR_REDUCTION) / (WHEEL_DIAMETER_INCHES * Math.PI);
 
@@ -41,10 +42,10 @@ public class Drive extends Thread {
     static final double RAMP_MIN_SPEED = 0.2;
 
     public final double MIN_SPEED = 0.25;
-    public final double MAX_SPEED = 1;
+    public final double MAX_SPEED = 0.9;
     private static final double MAX_ROTATE_SPEED = 0.50;
 
-    public enum DIRECTION {FORWARD, BACK, LEFT, RIGHT, TURN_LEFT, TURN_RIGHT}
+    public enum DIRECTION { FORWARD, BACK, LEFT, RIGHT, TURN_LEFT, TURN_RIGHT, DRIVER, STOOPED }
 
     // Color sensor
     static final float COLOR_SENSOR_GAIN = 2.2F;
@@ -66,6 +67,12 @@ public class Drive extends Thread {
     private boolean running = true;
     private boolean moving = false;
 
+    private int leftFrontStartPos  = 0;
+    private int rightFrontStartPos = 0;
+    private int leftBackStartPos   = 0;
+    private int rightBackStartPos  = 0;
+
+    private DIRECTION lastDirection = DIRECTION.STOOPED;
 
     List<DcMotorEx> motors;
     LinearOpMode opMode;
@@ -115,7 +122,7 @@ public class Drive extends Thread {
     public void run() {
 
         while (!opMode.isStarted())
-            yield();
+            Thread.yield();
 
         Logger.message("robot drive thread started");
 
@@ -127,23 +134,62 @@ public class Drive extends Thread {
                 double x = -gamepad.left_stick_y / 2.0;  // Reduce drive rate to 50%.
                 double y = -gamepad.left_stick_x / 2.0;  // Reduce strafe rate to 50%.
                 double yaw = -gamepad.right_stick_x / 3.0;  // Reduce rotate rate to 33%.
-                double speed = gamepad.left_trigger;
 
-                if (x != 0 && y != 0 && yaw != 0) {
-                    moveRobot(x, y, yaw, speed);
+                double speed = gamepad.left_trigger + MIN_SPEED;
+                if (speed > MAX_SPEED) speed = MAX_SPEED;
+                if (x == 0 && y == 0 && yaw != 0) {
+                    if (speed > MAX_ROTATE_SPEED) speed = MAX_ROTATE_SPEED;
+                }
+
+                if (x != 0 || y != 0 || yaw != 0) {
+                    DIRECTION direction;
+                    double MAX_STICK = 0.5;
+
+                    if (yaw != 0) {
+                        direction =  DIRECTION.DRIVER;
+                    } else if (Math.abs(x) == MAX_STICK || (x != 0 && y == 0 )) {
+                        if (x > 0)
+                            direction = DIRECTION.FORWARD;
+                        else
+                            direction = DIRECTION.BACK;
+                    } else if (Math.abs(y) == MAX_STICK || (x == 0 /*&& y != 0 */ )) {
+                        if (y > 0)
+                            direction =  DIRECTION.LEFT;
+                        else
+                            direction =  DIRECTION.RIGHT;
+                    } else {
+                        direction =  DIRECTION.DRIVER;
+                    }
+
+                    if (direction == DIRECTION.DRIVER) {
+                        moveRobot(x, y, yaw, speed);
+                    } else {
+                        moveRobot(direction, speed);
+                    }
+
                     moving = true;
+                    lastDirection = direction;
+                    //Logger.message("%-12s   %6.2f %6.2f %6.2f  %6.2f   %6.2f ", direction, x , y, yaw, gamepad.left_trigger, speed);
+
                 } else if (moving) {
                     stopRobot();
+                    lastDirection = DIRECTION.STOOPED;
                     moving = false;
                 }
             }
             else {
-                yield();
+                Thread.yield();
             }
         }
         Logger.message("robot drive thread stopped");
     }
 
+    /**
+     * Stop the thread's run method
+     */
+    public void end () {
+        running = false;
+    }
 
     /**
      * Move robot according to desired axes motions
@@ -178,7 +224,6 @@ public class Drive extends Thread {
         rightBackDrive.setPower(rightBackPower);
     }
 
-
     public void moveRobot(double x, double y, double yaw, double speed) {
 
         double leftFrontPower;
@@ -204,12 +249,13 @@ public class Drive extends Thread {
             max = Math.max(max, Math.abs(leftBackPower));
             max = Math.max(max, Math.abs(rightBackPower));
 
+            // ToDo remove, done in run
             if (speed == 0)
                 speed = MIN_SPEED;
             else if (speed > MAX_SPEED) {
                 speed = MAX_SPEED;
             }
-            if (x == 0 && y == 0 && (yaw > 0 || yaw < 0)) {
+            if (x == 0 && y == 0 && yaw != 0) {
                 if (speed > MAX_ROTATE_SPEED)
                     speed = MAX_ROTATE_SPEED;
             }
@@ -220,8 +266,6 @@ public class Drive extends Thread {
             rightFrontPower *= scale;
             leftBackPower *= scale;
             rightBackPower *= scale;
-
-            Logger.message("power %f %f %f %f %f", speed, leftFrontPower, rightFrontPower, leftBackPower, rightBackPower);
         }
 
         // Send powers to the wheels.
@@ -229,8 +273,106 @@ public class Drive extends Thread {
         rightFrontDrive.setPower(rightFrontPower);
         leftBackDrive.setPower(leftBackPower);
         rightBackDrive.setPower(rightBackPower);
+
+        if (LOG_VERBOSE) {
+            Logger.message("power %f %f %f %f %f", speed, leftFrontPower, rightFrontPower, leftBackPower, rightBackPower);
+        }
     }
 
+    /**
+     *  Method to move the robot in the specified direction. The encoder are used the correct for drift
+     *
+     * @param direction direction to move
+     * @param speed motor speed (-1 to 1)
+     */
+    public void moveRobot(DIRECTION direction, double speed) {
+
+        if (!opMode.opModeIsActive()) return;
+
+        int leftFrontSign = 0;
+        int rightFrontSign = 0;
+        int leftBackSign = 0;
+        int rightBackSign = 0;
+
+        if (direction == DIRECTION.FORWARD) {
+            leftFrontSign  = 1;
+            rightFrontSign = 1;
+            leftBackSign   = 1;
+            rightBackSign  = 1;
+        } else if (direction == DIRECTION.BACK) {
+            leftFrontSign  = -1;
+            rightFrontSign = -1;
+            leftBackSign   = -1;
+            rightBackSign  = -1;
+        } else if (direction == DIRECTION.LEFT) {
+            leftFrontSign  = -1;
+            rightFrontSign =  1;
+            leftBackSign   =  1;
+            rightBackSign  = -1;
+        } else if (direction == DIRECTION.RIGHT) {
+            leftFrontSign  =  1;
+            rightFrontSign = -1;
+            leftBackSign   = -1;
+            rightBackSign  =  1;
+        } else if (direction == DIRECTION.TURN_LEFT) {
+            leftFrontSign  = -1;
+            rightFrontSign =  1;
+            leftBackSign   = -1;
+            rightBackSign  =  1;
+        } else if (direction == DIRECTION.TURN_RIGHT){
+            leftFrontSign  =  1;
+            rightFrontSign = -1;
+            leftBackSign   =  1;
+            rightBackSign  = -1;
+        }
+
+        // If the direction have changed get the encoder positions.
+        if (direction != lastDirection) {
+            leftFrontStartPos = leftFrontDrive.getCurrentPosition();
+            rightFrontStartPos = rightFrontDrive.getCurrentPosition();
+            leftBackStartPos = leftBackDrive.getCurrentPosition();
+            rightBackStartPos = rightBackDrive.getCurrentPosition();
+        }
+
+        // Correct for drift
+        double leftFrontPos =  Math.abs(leftFrontDrive.getCurrentPosition()  - leftFrontStartPos);
+        double rightFrontPos = Math.abs(rightFrontDrive.getCurrentPosition() - rightFrontStartPos);
+        double leftBackPos =   Math.abs(leftBackDrive.getCurrentPosition()   - leftBackStartPos);
+        double rightBackPos =  Math.abs(rightBackDrive.getCurrentPosition()  - rightBackStartPos);
+        double maxPos = Math.max(Math.max(Math.max(leftFrontPos, rightFrontPos), leftBackPos), rightBackPos);
+
+        double scale = .0015;
+        double leftFrontAdjust = (maxPos - leftFrontPos) * scale;
+        double rightFrontAdjust = (maxPos - rightFrontPos) * scale;
+        double leftBackAdjust = (maxPos - leftBackPos) * scale;
+        double rightBackAdjust = (maxPos - rightBackPos) * scale;
+
+        double leftFrontPower = (speed + leftFrontAdjust) * leftFrontSign;
+        double rightFrontPower = (speed + rightFrontAdjust) * rightFrontSign;
+        double leftBackPower = (speed + leftBackAdjust) * leftBackSign;
+        double rightBackPower = (speed + rightBackAdjust) * rightBackSign;
+
+        leftFrontDrive.setPower(leftFrontPower);
+        rightFrontDrive.setPower(rightFrontPower);
+        leftBackDrive.setPower(leftBackPower);
+        rightBackDrive.setPower(rightBackPower);
+
+        if (LOG_VERBOSE) {
+            Logger.message("moveDistance: power: %4.2f %4.2f %4.2f %4.2f    adjust: %4.3f %4.3f %4.3f %4.3f     position: %6.0f %6.0f %6.0f %6.0f",
+                    leftFrontPower,
+                    rightFrontPower,
+                    leftBackPower,
+                    rightBackPower,
+                    leftFrontAdjust,
+                    rightFrontAdjust,
+                    leftBackAdjust,
+                    rightBackAdjust,
+                    leftFrontPos,
+                    rightFrontPos,
+                    leftBackPos,
+                    rightBackPos);
+        }
+    }
 
 
     /**
@@ -246,39 +388,39 @@ public class Drive extends Thread {
      * @param inches  distance to move in inches, positive for forward, negative for backward
      * @param timeout timeout in milliseconds, 0 for no timeout
      */
-    public void moveDistance(Robot.DIRECTION direction, double speed, double inches, double timeout) {
+    public void moveDistance(DIRECTION direction, double speed, double inches, double timeout) {
 
         int leftFrontSign = 0;
         int rightFrontSign = 0;
         int leftBackSign = 0;
         int rightBackSign = 0;
 
-        if (direction == Robot.DIRECTION.FORWARD) {
+        if (direction == DIRECTION.FORWARD) {
             leftFrontSign  = 1;
             rightFrontSign = 1;
             leftBackSign   = 1;
             rightBackSign  = 1;
-        } else if (direction == Robot.DIRECTION.BACK) {
+        } else if (direction == DIRECTION.BACK) {
             leftFrontSign  = -1;
             rightFrontSign = -1;
             leftBackSign   = -1;
             rightBackSign  = -1;
-        } else if (direction == Robot.DIRECTION.LEFT) {
+        } else if (direction == DIRECTION.LEFT) {
             leftFrontSign  = -1;
             rightFrontSign =  1;
             leftBackSign   =  1;
             rightBackSign  = -1;
-        } else if (direction == Robot.DIRECTION.RIGHT) {
+        } else if (direction == DIRECTION.RIGHT) {
             leftFrontSign  =  1;
             rightFrontSign = -1;
             leftBackSign   = -1;
             rightBackSign  =  1;
-        } else if (direction == Robot.DIRECTION.TURN_LEFT) {
+        } else if (direction == DIRECTION.TURN_LEFT) {
             leftFrontSign  = -1;
             rightFrontSign =  1;
             leftBackSign   = -1;
             rightBackSign  =  1;
-        } else if (direction == Robot.DIRECTION.TURN_RIGHT){
+        } else if (direction == DIRECTION.TURN_RIGHT){
             leftFrontSign  =  1;
             rightFrontSign = -1;
             leftBackSign   =  1;
@@ -383,6 +525,8 @@ public class Drive extends Thread {
                 elapsedTime.seconds());
     }
 
+
+
     /**
      * Move the robot until the specified color is detected.
      *
@@ -392,7 +536,7 @@ public class Drive extends Thread {
      * @param speed drive speed
      * @param timeout timeout in milliseconds
      */
-    public boolean moveToColor(Robot.COLOR color, double x, double y, double speed, double timeout){
+    public boolean moveToColor(COLOR color, double x, double y, double speed, double timeout){
 
         boolean found = false;
         float[] hsvValues = new float[3];
@@ -402,7 +546,7 @@ public class Drive extends Thread {
         moveRobot(x, y, 0, speed);
         elapsedTime.reset();
 
-        while (! found) {
+        while (! found && opMode.opModeIsActive())  {
             // Get the normalized colors from the sensor
             NormalizedRGBA colors = colorSensor.getNormalizedColors();
 
@@ -411,12 +555,12 @@ public class Drive extends Thread {
             float hue = hsvValues[0];
             float saturation = hsvValues[1];
             //Logger.message("hue %f saturation %f", hue, saturation);
-            if (color == Robot.COLOR.BLUE) {
+            if (color == COLOR.BLUE) {
                 if (hue >= 190 && hue <= 230 && saturation >= .5) {
                     Logger.message("blue line found");
                     found = true;
                 }
-            } else if (color == Robot.COLOR.RED) {
+            } else if (color == COLOR.RED) {
                 //Logger.message("hue %f, saturation %f", hue, saturation);
                 if ((hue >= 0 && hue <= 90) && saturation >= .5) {
                     Logger.message("red line found");
@@ -424,7 +568,7 @@ public class Drive extends Thread {
                 }
             }
             if (elapsedTime.milliseconds() > timeout){
-                Logger.message("no line found");
+                Logger.warning("no line found, traveled %5.2% inches", getDistanceTraveled());
                 break;
             }
         }
@@ -448,7 +592,7 @@ public class Drive extends Thread {
         moveRobot(1, 0, 0, speed);
         elapsedTime.reset();
 
-        while (! found) {
+        while (! found && opMode.opModeIsActive()) {
             double distance = distanceSensor.getDistance(DistanceUnit.INCH);
             Logger.message("distance %f ", distance);
 
@@ -460,7 +604,7 @@ public class Drive extends Thread {
 
             if (elapsedTime.milliseconds() > timeout){
                 stopRobot();
-                Logger.warning("no object found");
+                Logger.warning("no object found, traveled %6.2f inches", getDistanceTraveled());
                 break;
             }
         }
@@ -476,6 +620,8 @@ public class Drive extends Thread {
         rightFrontDrive.setPower(0);
         leftBackDrive.setPower(0);
         rightBackDrive.setPower(0);
+
+        lastDirection = DIRECTION.STOOPED;
     }
 
 
@@ -523,24 +669,24 @@ public class Drive extends Thread {
     }
 
     public void forward (double distance) {
-        moveDistance(Robot.DIRECTION.FORWARD,.4, distance, 0);
+        moveDistance(DIRECTION.FORWARD,.4, distance, 0);
     }
 
     public void back (double distance) {
 
-        moveDistance(Robot.DIRECTION.BACK,.4, distance, 0);
+        moveDistance(DIRECTION.BACK,.4, distance, 0);
     }
 
     public void strafeLeft (double distance) {
         //distance = Math.sqrt(Math.pow(distance,2 ) + Math.pow(distance,2));
         distance *= 1.11;
-        moveDistance(Robot.DIRECTION.LEFT,.4, distance, 0);
+        moveDistance(DIRECTION.LEFT,.4, distance, 0);
     }
 
     public void strafeRight (double distance) {
         //distance = Math.sqrt(Math.pow(distance,2 ) + Math.pow(distance,2));
         distance *= 1.11;
-        moveDistance(Robot.DIRECTION.RIGHT,.4, distance, 0);
+        moveDistance(DIRECTION.RIGHT,.4, distance, 0);
     }
 
     public void turn(double degrees) {
@@ -548,9 +694,9 @@ public class Drive extends Thread {
         double circumference = 2 * Math.PI * 24.9/2;
         double inches = Math.abs(degrees) / 360 * circumference;
         if (degrees > 0)
-            moveDistance(Robot.DIRECTION.TURN_LEFT, 0.4,  inches, 0 );
+            moveDistance(DIRECTION.TURN_LEFT, 0.4,  inches, 0 );
         else
-            moveDistance(Robot.DIRECTION.TURN_RIGHT, 0.4,  inches, 0 );
+            moveDistance(DIRECTION.TURN_RIGHT, 0.4,  inches, 0 );
     }
 
     public void turnWithIMU(double degrees) {
