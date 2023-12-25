@@ -29,6 +29,11 @@ public final class Logger {
         Log.w(TAG, String.format("%-24s %s", caller, warning));
     }
 
+    public static void warning(String format, Object... args) {
+        String caller = Thread.currentThread().getStackTrace()[4].getMethodName();
+        Log.w(TAG, String.format("%-24s %s", caller, String.format(format, args)));
+    }
+
     public static void message(String msg){
         logString(msg);
     }
