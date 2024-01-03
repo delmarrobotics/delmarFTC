@@ -1,3 +1,6 @@
+/*
+ * Test code for threads
+ */
 package test.code;
 
 import com.acmerobotics.dashboard.FtcDashboard;
@@ -8,15 +11,14 @@ import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
+import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.robotcore.external.stream.CameraStreamSource;
 import org.openftc.easyopencv.OpenCvCameraFactory;
 import org.openftc.easyopencv.OpenCvWebcam;
 
 import common.Drive;
+import common.Logger;
 
-/*
- * Test code for the hanging arm
- */
 @TeleOp(name="Thread Test", group="Test")
 @SuppressWarnings("unused")
 public class ThreadParent extends LinearOpMode {
@@ -41,6 +43,7 @@ public class ThreadParent extends LinearOpMode {
 
       waitForStart();
 
+      boolean found;
 
       //new Thread(child).start();
       runtime.reset();
@@ -51,11 +54,7 @@ public class ThreadParent extends LinearOpMode {
             while (gamepad1.a) sleep(100);
 
         if (gamepad1.x)
-          drive.moveToObject(3,0.3, 3000);
-
-        //telemetry.addData("Parent", "time: %8.0f", runtime.seconds());
-        //telemetry.update();
-        //sleep(2000);
+             found = drive.moveToObject(3,0.25, 3000);
       }
   }
 }

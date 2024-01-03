@@ -29,6 +29,8 @@
 
 package test.examples;
 
+import com.acmerobotics.dashboard.FtcDashboard;
+import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
 import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
@@ -52,7 +54,7 @@ import java.util.concurrent.TimeUnit;
  * Remove or comment out the @Disabled line to add this OpMode to the Driver Station OpMode list.
  */
 @TeleOp(name = "TensorFlow Object Detection", group = "Test")
-//@Disabled
+
 public class TensorFlowObjectDetection extends LinearOpMode {
 
 
@@ -84,6 +86,8 @@ public class TensorFlowObjectDetection extends LinearOpMode {
 
     @Override
     public void runOpMode() {
+
+        telemetry = new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry());
 
         initTfod();
 
