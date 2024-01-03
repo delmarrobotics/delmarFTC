@@ -1,34 +1,30 @@
+/*
+ * Odometer test
+ */
 package test.code;
 
-import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
-import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
+import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.teamcode.util.Encoder;
 
-import java.util.Arrays;
-import java.util.List;
 
 import common.Logger;
 import common.Robot;
 
-/*
- * Test code for the hanging arm
- */
 
 @TeleOp(name="Odometry Test", group="Test")
 @SuppressWarnings("unused")
 public class OdometryTest extends LinearOpMode {
 
-  /*
-  private static final double TICKS_PER_REV = 2000;
-  private static final double WHEEL_RADIUS = 0.944882;               // inches 48mm diameter
-  static final double COUNTS_PER_INCH = TICKS_PER_REV / (WHEEL_RADIUS * 2 * Math.PI);
-   */
+
+  private static final double ODOMETER_TICKS_PER_REV = 2000;
+  private static final double ODOMETER_WHEEL_DIAMETER = 1.90278;  //  1.92913;       // 0.9863 in inches, 48mm diameter
+  private static final double ODOMETER_COUNTS_PER_INCH = ODOMETER_TICKS_PER_REV / (ODOMETER_WHEEL_DIAMETER * Math.PI);
 
   static final double COUNTS_PER_MOTOR_REV = 28;              // HD Hex Motor Encoder
   static final double DRIVE_GEAR_REDUCTION = 20;              // Gearing
@@ -36,17 +32,16 @@ public class OdometryTest extends LinearOpMode {
   static final double COUNTS_PER_INCH =
           (COUNTS_PER_MOTOR_REV * DRIVE_GEAR_REDUCTION) / (WHEEL_DIAMETER_INCHES * Math.PI);
 
-
   private static final double DECELERATION_COUNT = 4 * COUNTS_PER_INCH;
   private static final double MAX_SPEED = 0.70;
   private static final double MIN_SPEED = 0.10;
-
 
   private final ElapsedTime runtime = new ElapsedTime();
 
   private Robot robot = null;
 
-  private Encoder leftFrontEncoder, rightFrontEncoder, leftRearEncoder, rightRearEncoder;
+  private DcMotorEx sideEncoderMotor;
+  private Encoder leftFrontEncoder, rightFrontEncoder, leftRearEncoder, rightRearEncoder, sideEncoder;
 
 
   @Override
@@ -57,11 +52,6 @@ public class OdometryTest extends LinearOpMode {
     robot = new Robot(this);
     robot.init();
 
-    robot.leftFrontDrive.setDirection(DcMotorSimple.Direction.FORWARD);
-    robot.rightFrontDrive.setDirection(DcMotorSimple.Direction.FORWARD);
-    robot.leftBackDrive.setDirection(DcMotorSimple.Direction.REVERSE);
-    robot.rightBackDrive.setDirection(DcMotorSimple.Direction.REVERSE);
-
     leftFrontEncoder = new Encoder(hardwareMap.get(DcMotorEx.class, "leftFront"));   // left rear
     rightFrontEncoder = new Encoder(hardwareMap.get(DcMotorEx.class, "rightFront")); // rightEncoder
     leftRearEncoder = new Encoder(hardwareMap.get(DcMotorEx.class, "leftRear"));     // frontEncoder
@@ -70,49 +60,65 @@ public class OdometryTest extends LinearOpMode {
     leftRearEncoder.setDirection(Encoder.Direction.REVERSE);
     rightRearEncoder.setDirection(Encoder.Direction.REVERSE);
 
+    sideEncoderMotor = hardwareMap.get(DcMotorEx.class, "sideEncoder");
+    sideEncoder = new Encoder(sideEncoderMotor);
 
-    List<DcMotor> motors = Arrays.asList(robot.leftFrontDrive, robot.rightFrontDrive, robot.leftBackDrive, robot.rightBackDrive);
-
-
-    // Wait for the game to start (driver presses PLAY)
     waitForStart();
 
-    //driveWithOdometry(0, 60, 0.3
+    distanceTest();
 
+    /*
+    sideEncoderMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
 
-    for (double power = 0.2; power < 0.5; power += 0.1) {
-
-      for (DcMotor motor : motors) {
-        DcMotor.RunMode mode = motor.getMode();
-        motor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        motor.setMode(mode);
-      }
-
-      runtime.reset();
-      moveRobotScaled(60, power);
-
-      int leftFrontPos = leftFrontEncoder.getCurrentPosition();
-      int rightFrontPos = rightFrontEncoder.getCurrentPosition();
-      int leftRearPos = leftRearEncoder.getCurrentPosition();
-      int rightRearPos = rightRearEncoder.getCurrentPosition();
-      telemetry.addData("power", "%5.2f", power);
-      telemetry.addData("left front",  "%d    %5.2f    %5.2f", leftFrontPos,  (leftFrontPos / COUNTS_PER_INCH),  (double)leftFrontPos / leftFrontPos);
-      telemetry.addData("right front", "%d    %5.2f    %5.2f", rightFrontPos, (rightFrontPos / COUNTS_PER_INCH), (double)rightFrontPos / leftFrontPos);
-      telemetry.addData("left rear",   "%d    %5.2f    %5.2f", leftRearPos,   (leftRearPos / COUNTS_PER_INCH),   (double)leftRearPos / leftFrontPos);
-      telemetry.addData("right rear",  "%d    %5.2f    %5.2f", rightRearPos,  (rightRearPos / COUNTS_PER_INCH),  (double)rightRearPos / leftFrontPos);
+    while (opModeIsActive()) {
+      int position = sideEncoder.getCurrentPosition();
+      Logger.message("encoder position %d  %8.2f", position, (double)position/ODOMETER_COUNTS_PER_INCH);
+      telemetry.addData("encoder position","%d  %8.2f", position, (double)position/ODOMETER_COUNTS_PER_INCH);
       telemetry.update();
+      sleep(250);
+    }
+    */
+  }
 
-      Logger.message("power %5.2f", power);
-      Logger.message("time %5.2f", runtime.seconds());
-      Logger.message("left front  %d    %5.2f    %5.2f", leftFrontPos,  (leftFrontPos / COUNTS_PER_INCH),  (double)leftFrontPos / leftFrontPos);
-      Logger.message("right front %d    %5.2f    %5.2f", rightFrontPos, (rightFrontPos / COUNTS_PER_INCH), (double)rightFrontPos / leftFrontPos);
-      Logger.message("left rear   %d    %5.2f    %5.2f", leftRearPos,   (leftRearPos / COUNTS_PER_INCH),   (double)leftRearPos / leftFrontPos);
-      Logger.message("right rear  %d    %5.2f    %5.2f", rightRearPos,  (rightRearPos / COUNTS_PER_INCH),  (double)rightRearPos / leftFrontPos);
+  private void distanceTest() {
 
-      if  (! opModeIsActive()) break;
+    robot.resetEncoders();
+    sideEncoderMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+    runtime.reset();
+
+    robot.forward(60);
+    sleep(2000);
+    displayResults();
+
+    while (opModeIsActive()) {
+      sleep(100);
     }
   }
 
+
+  private void displayResults() {
+
+    int leftFrontPos = leftFrontEncoder.getCurrentPosition();
+    int rightFrontPos = rightFrontEncoder.getCurrentPosition();
+    int leftRearPos = leftRearEncoder.getCurrentPosition();
+    int rightRearPos = rightRearEncoder.getCurrentPosition();
+    int odometerPos = sideEncoder.getCurrentPosition();
+
+    telemetry.addData("odometer",   "%6d    %5.2f", odometerPos,  (odometerPos  / ODOMETER_COUNTS_PER_INCH));
+    telemetry.addData("left front", "%6d    %5.2f    %6.3f", leftFrontPos,  (leftFrontPos  / COUNTS_PER_INCH), (((double)leftFrontPos  / leftFrontPos) - 1) * 100);
+    telemetry.addData("right front","%6d    %5.2f    %6.3f", rightFrontPos, (rightFrontPos / COUNTS_PER_INCH), (((double)rightFrontPos / leftFrontPos) - 1) * 100);
+    telemetry.addData("left rear",  "%6d    %5.2f    %6.3f", leftRearPos,   (leftRearPos   / COUNTS_PER_INCH), (((double)leftRearPos   / leftFrontPos) - 1) * 100);
+    telemetry.addData("right rear", "%6d    %5.2f    %6.3f", rightRearPos,  (rightRearPos  / COUNTS_PER_INCH), (((double)rightRearPos  / leftFrontPos) - 1) * 100);
+    telemetry.update();
+
+    Logger.message("odometer    %6d    %5.2f", odometerPos,  (odometerPos  / ODOMETER_COUNTS_PER_INCH));
+    Logger.message("left front  %6d    %5.2f    %6.3f", leftFrontPos,  (leftFrontPos / COUNTS_PER_INCH),  (((double)leftFrontPos  / leftFrontPos) - 1) * 100);
+    Logger.message("right front %6d    %5.2f    %6.3f", rightFrontPos, (rightFrontPos / COUNTS_PER_INCH), (((double)rightFrontPos / leftFrontPos) - 1) * 100);
+    Logger.message("left rear   %6d    %5.2f    %6.3f", leftRearPos,   (leftRearPos / COUNTS_PER_INCH),   (((double)leftRearPos   / leftFrontPos) - 1) * 100);
+    Logger.message("right rear  %6d    %5.2f    %6.3f", rightRearPos,  (rightRearPos / COUNTS_PER_INCH),  (((double)rightRearPos  / leftFrontPos) - 1) * 100);
+    Logger.message("\n");
+
+  }
 
   private void moveRobotScaled (double inches, double power) {
 
@@ -137,7 +143,6 @@ public class OdometryTest extends LinearOpMode {
     robot.stopRobot();
     Logger.message("moveRobotScaled: target %f  traveled %f", inches, current / COUNTS_PER_INCH);
   }
-
 
   /**
    * Move the robot by the specified inches forward, backward, left or right

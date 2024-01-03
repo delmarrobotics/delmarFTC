@@ -20,6 +20,7 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.YawPitchRollAngles;
+import org.firstinspires.ftc.teamcode.util.Encoder;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -30,20 +31,26 @@ public class Drive extends Thread {
 
     static final boolean LOG_VERBOSE = true;
 
+    public static double DRIVE_FACTOR  = 1;
+    public static double STRAFE_FACTOR = 1.11;
+    public static double TURN_FACTOR = (24.9/2);
+
+
+
     // Drive train
-    static final double COUNTS_PER_MOTOR_REV = 28;              // HD Hex Motor Encoder
-    static final double DRIVE_GEAR_REDUCTION = 20;              // Gearing
-    static final double WHEEL_DIAMETER_INCHES = (96 / 25.4);     // 96 mm wheels converted to inches
-    static final double COUNTS_PER_INCH =
+    private final double COUNTS_PER_MOTOR_REV = 28;              // HD Hex Motor Encoder
+    private final double DRIVE_GEAR_REDUCTION = 20;              // Gearing
+    private final double WHEEL_DIAMETER_INCHES = (96 / 25.4);     // 96 mm wheels converted to inches
+    private final double COUNTS_PER_INCH =
             (COUNTS_PER_MOTOR_REV * DRIVE_GEAR_REDUCTION) / (WHEEL_DIAMETER_INCHES * Math.PI);
 
-    static final double RAMP_DISTANCE = COUNTS_PER_INCH * 12;   // ramp down distance in encoder counts
-    static final double RAMP_TIME = 1000;                  // ramp up time in milliseconds
-    static final double RAMP_MIN_SPEED = 0.2;
+    private final double RAMP_DISTANCE = COUNTS_PER_INCH * 12;   // ramp down distance in encoder counts
+    private final double RAMP_TIME = 1000;                  // ramp up time in milliseconds
+    private final double RAMP_MIN_SPEED = 0.2;
 
-    public final double MIN_SPEED = 0.25;
-    public final double MAX_SPEED = 0.9;
-    private static final double MAX_ROTATE_SPEED = 0.50;
+    private final double MIN_SPEED = 0.25;
+    private final double MAX_SPEED = 0.9;
+    private final double MAX_ROTATE_SPEED = 0.50;
 
     public enum DIRECTION { FORWARD, BACK, LEFT, RIGHT, TURN_LEFT, TURN_RIGHT, DRIVER, STOOPED }
 
@@ -58,9 +65,12 @@ public class Drive extends Thread {
     public DcMotorEx leftBackDrive = null;    //  Used to control the left back drive wheel
     public DcMotorEx rightBackDrive = null;   //  Used to control the right back drive wheel
 
+    public  Encoder sideEncoder;
+
     private IMU imu;
     private NormalizedColorSensor colorSensor = null;
-    private DistanceSensor distanceSensor;
+
+    public DistanceSensor distanceSensor;
 
     private final ElapsedTime elapsedTime = new ElapsedTime();
 
@@ -100,6 +110,8 @@ public class Drive extends Thread {
 
             distanceSensor = opMode.hardwareMap.get(DistanceSensor.class, Config.DISTANCE_SENSOR);
 
+            sideEncoder = new Encoder(opMode.hardwareMap.get(DcMotorEx.class, Config.INTAKE_ROTATE));
+
         } catch (Exception e) {
             Logger.error(e, "Hardware not found");
         }
@@ -135,7 +147,7 @@ public class Drive extends Thread {
                 double y = -gamepad.left_stick_x / 2.0;  // Reduce strafe rate to 50%.
                 double yaw = -gamepad.right_stick_x / 3.0;  // Reduce rotate rate to 33%.
 
-                double speed = gamepad.left_trigger + MIN_SPEED;
+                double speed = MIN_SPEED + ((MAX_SPEED - MIN_SPEED) * gamepad.left_trigger);
                 if (speed > MAX_SPEED) speed = MAX_SPEED;
                 if (x == 0 && y == 0 && yaw != 0) {
                     if (speed > MAX_ROTATE_SPEED) speed = MAX_ROTATE_SPEED;
@@ -169,7 +181,7 @@ public class Drive extends Thread {
 
                     moving = true;
                     lastDirection = direction;
-                    //Logger.message("%-12s   %6.2f %6.2f %6.2f  %6.2f   %6.2f ", direction, x , y, yaw, gamepad.left_trigger, speed);
+                    Logger.message("%-12s   %6.2f %6.2f %6.2f  %6.2f   %6.2f ", direction, x , y, yaw, gamepad.left_trigger, speed);
 
                 } else if (moving) {
                     stopRobot();
@@ -439,7 +451,7 @@ public class Drive extends Thread {
         }
 
         // Determine new target position, and pass to motor controller
-        int target = (int) (inches * COUNTS_PER_INCH);
+        int target = (int) (inches * encoderTicksPerInch());
         leftFrontDrive.setTargetPosition(target * leftFrontSign);
         rightFrontDrive.setTargetPosition(target * rightFrontSign);
         leftBackDrive.setTargetPosition(target * leftBackSign);
@@ -516,11 +528,11 @@ public class Drive extends Thread {
 
         Logger.message("%s  target  %6.2f  traveled %6.2f %6.2f %6.2f %6.2f  heading %6.2f  time %6.2f",
                 direction,
-                (double)target / COUNTS_PER_INCH,
-                (double)leftFrontDrive.getCurrentPosition() / COUNTS_PER_INCH,
-                (double)rightFrontDrive.getCurrentPosition() / COUNTS_PER_INCH,
-                (double)leftBackDrive.getCurrentPosition() / COUNTS_PER_INCH,
-                (double)rightBackDrive.getCurrentPosition() / COUNTS_PER_INCH,
+                (double)target / encoderTicksPerInch(),
+                (double)leftFrontDrive.getCurrentPosition() / encoderTicksPerInch(),
+                (double)rightFrontDrive.getCurrentPosition() / encoderTicksPerInch(),
+                (double)leftBackDrive.getCurrentPosition() / encoderTicksPerInch(),
+                (double)rightBackDrive.getCurrentPosition() / encoderTicksPerInch(),
                 getOrientation(),
                 elapsedTime.seconds());
     }
@@ -589,17 +601,31 @@ public class Drive extends Thread {
         ElapsedTime elapsedTime = new ElapsedTime();
 
         resetEncoders();
-        moveRobot(1, 0, 0, speed);
+        double startDistance = 0;
+        double average;
+        int count = 0;
+        //moveRobot(1, 0, 0, speed);
+        moveRobot(DIRECTION.FORWARD, speed);
         elapsedTime.reset();
 
         while (! found && opMode.opModeIsActive()) {
             double distance = distanceSensor.getDistance(DistanceUnit.INCH);
-            Logger.message("distance %f ", distance);
 
-            if (distance <= inches) {
+            if (count == 0) {
+                average = 0;
+                startDistance = distance;
+            } else {
+                average = (startDistance - distance) / count;
+                Logger.message("distance %6.2f  %6.2f", distance, average);
+            }
+            count++;
+
+            if (distance - inches <= average / 2) {
                 stopRobot();
-                Logger.message("object found");
+                Logger.message("object found, distance %6.2f ", distance);
                 found = true;
+ //           } else if ( distance - inches < 2) {
+ //               moveRobot(1, 0, 0, 0.1);
             }
 
             if (elapsedTime.milliseconds() > timeout){
@@ -628,19 +654,23 @@ public class Drive extends Thread {
     public void resetEncoders() {
 
         for (DcMotor motor : motors) {
-            DcMotor.RunMode mode = leftFrontDrive.getMode();
+            DcMotor.RunMode mode = motor.getMode();
             motor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-            motor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+            //motor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
             motor.setMode(mode);
         }
     }
 
+    public double encoderTicksPerInch() {
+        return (COUNTS_PER_INCH * DRIVE_FACTOR);
+
+    }
     public List<Double> getWheelPositions() {
 
         List<Double> wheelPositions = new ArrayList<>();
         for (DcMotor motor : motors) {
             int position = motor.getCurrentPosition();
-            wheelPositions.add((double)position / COUNTS_PER_INCH);
+            wheelPositions.add((double)position / encoderTicksPerInch());
         }
         return wheelPositions;
     }
@@ -650,7 +680,7 @@ public class Drive extends Thread {
 
         for (DcMotor motor : motors)
             traveled += motor.getCurrentPosition();
-        return traveled / motors.size() / COUNTS_PER_INCH;
+        return traveled / motors.size() / encoderTicksPerInch();
     }
 
     /**
@@ -679,19 +709,19 @@ public class Drive extends Thread {
 
     public void strafeLeft (double distance) {
         //distance = Math.sqrt(Math.pow(distance,2 ) + Math.pow(distance,2));
-        distance *= 1.11;
+        distance *= STRAFE_FACTOR;
         moveDistance(DIRECTION.LEFT,.4, distance, 0);
     }
 
     public void strafeRight (double distance) {
         //distance = Math.sqrt(Math.pow(distance,2 ) + Math.pow(distance,2));
-        distance *= 1.11;
+        distance *= STRAFE_FACTOR;
         moveDistance(DIRECTION.RIGHT,.4, distance, 0);
     }
 
     public void turn(double degrees) {
 
-        double circumference = 2 * Math.PI * 24.9/2;
+        double circumference = 2 * Math.PI * TURN_FACTOR;
         double inches = Math.abs(degrees) / 360 * circumference;
         if (degrees > 0)
             moveDistance(DIRECTION.TURN_LEFT, 0.4,  inches, 0 );
