@@ -1,7 +1,7 @@
 /*
  *
  */
-package test.code;
+package test.unused;
 
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.util.ElapsedTime;
