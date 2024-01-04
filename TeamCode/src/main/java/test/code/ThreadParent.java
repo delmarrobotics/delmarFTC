@@ -25,7 +25,6 @@ public class ThreadParent extends LinearOpMode {
 
   private final ElapsedTime runtime = new ElapsedTime();
   //Logger logger = Logger.getLogger("MyLog");
-  ThreadChild child  = null;
 
   @Override
   public void runOpMode() {
@@ -35,8 +34,6 @@ public class ThreadParent extends LinearOpMode {
       telemetry.update();
       Servo servo;
 
-      //ThreadChild child = new ThreadChild(this);
-      //child.start();
 
       Drive drive = new Drive(this);
       drive.start();

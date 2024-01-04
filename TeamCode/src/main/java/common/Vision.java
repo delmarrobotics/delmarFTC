@@ -119,6 +119,8 @@ public class Vision {
                 //.setModelAspectRatio(16.0 / 9.0)
                 .build();
 
+        //tfod.setZoom(200);
+
         aprilTag = new AprilTagProcessor.Builder()
                 .build();
 

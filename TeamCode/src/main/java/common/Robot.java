@@ -55,8 +55,8 @@ public class Robot {
     static final double DRONE_ANGLE_DOWN = 0.48;
     //static final double DRONE_ANGLE_UP   = 0.29;   // ToDo uncomment
     public double DRONE_ANGLE_UP   = 0.29;           // ToDo remove
-    static final double DRONE_FIRE_DOWN  = 0.063;
-    static final double DRONE_FIRE_UP    = 0.16;
+    static final double DRONE_FIRE_DOWN  = 0.55 ;
+    static final double DRONE_FIRE_UP    = 0.73;
 
     // pixel dropper servo positions
     static final double DROPPER_OPEN     = 0.51;

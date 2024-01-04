@@ -115,22 +115,22 @@ public class RouteTest extends LinearOpMode {
                 SelectTuning();
                 while (gamepad1.back) sleep(100);
             }
-        }
+         }
     }
 
     private void SelectTuning () {
         if (tuning == TUNING.DRIVE) {
             tuning = TUNING.STRAFE;
             factor = Drive.STRAFE_FACTOR;
-            factorMsg.setCaption("drive factor");
+            factorMsg.setCaption("strafe factor");
         } else if (tuning == TUNING.STRAFE) {
             tuning = TUNING.TURN;
             factor = Drive.TURN_FACTOR;
-            factorMsg.setCaption("strafe factor");
+            factorMsg.setCaption("turn factor");
         } else if (tuning == TUNING.TURN) {
             tuning = TUNING.DRIVE;
             factor = Drive.DRIVE_FACTOR;
-            factorMsg.setCaption("turn factor");
+            factorMsg.setCaption("drive factor");
         }
         factorMsg.setValue( FACTOR_FORMAT, factor);
         telemetry.update();
