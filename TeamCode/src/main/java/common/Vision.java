@@ -15,6 +15,7 @@ import org.firstinspires.ftc.robotcore.external.function.Continuation;
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
 import org.firstinspires.ftc.robotcore.external.hardware.camera.controls.ExposureControl;
 import org.firstinspires.ftc.robotcore.external.hardware.camera.controls.GainControl;
+import org.firstinspires.ftc.robotcore.external.hardware.camera.controls.PtzControl;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.stream.CameraStreamSource;
 import org.firstinspires.ftc.robotcore.external.tfod.Recognition;
@@ -119,7 +120,7 @@ public class Vision {
                 //.setModelAspectRatio(16.0 / 9.0)
                 .build();
 
-        //tfod.setZoom(200);
+        //tfod.setZoom(1.5);
 
         aprilTag = new AprilTagProcessor.Builder()
                 .build();
@@ -388,9 +389,9 @@ public class Vision {
                 gainControl.setGain(gain);
                 opMode.sleep(500);
 
-                if (findTeamElement(100)) {
+                if (findTeamElement(300)) {
                    Logger.message("found - exposure: %d gain: %d  Confidence: %.2f", exposure, gain, element.getConfidence());
-                   if (element.getConfidence() < confidence) {
+                   if (element.getConfidence() > confidence) {
                        bestExposure = exposure;
                        bestGain = gain;
                    }
@@ -400,5 +401,15 @@ public class Vision {
             }
         }
         Logger.message("Best setting -  exposure: %d gain: %d", bestExposure, bestGain);
+    }
+
+    public void setZoom(int zoom) {
+        PtzControl ptzControl = visionPortal.getCameraControl(PtzControl.class);
+        ptzControl.setZoom(zoom);
+    }
+
+    public int getZoom() {
+        PtzControl ptzControl = visionPortal.getCameraControl(PtzControl.class);
+        return ptzControl.getZoom();
     }
 }
