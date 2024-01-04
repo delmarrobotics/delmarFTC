@@ -29,7 +29,7 @@ import java.util.Locale;
 
 public class Drive extends Thread {
 
-    static final boolean LOG_VERBOSE = true;
+    static final boolean LOG_VERBOSE = false;
 
     public static double DRIVE_FACTOR  = 1;
     public static double STRAFE_FACTOR = 1.11;
@@ -133,63 +133,75 @@ public class Drive extends Thread {
      */
     public void run() {
 
-        while (!opMode.isStarted())
-            Thread.yield();
+        while (!opMode.isStarted()) Thread.yield();
+       Logger.message("robot drive thread started");
 
-        Logger.message("robot drive thread started");
+        ElapsedTime driveTime = new ElapsedTime();
+        double lastTime = driveTime.milliseconds();
+        double lastSpeed = 0;
+        double accelerationPerMS = (MAX_SPEED - MIN_SPEED) / (1000 * 1.5);   // 1.5 second to accelerate to full speed
 
         while (running && opMode.opModeIsActive()) {
-            if (running) {
 
-                // Left stick to go forward back and strafe. Right stick to rotate. Left trigger accelerate.
-                Gamepad gamepad = opMode.gamepad1;
-                double x = -gamepad.left_stick_y / 2.0;  // Reduce drive rate to 50%.
-                double y = -gamepad.left_stick_x / 2.0;  // Reduce strafe rate to 50%.
-                double yaw = -gamepad.right_stick_x / 3.0;  // Reduce rotate rate to 33%.
+            // Left stick to go forward back and strafe. Right stick to rotate. Left trigger accelerate.
+            Gamepad gamepad = opMode.gamepad1;
+            double x = -gamepad.left_stick_y / 2.0;  // Reduce drive rate to 50%.
+            double y = -gamepad.left_stick_x / 2.0;  // Reduce strafe rate to 50%.
+            double yaw = -gamepad.right_stick_x / 3.0;  // Reduce rotate rate to 33%.
+            double speed = (gamepad.left_trigger * (MAX_SPEED - MIN_SPEED)) + MIN_SPEED;
 
-                double speed = MIN_SPEED + ((MAX_SPEED - MIN_SPEED) * gamepad.left_trigger);
-                if (speed > MAX_SPEED) speed = MAX_SPEED;
-                if (x == 0 && y == 0 && yaw != 0) {
-                    if (speed > MAX_ROTATE_SPEED) speed = MAX_ROTATE_SPEED;
-                }
-
-                if (x != 0 || y != 0 || yaw != 0) {
-                    DIRECTION direction;
-                    double MAX_STICK = 0.5;
-
-                    if (yaw != 0) {
-                        direction =  DIRECTION.DRIVER;
-                    } else if (Math.abs(x) == MAX_STICK || (x != 0 && y == 0 )) {
-                        if (x > 0)
-                            direction = DIRECTION.FORWARD;
-                        else
-                            direction = DIRECTION.BACK;
-                    } else if (Math.abs(y) == MAX_STICK || (x == 0 /*&& y != 0 */ )) {
-                        if (y > 0)
-                            direction =  DIRECTION.LEFT;
-                        else
-                            direction =  DIRECTION.RIGHT;
-                    } else {
-                        direction =  DIRECTION.DRIVER;
-                    }
-
-                    if (direction == DIRECTION.DRIVER) {
-                        moveRobot(x, y, yaw, speed);
-                    } else {
-                        moveRobot(direction, speed);
-                    }
-
-                    moving = true;
-                    lastDirection = direction;
-                    Logger.message("%-12s   %6.2f %6.2f %6.2f  %6.2f   %6.2f ", direction, x , y, yaw, gamepad.left_trigger, speed);
-
-                } else if (moving) {
-                    stopRobot();
-                    lastDirection = DIRECTION.STOOPED;
-                    moving = false;
-                }
+            // limit acceleration to prevent skidding.
+            double currentTime = driveTime.milliseconds();
+            if (speed > MIN_SPEED && speed > lastSpeed) {
+                double deltaTime = currentTime - lastTime;
+                double acceleration = (speed - lastSpeed) / (deltaTime);
+                if (acceleration > (accelerationPerMS * deltaTime))
+                    speed = lastSpeed + (accelerationPerMS * deltaTime);
             }
-            else {
+            lastTime = currentTime;
+            lastSpeed = speed;
+
+            if (speed > MAX_SPEED) speed = MAX_SPEED;
+            if (x == 0 && y == 0 && yaw != 0) {
+                if (speed > MAX_ROTATE_SPEED) speed = MAX_ROTATE_SPEED;
+            }
+
+            if (x != 0 || y != 0 || yaw != 0) {
+                DIRECTION direction;
+                double MAX_STICK = 0.5;
+
+                if (yaw != 0) {
+                    direction =  DIRECTION.DRIVER;
+                } else if (Math.abs(x) == MAX_STICK || (x != 0 && y == 0 )) {
+                    if (x > 0)
+                        direction = DIRECTION.FORWARD;
+                    else
+                        direction = DIRECTION.BACK;
+                } else if (Math.abs(y) == MAX_STICK || (x == 0 /*&& y != 0 */ )) {
+                    if (y > 0)
+                        direction =  DIRECTION.LEFT;
+                    else
+                        direction =  DIRECTION.RIGHT;
+                } else {
+                    direction =  DIRECTION.DRIVER;
+                }
+
+                if (direction == DIRECTION.DRIVER) {
+                    moveRobot(x, y, yaw, speed);
+                } else {
+                    moveRobot(direction, speed);
+                }
+
+                moving = true;
+                lastDirection = direction;
+                Logger.message("%-12s   %6.2f %6.2f %6.2f  %6.2f   %6.2f ", direction, x , y, yaw, gamepad.left_trigger, speed);
+
+            } else if (moving) {
+                stopRobot();
+                lastDirection = DIRECTION.STOOPED;
+                moving = false;
+
+            } else {
                 Thread.yield();
             }
         }
