@@ -29,14 +29,12 @@
 
 package test.code;
 
-import com.acmerobotics.roadrunner.geometry.Pose2d;
-import com.acmerobotics.roadrunner.trajectory.Trajectory;
-import com.qualcomm.robotcore.eventloop.opmode.Disabled;
+import com.acmerobotics.dashboard.FtcDashboard;
+import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
-import org.firstinspires.ftc.teamcode.drive.SampleMecanumDrive;
 
 import common.Vision;
 
@@ -46,20 +44,31 @@ import common.Vision;
  */
 
 @TeleOp(name="Calibrate Camera", group="Test")
-@Disabled
+
 public class CalibrateCamera extends LinearOpMode {
 
     private ElapsedTime runtime = new ElapsedTime();
 
     @Override
     public void runOpMode() {
+        telemetry = new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry());
+
         telemetry.addData("Status", "Initialized");
         telemetry.update();
 
         Vision vision = new Vision(this);
 
+        while (!vision.cameraReady())
+            sleep(100);
+        telemetry.addLine("camera ready, press start");
+        telemetry.update();
+
+        vision.enableCameraStream(true);
+
         waitForStart();
         runtime.reset();
+
+        vision.enableCameraStream(false);
 
         vision.calibrateCamera();
 
