@@ -152,7 +152,9 @@ public class Drive extends Thread {
 
             // limit acceleration to prevent skidding.
             double currentTime = driveTime.milliseconds();
-            if (speed > MIN_SPEED && speed > lastSpeed) {
+            if (! moving) {
+                speed = MIN_SPEED;
+            } else if (speed > lastSpeed) {
                 double deltaTime = currentTime - lastTime;
                 double acceleration = (speed - lastSpeed) / (deltaTime);
                 if (acceleration > (accelerationPerMS * deltaTime))
