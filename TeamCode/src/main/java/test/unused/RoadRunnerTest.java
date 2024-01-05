@@ -90,7 +90,7 @@ public class RoadRunnerTest extends LinearOpMode {
         robot.forward(22);
         robot.strafeLeft(6);
         robot.pixelArm.positionArm(PixelArm.ARM_POSITION.LOW);
-        robot.moveToColor(Robot.COLOR.RED, 1, 0, 0.25, 2000);
+        robot.drive.moveToColor(Drive.COLOR.RED, 1, 0, 0.25, 2000);
         auto.adjustYaw();
         robot.forward(7);
         robot.dropYellowPixel();
@@ -108,7 +108,7 @@ public class RoadRunnerTest extends LinearOpMode {
         robot.forward(26);
         robot.strafeLeft(3);
         robot.pixelArm.positionArm(PixelArm.ARM_POSITION.LOW);
-        robot.moveToColor(Robot.COLOR.RED, 1, 0, 0.25, 2000);
+        robot.drive.moveToColor(Drive.COLOR.RED, 1, 0, 0.25, 2000);
         auto.adjustYaw();
         robot.forward(7);
         robot.dropYellowPixel();
@@ -125,7 +125,7 @@ public class RoadRunnerTest extends LinearOpMode {
         robot.forward(15);
         robot.strafeRight(7);
         robot.pixelArm.positionArm(PixelArm.ARM_POSITION.LOW);
-        robot.moveToColor(Robot.COLOR.RED, 1, 0, 0.25, 2000);
+        robot.drive.moveToColor(Drive.COLOR.RED, 1, 0, 0.25, 2000);
         auto.adjustYaw();
         robot.forward(7);
         robot.dropYellowPixel();

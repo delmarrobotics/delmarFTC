@@ -362,7 +362,7 @@ public class Vision {
     public boolean cameraReady() {
         VisionPortal.CameraState state;
         state = visionPortal.getCameraState();
-        Logger.message("camera state %s", state);
+        //Logger.message("camera state %s", state);
         return (state == VisionPortal.CameraState.STREAMING);
     }
 

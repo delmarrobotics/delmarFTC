@@ -62,9 +62,9 @@ public class Auto {
         boolean found = false;
         robot.pixelArm.positionArm(PixelArm.ARM_POSITION.YELLOW);
         if (color == COLOR.BLUE)
-            found = robot.moveToColor(Robot.COLOR.BLUE, 1, 0, 0.2, 2000);
+            found = robot.drive.moveToColor(Drive.COLOR.BLUE, 1, 0, 0.2, 2000);
         else if (color == COLOR.RED)
-            found = robot.moveToColor(Robot.COLOR.RED, 1, 0, 0.2, 2000);
+            found = robot.drive.moveToColor(Drive.COLOR.RED, 1, 0, 0.2, 2000);
         //adjustYaw();
         if (found)
             robot.forward(7.5);
@@ -126,7 +126,7 @@ public class Auto {
             double yaw = robot.vision.aprilTagYaw();
             Logger.message("adjustYaw: aprilTag: x %f  range %f  yaw %f", x, range, yaw);
             robot.turn(yaw);
-            Logger.message("adjustYaw: robot orientation %3.1f", robot.getOrientation());
+            Logger.message("adjustYaw: robot orientation %3.1f", robot.drive.getOrientation());
         } else {
              Logger.message("adjustYaw: no aprilTag found");
         }

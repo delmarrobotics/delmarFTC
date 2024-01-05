@@ -5,6 +5,7 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
+import common.Drive;
 import common.Robot;
 
 /*
@@ -31,7 +32,7 @@ public class DriveToLineTest extends LinearOpMode {
     waitForStart();
     runtime.reset();
 
-    robot.moveToColor(Robot.COLOR.RED, 1, 0, MIN_SPEED, 4000);
+    robot.drive.moveToColor(Drive.COLOR.RED, 1, 0, MIN_SPEED, 4000);
 
     // run until the end of the match (driver presses STOP)
     while (opModeIsActive()) {

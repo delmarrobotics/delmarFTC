@@ -261,11 +261,11 @@ public class GoStraight extends LinearOpMode {
     while (opModeIsActive()) {
       current = encoder.getCurrentPosition();
       if (Math.abs(current - start) >= distance) {
-        robot.stopRobot();
+        robot.drive.stopRobot();
         break;
       }
     }
-    robot.stopRobot();
+    robot.drive.stopRobot();
     //Logger.message("moveRobotScaled: target %f  traveled %f", inches, current / COUNTS_PER_INCH);
   }
 
@@ -380,7 +380,7 @@ public class GoStraight extends LinearOpMode {
       sleep(2000);
 
     }
-    robot.stopRobot();
+    robot.drive.stopRobot();
     //Logger.message("moveRobotScaled: target %f  traveled %f", inches, current / COUNTS_PER_INCH);
 
     int index = (int)Math.round(power * 100);

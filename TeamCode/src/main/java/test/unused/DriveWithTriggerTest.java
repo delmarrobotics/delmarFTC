@@ -50,9 +50,6 @@ public class DriveWithTriggerTest extends LinearOpMode {
 
       telemetry.addData("Status", "Run Time: " + runtime);
       telemetry.update();
-      if (gamepad1.a){
-        robot.printWheelPosition();
-      }
     }
   }
 
@@ -96,9 +93,9 @@ public class DriveWithTriggerTest extends LinearOpMode {
     }
 
     // Send powers to the wheels.
-    robot.leftFrontDrive.setPower(leftFrontPower);
-    robot.rightFrontDrive.setPower(rightFrontPower);
-    robot.leftBackDrive.setPower(leftBackPower);
-    robot.rightBackDrive.setPower(rightBackPower);
+    robot.drive.leftFrontDrive.setPower(leftFrontPower);
+    robot.drive.rightFrontDrive.setPower(rightFrontPower);
+    robot.drive.leftBackDrive.setPower(leftBackPower);
+    robot.drive.rightBackDrive.setPower(rightBackPower);
   }
 }

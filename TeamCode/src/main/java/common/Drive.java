@@ -25,7 +25,6 @@ import org.firstinspires.ftc.teamcode.util.Encoder;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Locale;
 
 public class Drive extends Thread {
 
@@ -40,12 +39,12 @@ public class Drive extends Thread {
     // Drive train
     private final double COUNTS_PER_MOTOR_REV = 28;              // HD Hex Motor Encoder
     private final double DRIVE_GEAR_REDUCTION = 20;              // Gearing
-    private final double WHEEL_DIAMETER_INCHES = (96 / 25.4);     // 96 mm wheels converted to inches
+    private final double WHEEL_DIAMETER_INCHES = (96 / 25.4);    // 96 mm wheels converted to inches
     private final double COUNTS_PER_INCH =
             (COUNTS_PER_MOTOR_REV * DRIVE_GEAR_REDUCTION) / (WHEEL_DIAMETER_INCHES * Math.PI);
 
     private final double RAMP_DISTANCE = COUNTS_PER_INCH * 12;   // ramp down distance in encoder counts
-    private final double RAMP_TIME = 1000;                  // ramp up time in milliseconds
+    private final double RAMP_TIME = 1000;                       // ramp up time in milliseconds
     private final double RAMP_MIN_SPEED = 0.2;
 
     private final double MIN_SPEED = 0.25;
@@ -110,7 +109,7 @@ public class Drive extends Thread {
 
             distanceSensor = opMode.hardwareMap.get(DistanceSensor.class, Config.DISTANCE_SENSOR);
 
-            sideEncoder = new Encoder(opMode.hardwareMap.get(DcMotorEx.class, Config.INTAKE_ROTATE));
+            sideEncoder = new Encoder(opMode.hardwareMap.get(DcMotorEx.class, Config.PIXEL_INTAKE));
 
         } catch (Exception e) {
             Logger.error(e, "Hardware not found");
@@ -140,6 +139,7 @@ public class Drive extends Thread {
         double lastTime = driveTime.milliseconds();
         double lastSpeed = 0;
         double accelerationPerMS = (MAX_SPEED - MIN_SPEED) / (1000 * 1.5);   // 1.5 second to accelerate to full speed
+        double decelerationPerMS = (MAX_SPEED - MIN_SPEED) / (1000 * 1);     // 1 second to come to full stop
 
         while (running && opMode.opModeIsActive()) {
 
@@ -150,15 +150,18 @@ public class Drive extends Thread {
             double yaw = -gamepad.right_stick_x / 3.0;  // Reduce rotate rate to 33%.
             double speed = (gamepad.left_trigger * (MAX_SPEED - MIN_SPEED)) + MIN_SPEED;
 
-            // limit acceleration to prevent skidding.
+            // limit acceleration and deceleration to prevent skidding.
             double currentTime = driveTime.milliseconds();
             if (! moving) {
                 speed = MIN_SPEED;
-            } else if (speed > lastSpeed) {
+            } else {
                 double deltaTime = currentTime - lastTime;
                 double acceleration = (speed - lastSpeed) / (deltaTime);
-                if (acceleration > (accelerationPerMS * deltaTime))
+                if ((speed > lastSpeed) && (acceleration > (accelerationPerMS * deltaTime)))
                     speed = lastSpeed + (accelerationPerMS * deltaTime);
+                else if ((speed < lastSpeed) && (acceleration < decelerationPerMS * deltaTime)) {  // ToDo not currently used
+                    speed = lastSpeed - (decelerationPerMS * deltaTime);
+                }
             }
             lastTime = currentTime;
             lastSpeed = speed;
@@ -594,7 +597,7 @@ public class Drive extends Thread {
                 }
             }
             if (elapsedTime.milliseconds() > timeout){
-                Logger.warning("no line found, traveled %5.2% inches", getDistanceTraveled());
+                Logger.warning("no line found, traveled %5.2f inches", getDistanceTraveled());
                 break;
             }
         }

@@ -33,6 +33,7 @@ public class MainTeleOp extends LinearOpMode {
         // Initialize the robot hardware.
         robot = new Robot(this);
         robot.init();
+        robot.drive.start();
 
         // Wait for the game to start (driver presses PLAY)
         waitForStart();
@@ -55,11 +56,13 @@ public class MainTeleOp extends LinearOpMode {
             }
 
             // POV Mode uses left stick to go forward, and right stick to rotate, left trigger accelerate.
+            /*
             double drive  = -gamepad1.left_stick_y  / 2.0;  // Reduce drive rate to 50%.
             double strafe = -gamepad1.left_stick_x  / 2.0;  // Reduce strafe rate to 50%.
             double yaw   = -gamepad1.right_stick_x / 3.0;  // Reduce rotate rate to 33%.
             double speed = gamepad1.left_trigger;
             robot.moveRobot(drive, strafe, yaw, speed);
+            */
 
             if (gamepad2.back) {
                 if (runtime.seconds() > 90 && mode == GamepadMode.PIXEL)

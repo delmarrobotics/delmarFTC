@@ -63,7 +63,7 @@ public class DriveToAprilTag extends LinearOpMode {
                 .build();
         drive.followTrajectorySequence(traj1);
 
-        Logger.message("robot orientation %3.1f", robot.getOrientation());
+        Logger.message("robot orientation %3.1f", robot.drive.getOrientation());
 
         //robot.moveToColor(Robot.COLOR.RED, 1, 0, 0.2,3000);
         //robot.moveToColor(Robot.COLOR.BLUE, 1, 0, MIN_SPEED, 4000);

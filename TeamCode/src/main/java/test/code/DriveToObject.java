@@ -11,7 +11,7 @@ import common.Drive;
 import common.Logger;
 import common.Robot;
 
-@TeleOp(name=" Drive To Object", group="Test")
+@TeleOp(name="Drive To Object", group="Test")
 @SuppressWarnings("unused")
 public class DriveToObject extends LinearOpMode {
 

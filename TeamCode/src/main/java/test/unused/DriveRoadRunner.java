@@ -29,7 +29,7 @@ public class DriveRoadRunner extends SampleMecanumDrive {
 
     public void forward (double distance) {
 
-        List<Double> before = robot.getWheelPositions();
+        List<Double> before = robot.drive.getWheelPositions();
         double beforeHeading = super.getRawExternalHeading();
 
         Trajectory trajectory = super.trajectoryBuilder(new Pose2d())
@@ -37,7 +37,7 @@ public class DriveRoadRunner extends SampleMecanumDrive {
                 .build();
         super.followTrajectory(trajectory);
 
-        List<Double> after = robot.getWheelPositions();
+        List<Double> after = robot.drive.getWheelPositions();
 
         Logger.message("distance %6.2f  heading %6.2f  leftFront %6.2f  leftRear %6.2f  rightRear %6.2f  rightFront %6.2f",
                 distance,
@@ -50,7 +50,7 @@ public class DriveRoadRunner extends SampleMecanumDrive {
 
     public void back (double distance) {
 
-        List<Double> before = robot.getWheelPositions();
+        List<Double> before = robot.drive.getWheelPositions();
         double beforeHeading = super.getRawExternalHeading();
 
         Trajectory trajectory = super.trajectoryBuilder(new Pose2d())
@@ -58,7 +58,7 @@ public class DriveRoadRunner extends SampleMecanumDrive {
                 .build();
         super.followTrajectory(trajectory);
 
-        List<Double> after = robot.getWheelPositions();
+        List<Double> after = robot.drive.getWheelPositions();
 
         Logger.message("distance %6.2f  heading %6.2f  leftFront %6.2f  leftRear %6.2f  rightRear %6.2f  rightFront %6.2f",
                 distance,
@@ -71,7 +71,7 @@ public class DriveRoadRunner extends SampleMecanumDrive {
 
     public void strafeLeft (double distance) {
 
-        List<Double> before = robot.getWheelPositions();
+        List<Double> before = robot.drive.getWheelPositions();
         double beforeHeading = super.getRawExternalHeading();
 
         Trajectory trajectory = super.trajectoryBuilder(new Pose2d())
@@ -79,7 +79,7 @@ public class DriveRoadRunner extends SampleMecanumDrive {
                 .build();
         super.followTrajectory(trajectory);
 
-        List<Double> after = robot.getWheelPositions();
+        List<Double> after = robot.drive.getWheelPositions();
 
         Logger.message("distance %6.2f  heading %6.2f  leftFront %6.2f  leftRear %6.2f  rightRear %6.2f  rightFront %6.2f",
                 distance,
@@ -92,7 +92,7 @@ public class DriveRoadRunner extends SampleMecanumDrive {
 
     public void strafeRight (double distance) {
 
-        List<Double> before = robot.getWheelPositions();
+        List<Double> before = robot.drive.getWheelPositions();
         double beforeHeading = super.getRawExternalHeading();
 
         Trajectory trajectory = super.trajectoryBuilder(new Pose2d())
@@ -100,7 +100,7 @@ public class DriveRoadRunner extends SampleMecanumDrive {
                 .build();
         super.followTrajectory(trajectory);
 
-        List<Double> after = robot.getWheelPositions();
+        List<Double> after = robot.drive.getWheelPositions();
 
         Logger.message("distance %6.2f  heading %6.2f  leftFront %6.2f  leftRear %6.2f  rightRear %6.2f  rightFront %6.2f",
                 distance,
@@ -114,11 +114,11 @@ public class DriveRoadRunner extends SampleMecanumDrive {
     public void turn(double angle) {
 
         //double heading = super.getRawExternalHeading();
-        double heading = robot.getOrientation();
+        double heading = robot.drive.getOrientation();
         super.turn(angle);
         Logger.message("angle %6.2f  heading %6.2f",
                 Math.toDegrees(angle),
-                robot.getOrientation() - heading);
+                robot.drive.getOrientation() - heading);
     }
 
 }

@@ -5,6 +5,7 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
+import common.Drive;
 import common.Robot;
 
 @TeleOp(name="inchTest", group="Main")
@@ -32,7 +33,7 @@ public class InchTest extends LinearOpMode {
             if (gamepad1.a) inchDrive += 1;
             if (gamepad1.b) inchDrive -= 1;
 
-            if (gamepad1.left_bumper) robot.moveDistance(0.5,inchDrive,1000);
+            if (gamepad1.left_bumper) robot.drive.moveDistance(Drive.DIRECTION.FORWARD,0.5,inchDrive,1000);
         }
     }
 }

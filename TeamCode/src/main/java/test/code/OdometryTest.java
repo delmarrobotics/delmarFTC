@@ -9,7 +9,6 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
-import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.teamcode.util.Encoder;
 
 
@@ -82,7 +81,7 @@ public class OdometryTest extends LinearOpMode {
 
   private void distanceTest() {
 
-    robot.resetEncoders();
+    robot.drive.resetEncoders();
     sideEncoderMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
     runtime.reset();
 
@@ -128,19 +127,19 @@ public class OdometryTest extends LinearOpMode {
     int start = encoder.getCurrentPosition();
     double distance = Math.abs(COUNTS_PER_INCH * inches);
 
-    robot.leftFrontDrive.setPower(power);
-    robot.rightFrontDrive.setPower(power);
-    robot.leftBackDrive.setPower(power);
-    robot.rightBackDrive.setPower(power);
+    robot.drive.leftFrontDrive.setPower(power);
+    robot.drive.rightFrontDrive.setPower(power);
+    robot.drive.leftBackDrive.setPower(power);
+    robot.drive.rightBackDrive.setPower(power);
 
     while (opModeIsActive()) {
       current = encoder.getCurrentPosition();
       if (Math.abs(current - start) >= distance) {
-        robot.stopRobot();
+        robot.drive.stopRobot();
         break;
       }
     }
-    robot.stopRobot();
+    robot.drive.stopRobot();
     Logger.message("moveRobotScaled: target %f  traveled %f", inches, current / COUNTS_PER_INCH);
   }
 
@@ -184,13 +183,13 @@ public class OdometryTest extends LinearOpMode {
     int start = encoder.getCurrentPosition();
     double distance = Math.abs(COUNTS_PER_INCH * inches);
 
-    robot.moveRobot(x, y,0, speed);
+    robot.drive.moveRobot(x, y,0, speed);
 
     while (opModeIsActive()) {
       current = encoder.getCurrentPosition();
       //Logger.message("traveled %f", Math.abs(current - start));
       if (Math.abs(current - start) >= distance) {
-        robot.stopRobot();
+        robot.drive.stopRobot();
         break;
       }
       double remaining = distance - Math.abs(current - start);
@@ -200,10 +199,10 @@ public class OdometryTest extends LinearOpMode {
         //Logger.message("decelerationSpeed %f", decelerationSpeed);
       }
       if (remaining <= (COUNTS_PER_INCH * 2) ) {
-        robot.moveRobot(x, y,0, 0.1);
+        robot.drive.moveRobot(x, y,0, 0.1);
       }
     }
-    robot.stopRobot();
+    robot.drive.stopRobot();
     Logger.message("driveWithOdometry: target %f  traveled %f", inches, current / COUNTS_PER_INCH);
   }
 }
