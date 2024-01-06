@@ -33,6 +33,8 @@ public class MainTeleOp extends LinearOpMode {
         // Initialize the robot hardware.
         robot = new Robot(this);
         robot.init();
+
+        robot.drive.setBraking(false);
         robot.drive.start();
 
         // Wait for the game to start (driver presses PLAY)
