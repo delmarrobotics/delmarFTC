@@ -8,7 +8,7 @@ import common.Auto;
 import common.Robot;
 
 @TeleOp(name="Backdrop Strafe Test", group="Test")
-@Disabled
+//@Disabled
 public class BackdropStrafeTest extends LinearOpMode {
 
     private Robot robot = null;
@@ -29,19 +29,29 @@ public class BackdropStrafeTest extends LinearOpMode {
         // run until the end of the match (driver presses STOP)
         while (opModeIsActive()) {
 
-            auto.setColor(Auto.COLOR.RED);
+            auto.setColor(Auto.COLOR.BLUE);
 
             if (gamepad1.x) {
                 auto.objectPosition = Auto.POSITION.left;
+                auto.adjustYaw();
                 auto.strafeToDropPosition();
+                auto.dropYellowPixel();
             }
             if (gamepad1.a) {
                 auto.objectPosition = Auto.POSITION.center;
+                auto.adjustYaw();
                 auto.strafeToDropPosition();
+                auto.dropYellowPixel();
             }
             if (gamepad1.b) {
                 auto.objectPosition = Auto.POSITION.right;
+                auto.adjustYaw();
                 auto.strafeToDropPosition();
+                auto.dropYellowPixel();
+            }
+            if (gamepad1.y) {
+                robot.vision.findAprilTag(-1);
+                while (gamepad1.y) sleep(100);
             }
         }
     }

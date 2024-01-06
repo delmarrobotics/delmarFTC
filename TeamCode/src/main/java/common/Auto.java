@@ -67,12 +67,13 @@ public class Auto {
             found = robot.drive.moveToColor(Drive.COLOR.RED, 1, 0, 0.2, 2000);
         //adjustYaw();
         if (found)
-            robot.forward(7.5);
+            robot.forward(9);
         robot.dropYellowPixel();
         robot.back(3);
         robot.pixelArm.pixelWristMove(PixelArm.PIXEL_WRIST_HOME);
         robot.pixelArm.pixelArmMove(PixelArm.PIXEL_ARM_IN);
-//        robot.pixelArm.pixelElbowMove(PixelArm.PIXEL_ELBOW_DOWN);
+        opMode.sleep(1000 );
+        robot.pixelArm.pixelElbowMove(PixelArm.PIXEL_ELBOW_DOWN);
 
     }
 
@@ -142,13 +143,13 @@ public class Auto {
             int id = robot.vision.aprilTagID();
             if (id == Vision.BLUE_LEFT_TAG || id == Vision.RED_LEFT_TAG) {
                 if (objectPosition == POSITION.left) {
-                    strafe = x - 6.5;
+                    strafe = x - 6;
                     Logger.message("left tag, left position, strafe %f", strafe);
                 } else if (objectPosition == POSITION.center) {
                     strafe = x;
                     Logger.message("left tag, center position, strafe %f", strafe);
                 } else {
-                    strafe = 6.5 + x;
+                    strafe = 6 + x;
                     Logger.message("left tag, right position, strafe %f", strafe);
                 }
             } else if (id == Vision.BLUE_CENTER_TAG || id == Vision.RED_CENTER_TAG) {
@@ -178,11 +179,11 @@ public class Auto {
 
             if (strafe > 0) {
                 robot.strafeRight(strafe);
-                robot.forward(8);
+                //robot.forward(8);
             }
             else if (strafe < 0 ) {
                 robot.strafeLeft(-strafe);
-                robot.forward(8);
+                //robot.forward(8);
             }
         }
     }

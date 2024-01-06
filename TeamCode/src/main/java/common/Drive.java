@@ -30,11 +30,9 @@ public class Drive extends Thread {
 
     static final boolean LOG_VERBOSE = false;
 
-    public static double DRIVE_FACTOR  = 1;
-    public static double STRAFE_FACTOR = 1.11;
-    public static double TURN_FACTOR = (24.9/2);
-
-
+    public static double DRIVE_FACTOR  = 0.94;      // 1;
+    public static double STRAFE_FACTOR = 1.2;       // 1.11;
+    public static double TURN_FACTOR   = 13.38;     // (24.9/2);
 
     // Drive train
     private final double COUNTS_PER_MOTOR_REV = 28;              // HD Hex Motor Encoder
@@ -122,7 +120,7 @@ public class Drive extends Thread {
 
         motors = Arrays.asList(leftFrontDrive, rightFrontDrive, leftBackDrive, rightBackDrive);
 
-        for (DcMotor motor : motors) {
+         for (DcMotor motor : motors) {
             motor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         }
     }

@@ -90,42 +90,44 @@ public class BlueRightAuto extends LinearOpMode {
         waitForStart();
         runtime.reset();
 
+        robot.vision.enableCameraStream(false);    // ToDo for debugging
+
         auto.setColor(Auto.COLOR.BLUE);
         objectPosition = auto.findTeamElement();
 
         if (objectPosition == Auto.POSITION.left) {
-            robot.forward(24);
+            robot.forward(26.5);
             robot.turn(90);
-            robot.forward(6);
+            robot.forward(7.5);
             robot.dropPurplePixel();
-            robot.back(10);
+            robot.back(7.5);
             robot.turn(-90);
-            robot.forward(25);
+            robot.forward(23.5);
             robot.turn(90);
-            robot.forward(67+4);
+            robot.forward(70);
             robot.strafeLeft(24);
 
         } else if (objectPosition == Auto.POSITION.center) {
-            robot.forward(30);
+            robot.forward(33);
             robot.dropPurplePixel();
-            robot.forward(19);
+            robot.forward(17);
             robot.turn(90);
-            robot.forward(67);
+            robot.forward(70);
             robot.strafeLeft(24);
 
         } else if (objectPosition == Auto.POSITION.right) {
-            robot.forward(25);
+            robot.forward(26.5);
             robot.strafeRight(8.5);
             robot.dropPurplePixel();
-            robot.forward(24);
+            robot.forward(23.5);
             robot.turn(90);
-            robot.forward(67+8.5);
+            robot.forward(70+8.5);
             robot.strafeLeft(24);
         }
 
         auto.strafeToDropPosition();
-        auto.dropYellowPixel();
-        auto.parkCenter();
+        //auto.dropYellowPixel();
+        //auto.parkCenter();
 
         Logger.message("Run Time %s", runtime.toString());
     }

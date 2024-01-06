@@ -151,7 +151,7 @@ public class RouteTest extends LinearOpMode {
 
     private void moveForwardBackward (Drive.DIRECTION direction, double inches) {
 
-        double odometerStart = (double)drive.sideEncoder.getCurrentPosition() / ODOMETER_COUNTS_PER_INCH;
+        //double odometerStart = (double)drive.sideEncoder.getCurrentPosition() / ODOMETER_COUNTS_PER_INCH;
 
         if (direction == Drive.DIRECTION.FORWARD)
             drive.forward(inches);
@@ -159,8 +159,8 @@ public class RouteTest extends LinearOpMode {
             drive.back(inches);
 
         sleep(1000);
-        double odometerEnd = (double)drive.sideEncoder.getCurrentPosition() / ODOMETER_COUNTS_PER_INCH;
-        traveled1Msg.setValue(INCHES_FORMAT, odometerEnd - odometerStart);
+        //double odometerEnd = (double)drive.sideEncoder.getCurrentPosition() / ODOMETER_COUNTS_PER_INCH;
+        // traveled1Msg.setValue(INCHES_FORMAT, odometerEnd - odometerStart);
         traveled2Msg.setValue(INCHES_FORMAT, drive.getDistanceTraveled());
         telemetry.update();
     }
