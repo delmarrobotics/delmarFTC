@@ -75,82 +75,19 @@ public class RoadRunnerTest extends LinearOpMode {
 
         auto.setColor(Auto.COLOR.RED);
         auto.objectPosition = Auto.POSITION.right;
-        redRightRight();
-        //redRightLeft();
-        //redRightCenter();
+
     }
 
     public void redRightLeft() {
-        robot.forward(24);
-        robot.turn(90);
-        robot.forward(6);
-        robot.dropPurplePixel();
-        robot.back(10);
-        robot.turn(180);
-        robot.forward(22);
-        robot.strafeLeft(6);
-        robot.pixelArm.positionArm(PixelArm.ARM_POSITION.LOW);
-        robot.drive.moveToColor(Drive.COLOR.RED, 1, 0, 0.25, 2000);
-        auto.adjustYaw();
-        robot.forward(7);
-        robot.dropYellowPixel();
-        robot.back(2);
-        robot.pixelArm.positionArm(PixelArm.ARM_POSITION.HOME);
-        robot.strafeRight(25);
-        //robot.forward(12);
     }
 
     public void redRightCenter() {
-        robot.forward(30.5);
-        robot.dropPurplePixel();
-        robot.back(8);
-        robot.turn(-90);
-        robot.forward(26);
-        robot.strafeLeft(3);
-        robot.pixelArm.positionArm(PixelArm.ARM_POSITION.LOW);
-        robot.drive.moveToColor(Drive.COLOR.RED, 1, 0, 0.25, 2000);
-        auto.adjustYaw();
-        robot.forward(7);
-        robot.dropYellowPixel();
-        robot.back(2);
-        robot.strafeRight(20);
-        //robot.forward(12);
     }
 
-    public void redRightRight(){
-        robot.forward(30);
-        robot.turn(-90);
-        robot.forward(6);
-        robot.dropPurplePixel();
-        robot.forward(15);
-        robot.strafeRight(7);
-        robot.pixelArm.positionArm(PixelArm.ARM_POSITION.LOW);
-        robot.drive.moveToColor(Drive.COLOR.RED, 1, 0, 0.25, 2000);
-        auto.adjustYaw();
-        robot.forward(7);
-        robot.dropYellowPixel();
-        robot.back(2);
-        robot.pixelArm.positionArm(PixelArm.ARM_POSITION.HOME);
-        robot.strafeRight(15);
-        //robot.forward(12);
+    public void redRightRight() {
     }
 
-
-    public void blueRightRight(){
-
-
-        /*
-        robot.forward(6.5);
-        robot.turn(95);
-        robot.forward(24);
-        robot.turn(95);
-        robot.forward(90);
-        double heading = robot.getOrientation();
-        Logger.message("forward heading %6.2f", heading);
-        robot.strafeLeft(40);
-        auto.yellowPixel();
-
-         */
+    public void blueRightRight() {
     }
 
     public void turnTest () {
@@ -165,9 +102,6 @@ public class RoadRunnerTest extends LinearOpMode {
         for (distance = 12; distance <= 36; distance += 12) {
             robot.forward(distance);
             robot.back(distance);
-//            drive.turn(Math.toRadians(90));
-  //          drive.strafeLeft(distance);
-    //        drive.strafeRight(distance);
         }
     }
 }

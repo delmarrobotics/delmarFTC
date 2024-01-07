@@ -314,8 +314,6 @@ public class Drive extends Thread {
      */
     public void moveRobot(DIRECTION direction, double speed) {
 
-        if (!opMode.opModeIsActive()) return;
-
         int leftFrontSign = 0;
         int rightFrontSign = 0;
         int leftBackSign = 0;
@@ -454,11 +452,6 @@ public class Drive extends Thread {
             rightBackSign  = -1;
         }
 
-        // Ensure that the OpMode is still active
-        if (! opMode.opModeIsActive())  return;
-
-        //Logger.message("moveDistance: heading %6.2f", getOrientation());
-
         DcMotor.RunMode mode = leftFrontDrive.getMode();
         for (DcMotor motor : motors) {
             motor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
@@ -586,14 +579,17 @@ public class Drive extends Thread {
                     found = true;
                 }
             } else if (color == COLOR.RED) {
-                //Logger.message("hue %f, saturation %f", hue, saturation);
                 if ((hue >= 0 && hue <= 90) && saturation >= .5) {
                     Logger.message("red line found");
                     found = true;
                 }
             }
+            //if (maxInches && (maxInches <= getDistanceTraveled())) {
+            //    Logger.warning("no line found, traveled %5.2f inches", getDistanceTraveled());
+            //    break;
+            //}
             if (elapsedTime.milliseconds() > timeout){
-                Logger.warning("no line found, traveled %5.2f inches", getDistanceTraveled());
+                Logger.warning("timeout, no line found, traveled %5.2f inches", getDistanceTraveled());
                 break;
             }
         }
@@ -613,11 +609,11 @@ public class Drive extends Thread {
         boolean found = false;
         ElapsedTime elapsedTime = new ElapsedTime();
 
-        resetEncoders();
+        int count = 0;
         double startDistance = 0;
         double average;
-        int count = 0;
-        //moveRobot(1, 0, 0, speed);
+
+        resetEncoders();
         moveRobot(DIRECTION.FORWARD, speed);
         elapsedTime.reset();
 
@@ -707,12 +703,10 @@ public class Drive extends Thread {
 
     /**
      *  Return the current orientation of the robot.
-     * @return orientation in a range of -180 to 180
+     * @return orientation in degrees in a range of -180 to 180
      */
     public double getOrientation(){
         YawPitchRollAngles orientation = imu.getRobotYawPitchRollAngles();
-        //Logger.message("Yaw   (Z) %6.2f Deg. (Heading)", orientation.getYaw(AngleUnit.DEGREES));
-
         return orientation.getYaw(AngleUnit.DEGREES);
     }
 
