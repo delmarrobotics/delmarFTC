@@ -36,7 +36,7 @@ public class BlueLeftAuto extends LinearOpMode {
         Robot robot = new Robot(this);
         robot.init();
 
-        Auto auto = new Auto(this, robot, null);
+        Auto auto = new Auto(this, robot);
 
         telemetry.addLine("waiting for camera");
         telemetry.update();
@@ -46,50 +46,45 @@ public class BlueLeftAuto extends LinearOpMode {
         telemetry.addLine("camera ready, press start"); //sleep(200) not needed here
         telemetry.update();
 
-        robot.vision.enableCameraStream(true);    // ToDo for debugging
+        robot.vision.enableCameraStream(true);
 
-        // Wait for the game to start (driver presses PLAY)
         waitForStart();
+        runtime.reset();
 
-        if (opModeIsActive()) {
+        robot.vision.enableCameraStream(false);
 
-            runtime.reset();
+        auto.setColor(Auto.COLOR.BLUE);
+        objectPosition = auto.findTeamElement();
 
-            auto.setColor(Auto.COLOR.BLUE);
-            objectPosition = auto.findTeamElement();
+        if (objectPosition == Auto.POSITION.left) {
+            robot.forward(12);
+            robot.strafeLeft(13);
+            robot.forward(29-12);
+            robot.dropPurplePixel();
+            robot.back(6.5);
+            robot.turn(90);
+            robot.forward(23.5-13);
 
-            if (objectPosition == Auto.POSITION.left) {
-                robot.forward(12);
-                robot.strafeLeft(13);
-                robot.forward(13);
-                robot.dropPurplePixel();
-                robot.back(8);
-                robot.turn(90);
-                robot.forward(15);
-                robot.strafeRight(1);
+        } else if (objectPosition == Auto.POSITION.center) {
+            robot.forward(33);
+            robot.dropPurplePixel();
+            robot.back(7);
+            robot.turn(90);
+            robot.forward(23.5);
 
-            } else if (objectPosition == Auto.POSITION.center) {
-                robot.forward(30.5);
-                robot.dropPurplePixel();
-                robot.back(8);
-                robot.turn(90);
-                robot.forward(25);
-                robot.strafeRight(3);
-
-            } else if (objectPosition == Auto.POSITION.right) {
-                robot.forward(24);
-                robot.turn(90);
-                robot.back(14);
-                robot.dropPurplePixel();
-                robot.forward(38);
-                robot.strafeRight(6);
-            }
-
-            auto.strafeToDropPosition();
-            auto.dropYellowPixel();
-            auto.parkCorner();
-
-            telemetry.addData("Run Time", runtime.toString());
+        } else if (objectPosition == Auto.POSITION.right) {
+            robot.forward(26.6);
+            robot.turn(-90);
+            robot.forward(7.5);
+            robot.dropPurplePixel();
+            robot.back(23.5+7.5);
+            robot.turn(180);
         }
+
+        auto.strafeToDropPosition();
+        auto.dropYellowPixel();
+        auto.parkCorner();
+
+        telemetry.addData("Run Time", runtime.toString());
     }
 }

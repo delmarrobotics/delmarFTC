@@ -64,7 +64,7 @@ public class Vision {
         }
     }
 
-    private boolean DASHBOARD_STREAM = true;
+    private final boolean DASHBOARD_STREAM = true;              // // ToDo true for debugging
 
     private static final String TFOD_MODEL_FILE = "TeamElement1.tflite";
     private static final String[] LABELS = { "Team Element" };
@@ -222,11 +222,16 @@ public class Vision {
     }
 
     public void enableCameraStream(boolean enabled) {
-        visionPortal.setProcessorEnabled(dashboard, enabled);
-        if (enabled)
-            FtcDashboard.getInstance().startCameraStream(dashboard, 0);
-        else
-            FtcDashboard.getInstance().stopCameraStream();
+
+        if (DASHBOARD_STREAM) {
+            if (enabled) {
+                visionPortal.setProcessorEnabled(dashboard, true);
+                FtcDashboard.getInstance().startCameraStream(dashboard, 0);
+            } else {
+                FtcDashboard.getInstance().stopCameraStream();
+                visionPortal.setProcessorEnabled(dashboard, false);
+            }
+        }
     }
 
     public boolean findAprilTag (int tagID) {

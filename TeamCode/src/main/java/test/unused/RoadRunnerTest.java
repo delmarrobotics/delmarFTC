@@ -64,7 +64,7 @@ public class RoadRunnerTest extends LinearOpMode {
         robot = new Robot(this);
         robot.init();
 
-        auto = new Auto(this, robot, null);
+        auto = new Auto(this, robot);
 
         while (! robot.vision.cameraReady())
             sleep(100);

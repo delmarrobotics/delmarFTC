@@ -21,12 +21,10 @@ public class Auto {
 
     LinearOpMode opMode;
     Robot robot;
-    SampleMecanumDrive drive;
 
-    public Auto(LinearOpMode opMode, Robot robot, SampleMecanumDrive drive) {
+    public Auto(LinearOpMode opMode, Robot robot) {
         this.opMode = opMode;
         this.robot = robot;
-        this.drive = drive;
     }
 
     public void setColor(COLOR color ) {
@@ -125,11 +123,11 @@ public class Auto {
             double x = robot.vision.aprilTagX();
             double range = robot.vision.aprilTagY();
             double yaw = robot.vision.aprilTagYaw();
-            Logger.message("adjustYaw: aprilTag: x %f  range %f  yaw %f", x, range, yaw);
+            Logger.message("aprilTag: x %f  range %f  yaw %f  orientation %3.1f", x, range, yaw, robot.drive.getOrientation());
             robot.turn(yaw);
-            Logger.message("adjustYaw: robot orientation %3.1f", robot.drive.getOrientation());
+            Logger.message("robot orientation %3.1f", robot.drive.getOrientation());
         } else {
-             Logger.message("adjustYaw: no aprilTag found");
+             Logger.message("no aprilTag found");
         }
     }
 

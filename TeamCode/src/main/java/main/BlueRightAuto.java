@@ -6,13 +6,9 @@
 
 package main;
 
-import com.acmerobotics.roadrunner.geometry.Pose2d;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.util.ElapsedTime;
-
-import org.firstinspires.ftc.teamcode.drive.SampleMecanumDrive;
-import org.firstinspires.ftc.teamcode.trajectorysequence.TrajectorySequence;
 
 import common.Auto;
 import common.Logger;
@@ -35,48 +31,7 @@ public class BlueRightAuto extends LinearOpMode {
         Robot robot = new Robot(this);
         robot.init();
 
-        SampleMecanumDrive drive = new SampleMecanumDrive(hardwareMap);
-
-        Auto auto = new Auto(this, robot, drive);
-
-        TrajectorySequence left1 = drive.trajectorySequenceBuilder(new Pose2d(0, 0, 0))
-                .forward(27.25)
-                .turn(Math.toRadians(-90))
-                .forward(8)
-                .build();
-        TrajectorySequence left2 = drive.trajectorySequenceBuilder(left1.end())
-                .back(8)
-                .turn(Math.toRadians(90))
-                .forward(23.5)
-                .turn(Math.toRadians(90))
-                .forward(70.5)
-                .strafeLeft(29.5)
-                .build();
-
-        TrajectorySequence right1 = drive.trajectorySequenceBuilder(new Pose2d(0, 0, 0))
-                .forward(30)
-                .turn(Math.toRadians(-110))
-                .forward(6.5)
-                .build();
-        TrajectorySequence right2 = drive.trajectorySequenceBuilder(right1.end())
-                .forward(6.5)
-                .turn(Math.toRadians(110))
-                .forward(23.5)
-                .turn(Math.toRadians(110))
-                .forward(90)
-                .strafeLeft(29.5)
-                .build();
-
-        TrajectorySequence center1 = drive.trajectorySequenceBuilder(new Pose2d(0, 0, 0))
-                .forward(31.25)
-                .build();
-        TrajectorySequence center2 = drive.trajectorySequenceBuilder(center1.end())
-                .forward(23.5)
-                .turn(Math.toRadians(90))
-                .forward(70.5)
-                .strafeLeft(23.5)
-                .build();
-
+        Auto auto = new Auto(this, robot);
 
         telemetry.addLine("waiting for camera");
         telemetry.update();
@@ -85,12 +40,12 @@ public class BlueRightAuto extends LinearOpMode {
         telemetry.addLine("camera ready, press start");
         telemetry.update();
 
-        robot.vision.enableCameraStream(true);    // ToDo for debugging
+        robot.vision.enableCameraStream(true);
 
         waitForStart();
         runtime.reset();
 
-        robot.vision.enableCameraStream(false);    // ToDo for debugging
+        robot.vision.enableCameraStream(false);
 
         auto.setColor(Auto.COLOR.BLUE);
         objectPosition = auto.findTeamElement();
@@ -126,8 +81,8 @@ public class BlueRightAuto extends LinearOpMode {
         }
 
         auto.strafeToDropPosition();
-        //auto.dropYellowPixel();
-        //auto.parkCenter();
+        auto.dropYellowPixel();
+        auto.parkCenter();
 
         Logger.message("Run Time %s", runtime.toString());
     }

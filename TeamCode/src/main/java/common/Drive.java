@@ -137,7 +137,7 @@ public class Drive extends Thread {
         double lastTime = driveTime.milliseconds();
         double lastSpeed = 0;
         double accelerationPerMS = (MAX_SPEED - MIN_SPEED) / (1000 * 1.5);   // 1.5 second to accelerate to full speed
-        double decelerationPerMS = (MAX_SPEED - MIN_SPEED) / (1000 * 1);     // 1 second to come to full stop
+        double decelerationPerMS = (MAX_SPEED - MIN_SPEED) / (1000);     // 1 second to come to full stop
 
         while (running && opMode.opModeIsActive()) {
 
@@ -552,8 +552,6 @@ public class Drive extends Thread {
                 elapsedTime.seconds());
     }
 
-
-
     /**
      * Move the robot until the specified color is detected.
      *
@@ -665,6 +663,15 @@ public class Drive extends Thread {
         lastDirection = DIRECTION.STOOPED;
     }
 
+    public void setBraking(boolean enabled) {
+
+        for (DcMotor motor : motors) {
+            if (enabled)
+                motor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+            else
+                motor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
+        }
+    }
 
     public void resetEncoders() {
 
@@ -766,7 +773,6 @@ public class Drive extends Thread {
         }
         stopRobot();
     }
-
 
 } // end of class
 

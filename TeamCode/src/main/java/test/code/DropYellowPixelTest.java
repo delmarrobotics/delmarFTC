@@ -17,7 +17,7 @@ public class DropYellowPixelTest extends LinearOpMode {
     public void runOpMode() {
         robot = new Robot(this);
         robot.init();
-        auto = new Auto(this, robot, null);
+        auto = new Auto(this, robot);
 
         waitForStart();
 

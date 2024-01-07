@@ -6,13 +6,9 @@
 
 package main;
 
-import com.acmerobotics.roadrunner.geometry.Pose2d;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.util.ElapsedTime;
-
-import org.firstinspires.ftc.teamcode.drive.SampleMecanumDrive;
-import org.firstinspires.ftc.teamcode.trajectorysequence.TrajectorySequence;
 
 import common.Auto;
 import common.Logger;
@@ -35,42 +31,7 @@ public class RedLeftAuto extends LinearOpMode {
         Robot robot = new Robot(this);
         robot.init();
 
-        SampleMecanumDrive drive = new SampleMecanumDrive(hardwareMap);
-
-        Auto auto = new Auto(this, robot, drive);
-
-        TrajectorySequence left1 = drive.trajectorySequenceBuilder(new Pose2d(0, 0, 0))
-                .forward(24)
-                .strafeLeft(12)
-                .build();
-        TrajectorySequence left2 = drive.trajectorySequenceBuilder(left1.end())
-                .forward(21)
-                .turn(Math.toRadians(-90))
-                .forward(50)
-                .strafeRight(30)
-                .build();
-
-        TrajectorySequence right1 = drive.trajectorySequenceBuilder(new Pose2d(0, 0, 0))
-                .forward(24)
-                .turn(Math.toRadians(-90))
-                .forward(12)
-                .build();
-        TrajectorySequence right2 = drive.trajectorySequenceBuilder(right1.end())
-                .back(12)
-                .strafeLeft(21)
-                .forward(50)
-                .strafeRight(30)
-                .build();
-
-        TrajectorySequence center1 = drive.trajectorySequenceBuilder(new Pose2d(0, 0, 0))
-                .forward(27)
-                .build();
-        TrajectorySequence center2 = drive.trajectorySequenceBuilder(center1.end())
-                .forward(18)
-                .turn(Math.toRadians(-90))
-                .forward(50)
-                .strafeRight(30)
-                .build();
+        Auto auto = new Auto(this, robot);
 
         telemetry.addLine("waiting for camera");
         telemetry.update();
@@ -79,50 +40,49 @@ public class RedLeftAuto extends LinearOpMode {
         telemetry.addLine("camera ready, press start");
         telemetry.update();
         
-        robot.vision.enableCameraStream(true);    // ToDo for debugging
+        robot.vision.enableCameraStream(true);
 
-        // Wait for the game to start (driver presses PLAY)
         waitForStart();
         runtime.reset();
+
+        robot.vision.enableCameraStream(false);
 
         auto.setColor(Auto.COLOR.RED);
         objectPosition = auto.findTeamElement();
 
         if (objectPosition == Auto.POSITION.left) {
-            robot.forward(25);
-            robot.strafeLeft(13);
+            robot.forward(26.5);
+            robot.strafeLeft(13);   // ToDo check
             robot.dropPurplePixel();
-            robot.forward(24);
+            robot.forward(23.5);
             robot.turn(-90);
-            robot.forward(67+13);
+            robot.forward(70+13);   // ToDo check
             robot.strafeRight(24);
 
         } else if (objectPosition == Auto.POSITION.center) {
-            robot.forward(30);
+            robot.forward(33);
             robot.dropPurplePixel();
-            robot.forward(19);
+            robot.forward(17);
             robot.turn(-90);
-            robot.forward(67);
+            robot.forward(70);
             robot.strafeRight(24);
 
         } else if (objectPosition == Auto.POSITION.right) {
-            robot.forward(24);
+            robot.forward(26.5);
             robot.turn(90);
-            robot.back(14);
+            robot.back(14);   // ToDo check
             robot.dropPurplePixel();
-            robot.forward(24);
+            robot.forward(14);
             robot.turn(-90);
-            robot.forward(25);
+            robot.forward(23.5);
             robot.turn(-90);
-            robot.forward(67+10);
+            robot.forward(70);
             robot.strafeRight(24);
         }
 
-        auto.strafeToDropPosition();;
+        auto.strafeToDropPosition();
         auto.dropYellowPixel();
         auto.parkCenter();
-
-        robot.vision.disableVision();
 
         Logger.message("Run Time %s", runtime.toString());
     }

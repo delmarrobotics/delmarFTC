@@ -6,16 +6,11 @@
 
 package main;
 
-import com.acmerobotics.roadrunner.geometry.Pose2d;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
-import org.firstinspires.ftc.teamcode.drive.SampleMecanumDrive;
-import org.firstinspires.ftc.teamcode.trajectorysequence.TrajectorySequence;
-
 import common.Auto;
-import common.PixelArm;
 import common.Robot;
 
 @Autonomous(name="Red Right Start", group="Main")
@@ -35,47 +30,7 @@ public class RedRightAuto extends LinearOpMode {
         Robot robot = new Robot(this);
         robot.init();
 
-        SampleMecanumDrive drive = new SampleMecanumDrive(hardwareMap);
-
-        Auto auto = new Auto(this, robot, drive);
-
-        TrajectorySequence left1 = drive.trajectorySequenceBuilder(new Pose2d(0, 0, 0))
-                .forward(27.25)
-                .turn(Math.toRadians(-90))
-                .back(15.75)
-                .build();
-        TrajectorySequence left2 = drive.trajectorySequenceBuilder(left1.end())
-                .forward(15.75)
-                .turn(Math.toRadians(90))
-                .forward(23.5)
-                .turn(Math.toRadians(90))
-                .forward(70.5)
-                .strafeLeft(29.5)
-                .build();
-
-        TrajectorySequence right1 = drive.trajectorySequenceBuilder(new Pose2d(0, 0, 0))
-                .forward(27.25)
-                .turn(Math.toRadians(-90))
-                .forward(8)
-                .build();
-        TrajectorySequence right2 = drive.trajectorySequenceBuilder(right1.end())
-                .back(8)
-                .turn(Math.toRadians(90))
-                .forward(23.5)
-                .turn(Math.toRadians(90))
-                .forward(70.5)
-                .strafeLeft(17.5)
-                .build();
-
-        TrajectorySequence center1 = drive.trajectorySequenceBuilder(new Pose2d(0, 0, 0))
-                .forward(33.5)
-                .build();
-        TrajectorySequence center2 = drive.trajectorySequenceBuilder(center1.end())
-                .forward(17.25)
-                .turn(Math.toRadians(90))
-                .forward(70.5)
-                .strafeLeft(23.5)
-                .build();
+        Auto auto = new Auto(this, robot);
 
         telemetry.addLine("waiting for camera");
         telemetry.update();
@@ -84,42 +39,39 @@ public class RedRightAuto extends LinearOpMode {
         telemetry.addLine("camera ready, press start");
         telemetry.update();
         
-        robot.vision.enableCameraStream(true);    // ToDo for debugging
+        robot.vision.enableCameraStream(true);
 
-        // Wait for the game to start (driver presses PLAY)
         waitForStart();
         runtime.reset();
+
+        robot.vision.enableCameraStream(false);
 
         auto.setColor(Auto.COLOR.RED);
         objectPosition = auto.findTeamElement();
 
         if (objectPosition == Auto.POSITION.left) {
-            robot.forward(24);
+            robot.forward(26.5);
             robot.turn(90);
-            robot.forward(6);
+            robot.forward(7.5);
             robot.dropPurplePixel();
-            robot.back(10);
+            robot.back(7.5+23.5);
             robot.turn(180);
-            robot.forward(22);
-            robot.strafeLeft(6);
 
         } else if (objectPosition == Auto.POSITION.center) {
-            robot.forward(30);
+            robot.forward(33);
             robot.dropPurplePixel();
-            robot.back(8);
+            robot.back(6.5);
             robot.turn(-90);
-            robot.forward(22);
-            robot.strafeLeft(4);
+            robot.forward(23.5);
 
         } else if (objectPosition == Auto.POSITION.right) {
             robot.forward(12);
             robot.strafeRight(8.5);
-            robot.forward(13);
+            robot.forward(26.5-12);
             robot.dropPurplePixel();
-            robot.back(8);
+            robot.back(6.5);
             robot.turn(-90);
-            robot.forward(15);
-            robot.strafeLeft(1);
+            robot.forward(23.5-8.5);
         }
 
         auto.strafeToDropPosition();
