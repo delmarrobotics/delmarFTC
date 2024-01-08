@@ -93,7 +93,7 @@ public class CalibrateServo extends LinearOpMode {
         positions[1] = new ServoPositions("droneFire", 0.063, 0.16);
         positions[2] = new ServoPositions(Config.PIXEL_DROPPER, 0.67, 0.51);
         positions[3] = new ServoPositions(Config.HANGING_ELBOW, 0.97, 0.64);
-        positions[4] = new ServoPositions(Config.HANGING_WRIST, 0.70, 0.96);
+        positions[4] = new ServoPositions(Config.HANGING_WRIST, 0.68, 0.30);
 
         getServos();
 
