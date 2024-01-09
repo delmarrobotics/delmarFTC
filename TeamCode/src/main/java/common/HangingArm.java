@@ -99,11 +99,11 @@ public class HangingArm
     public void elbowRelease() { elbow.setPosition(ELBOW_RELEASE_POSITION); }
 
     public void wristUp() {
-        wrist.setPosition(WRIST_HOME_POSITION);
+        wrist.setPosition(WRIST_TARGET_POSITION);
     }
 
     public void wristDown() {
-        wrist.setPosition(WRIST_TARGET_POSITION);
+        wrist.setPosition(WRIST_HOME_POSITION);
     }
 
     public void thumbOpen() {
@@ -124,7 +124,7 @@ public class HangingArm
     public void lockInHook () {
         double position;
         for (int i = 0; i < 2; i++) {
-            position = elbow.getPosition() + 0.0125;
+            position = elbow.getPosition() - 0.0125;
             elbow.setPosition(position);
             position = wrist.getPosition() + 0.015;
             wrist.setPosition(position);
