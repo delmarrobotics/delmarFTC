@@ -65,7 +65,7 @@ public class Auto {
             found = robot.drive.moveToColor(Drive.COLOR.RED, 1, 0, 0.2, 2000);
         //adjustYaw();
         if (found)
-            robot.forward(9);
+            robot.forward(11);
         robot.dropYellowPixel();
         robot.back(3);
         robot.pixelArm.pixelWristMove(PixelArm.PIXEL_WRIST_HOME);

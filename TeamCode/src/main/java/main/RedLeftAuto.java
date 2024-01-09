@@ -72,11 +72,11 @@ public class RedLeftAuto extends LinearOpMode {
             robot.turn(90);
             robot.back(14);   // ToDo check
             robot.dropPurplePixel();
-            robot.forward(14);
+            robot.forward(16);
             robot.turn(-90);
             robot.forward(23.5);
             robot.turn(-90);
-            robot.forward(70);
+            robot.forward(70+2);
             robot.strafeRight(24);
         }
 
