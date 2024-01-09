@@ -43,12 +43,12 @@ public class HangingArm
 {
     // Servo positions
     private static final double ELBOW_HOME_POSITION = 0.97;
-    private static final double ELBOW_TARGET_POSITION = 0.64;
+    private static final double ELBOW_TARGET_POSITION = 0.59;
     private static final double ELBOW_RELEASE_POSITION = 0.59;
-    private static final double WRIST_HOME_POSITION = 0.68;
-    private static final double WRIST_TARGET_POSITION = 0.30;
-    private static final double THUMB_OPEN = 0.5;
-    private static final double THUMB_CLOSE = 1;
+    private static final double WRIST_HOME_POSITION = 0.30;
+    private static final double WRIST_TARGET_POSITION = 0.53;
+    private static final double THUMB_OPEN = 0.30;
+    private static final double THUMB_CLOSE = 0.68;
 
     private Servo elbow;                     // Servo that raises and lowers the arm
     private Servo wrist;                     // Servo that rotates the hook

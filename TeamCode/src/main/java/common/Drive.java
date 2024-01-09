@@ -123,6 +123,8 @@ public class Drive extends Thread {
          for (DcMotor motor : motors) {
             motor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         }
+
+         resetOrientation();
     }
 
     /**

@@ -63,9 +63,9 @@ public class BlueRightAuto extends LinearOpMode {
             robot.strafeLeft(24);
 
         } else if (objectPosition == Auto.POSITION.center) {
-            robot.forward(33);
+            robot.forward(32);
             robot.dropPurplePixel();
-            robot.forward(17);
+            robot.forward(18);
             robot.turn(90);
             robot.forward(70);
             robot.strafeLeft(24);

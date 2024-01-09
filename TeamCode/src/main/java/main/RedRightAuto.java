@@ -52,32 +52,31 @@ public class RedRightAuto extends LinearOpMode {
         if (objectPosition == Auto.POSITION.left) {
             robot.forward(26.5);
             robot.turn(90);
-            robot.forward(7.5);
+            robot.forward(6.5);
             robot.dropPurplePixel();
-            robot.back(7.5+23.5);
+            robot.back(6.5+23.5);
             robot.turn(180);
 
         } else if (objectPosition == Auto.POSITION.center) {
-            robot.forward(33);
+            robot.forward(32);
             robot.dropPurplePixel();
-            robot.back(6.5);
+            robot.back(8);
             robot.turn(-90);
             robot.forward(23.5);
 
         } else if (objectPosition == Auto.POSITION.right) {
             robot.forward(12);
             robot.strafeRight(8.5);
-            robot.forward(26.5-12);
+            robot.forward(29-12);
             robot.dropPurplePixel();
-            robot.back(6.5);
+            robot.back(8);
             robot.turn(-90);
             robot.forward(23.5-8.5);
         }
 
+        robot.vision.enableCameraStream(true);
         auto.strafeToDropPosition();
         auto.dropYellowPixel();
         auto.parkCorner();
-
-        telemetry.addData("Run Time", runtime.toString());
     }
 }
