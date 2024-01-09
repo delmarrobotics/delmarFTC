@@ -131,6 +131,16 @@ public class Auto {
         }
     }
 
+    public void adjustYawWithIMU () {
+        double angle = 0;
+        double yaw = robot.drive.getOrientation();
+        if (color == COLOR.BLUE && yaw < 0) {
+            angle = yaw + 90;
+        } else if (color == COLOR.RED && yaw > 0)
+            angle = yaw - 90;
+        robot.drive.turn(angle);
+    }
+
     public void strafeToDropPosition () {
 
         double strafe = 0;
