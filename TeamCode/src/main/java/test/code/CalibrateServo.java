@@ -41,7 +41,9 @@ import java.util.Objects;
 import java.util.SortedSet;
 
 import common.Config;
+import common.HangingArm;
 import common.Logger;
+import common.Robot;
 
 /*
  * This OpMode calibrate any of the robot servos.
@@ -89,12 +91,12 @@ public class CalibrateServo extends LinearOpMode {
     public void runOpMode() {
 
         // default position
-        positions[0] = new ServoPositions("droneAngle", 0.48, 0.4);
-        positions[1] = new ServoPositions("droneFire", 0.063, 0.16);
-        positions[2] = new ServoPositions(Config.PIXEL_DROPPER, 0.67, 0.51);
-        positions[3] = new ServoPositions(Config.HANGING_ELBOW, 0.97, 0.59);
-        positions[4] = new ServoPositions(Config.HANGING_WRIST, 0.30, 0.53);
-        positions[5] = new ServoPositions(Config.HANDING_THUMB, 0.68, 0.30);
+        positions[0] = new ServoPositions(Config.DRONE_ANGLE,   Robot.DRONE_ANGLE_DOWN,         Robot.DRONE_ANGLE_UP );
+        positions[1] = new ServoPositions(Config.DRONE_FIRE,    Robot.DRONE_FIRE_DOWN,          Robot.DRONE_FIRE_UP);
+        positions[2] = new ServoPositions(Config.PIXEL_DROPPER, Robot.DROPPER_CLOSE,            Robot.DROPPER_OPEN);
+        positions[3] = new ServoPositions(Config.HANGING_ELBOW, HangingArm.ELBOW_HOME_POSITION, HangingArm.ELBOW_TARGET_POSITION);
+        positions[4] = new ServoPositions(Config.HANGING_WRIST, HangingArm.WRIST_HOME_POSITION, HangingArm.WRIST_TARGET_POSITION);
+        positions[5] = new ServoPositions(Config.HANDING_THUMB, HangingArm.THUMB_CLOSE,         HangingArm.THUMB_OPEN);
 
         getServos();
 

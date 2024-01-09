@@ -18,14 +18,14 @@ import com.qualcomm.robotcore.hardware.Servo;
 public class Robot {
 
     // drone launcher servo position
-    static final double DRONE_ANGLE_DOWN = 0.48;
-    public double DRONE_ANGLE_UP         = 0.29;
-    static final double DRONE_FIRE_DOWN  = 0.55;
-    static final double DRONE_FIRE_UP    = 0.73;
+    public static final double DRONE_ANGLE_DOWN = 0.48;
+    public static       double DRONE_ANGLE_UP   = 0.29;
+    public static final double DRONE_FIRE_DOWN  = 0.55;
+    public static final double DRONE_FIRE_UP    = 0.73;
 
     // pixel dropper servo positions
-    static final double DROPPER_OPEN     = 0.51;
-    static final double DROPPER_CLOSE    = 0.67;
+    public static final double DROPPER_OPEN     = 0.51;
+    public static final double DROPPER_CLOSE    = 0.67;
 
     // Intake
     static final double INTAKE_HOME      = 0.32;
