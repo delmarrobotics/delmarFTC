@@ -57,8 +57,12 @@ public class Auto {
 
         if (! DROP_PIXEL) return;
 
-        boolean found = false;
         robot.pixelArm.positionArm(PixelArm.ARM_POSITION.YELLOW);
+
+        robot.drive.moveToObject(1.5,0.25, 10000);
+
+        /*
+        boolean found = false;
         if (color == COLOR.BLUE)
             found = robot.drive.moveToColor(Drive.COLOR.BLUE, 1, 0, 0.2, 2000);
         else if (color == COLOR.RED)
@@ -66,6 +70,8 @@ public class Auto {
         //adjustYaw();
         if (found)
             robot.forward(11);
+         */
+
         robot.dropYellowPixel();
         robot.back(3);
         robot.pixelArm.pixelWristMove(PixelArm.PIXEL_WRIST_HOME);
@@ -146,6 +152,9 @@ public class Auto {
         double strafe = 0;
 
         if (robot.vision.findAprilTag(-1)) {
+
+            //double yaw = robot.vision.aprilTagYaw();
+            //robot.drive.turn(yaw);
 
             double x = robot.vision.aprilTagX();
             int id = robot.vision.aprilTagID();

@@ -46,7 +46,7 @@ public class HangingArm
     public static final double ELBOW_TARGET_POSITION = 0.59;
     public static final double ELBOW_RELEASE_POSITION = 0.59;
     public static final double WRIST_HOME_POSITION = 0.30;
-    public static final double WRIST_TARGET_POSITION = 0.53;
+    public static final double WRIST_TARGET_POSITION = 0.59;
     public static final double THUMB_OPEN = 0.30;
     public static final double THUMB_CLOSE = 0.68;
 
@@ -193,8 +193,9 @@ public class HangingArm
 
         } else if (gamepad.y) {
             // lower the hanging arm
-            thumbClose();
             wristDown();
+            opMode.sleep(1000);
+            thumbClose();
             elbowDown();
             Logger.message("Hanging Arm Down");
 

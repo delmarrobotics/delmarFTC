@@ -20,8 +20,8 @@ public class Robot {
     // drone launcher servo position
     public static final double DRONE_ANGLE_DOWN = 0.5;
     public static       double DRONE_ANGLE_UP   = 0.472; //ToDo Test Angle
-    public static final double DRONE_FIRE_DOWN  = 0.55;
-    public static final double DRONE_FIRE_UP    = 0.73;
+    public static final double DRONE_FIRE_DOWN  = 0.52;
+    public static final double DRONE_FIRE_UP    = 0.65;
 
     // pixel dropper servo positions
     public static final double DROPPER_OPEN     = 0.51;

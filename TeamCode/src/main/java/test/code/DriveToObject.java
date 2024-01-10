@@ -30,7 +30,7 @@ public class DriveToObject extends LinearOpMode {
     waitForStart();
     runtime.reset();
 
-    boolean found = drive.moveToObject(3,0.25, 10000);
+    boolean found = drive.moveToObject(1.5,0.25, 10000);
     sleep(2000);
     double distance = drive.distanceSensor.getDistance(DistanceUnit.INCH);
     Logger.message("distance %6.2f  time  %6.2f", distance, runtime.seconds());

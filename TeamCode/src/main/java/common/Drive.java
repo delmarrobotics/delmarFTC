@@ -638,13 +638,13 @@ public class Drive extends Thread {
                 startDistance = distance;
             } else {
                 average = (startDistance - distance) / count;
-                Logger.message("distance %6.2f  %6.2f", distance, average);
+                //Logger.message("distance %6.2f  %6.2f", distance, average);
             }
             count++;
 
             if (distance - inches <= average / 2) {
                 stopRobot();
-                Logger.message("object found, distance %6.2f ", distance);
+                //Logger.message("object found, distance %6.2f ", distance);
                 found = true;
  //           } else if ( distance - inches < 2) {
  //               moveRobot(1, 0, 0, 0.1);

@@ -29,7 +29,7 @@ public class PixelArm {
     public static final int    PIXEL_ARM_OUT_YELLOW  = 1080;
     public static final int    PIXEL_ARM_OUT_LOW     = 1280;
     public static final int    PIXEL_ARM_OUT_MID     = 2100;
-    public static final int    PIXEL_ARM_OUT_HIGH    = 2982;
+    public static final int    PIXEL_ARM_OUT_HIGH    = 2800;
 
     public static final double PIXEL_WRIST_HOME         = 0.64;
     public static final double PIXEL_WRIST_DROP_YELLOW  = 0.44;   // 0.48;
