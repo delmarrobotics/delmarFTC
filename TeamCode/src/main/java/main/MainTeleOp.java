@@ -112,6 +112,7 @@ public class MainTeleOp extends LinearOpMode {
                 while (gamepad1.b) sleep(100);
 
             } else if (gamepad1.x) {
+                robot.drive.moveToObject(2, 0.25, 2000);
                 while (gamepad1.x) sleep(100);
 
             } else if (gamepad1.right_bumper) {
@@ -147,6 +148,7 @@ public class MainTeleOp extends LinearOpMode {
                 "  a - intake on / off\n" +
                 "  b - intake rotate up / down\n" +
                 "  y - intake reverse\n" +
+                "  x - drive to backdrop\n" +
                 "\n");
     }
     public void displayControls2() {

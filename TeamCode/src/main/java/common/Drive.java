@@ -73,7 +73,7 @@ public class Drive extends Thread {
     private final ElapsedTime elapsedTime = new ElapsedTime();
 
     private boolean running = true;
-    private boolean moving = false;
+    private boolean driving = false;
 
     private int leftFrontStartPos  = 0;
     private int rightFrontStartPos = 0;
@@ -163,7 +163,7 @@ public class Drive extends Thread {
 
             // limit acceleration and deceleration to prevent skidding.
             double currentTime = driveTime.milliseconds();
-            if (! moving) {
+            if (! driving) {
                 speed = MIN_SPEED;
             } else {
                 double deltaTime = currentTime - lastTime;
@@ -208,14 +208,14 @@ public class Drive extends Thread {
                     moveRobot(direction, speed);
                 }
 
-                moving = true;
+                driving = true;
                 lastDirection = direction;
                 Logger.message("%-12s   %6.2f %6.2f %6.2f  %6.2f   %6.2f ", direction, x , y, yaw, gamepad.left_trigger, speed);
 
-            } else if (moving) {
+            } else if (driving) {
                 stopRobot();
                 lastDirection = DIRECTION.STOOPED;
-                moving = false;
+                driving = false;
 
             } else {
                 Thread.yield();
@@ -619,12 +619,15 @@ public class Drive extends Thread {
      * @return true if an object was detected at the specified distance
      */
     public boolean moveToObject (double inches, double speed, double timeout) {
-        boolean found = false;
-        ElapsedTime elapsedTime = new ElapsedTime();
 
+        // If manually driving, exit
+        if (driving) return false;
+
+        ElapsedTime elapsedTime = new ElapsedTime();
         int count = 0;
         double startDistance = 0;
         double average;
+        boolean found = false;
 
         resetEncoders();
         moveRobot(DIRECTION.FORWARD, speed);
@@ -650,7 +653,8 @@ public class Drive extends Thread {
  //               moveRobot(1, 0, 0, 0.1);
             }
 
-            if (elapsedTime.milliseconds() > timeout){
+            // return if timed out, of manually driving
+            if (elapsedTime.milliseconds() > timeout || driving) {
                 stopRobot();
                 Logger.warning("no object found, traveled %6.2f inches", getDistanceTraveled());
                 break;
