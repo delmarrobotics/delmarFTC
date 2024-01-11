@@ -132,6 +132,15 @@ public class HangingArm
         }
     }
 
+    public void storeArm () {
+        elbow.setPosition(ELBOW_HOME_POSITION -ELBOW_TARGET_POSITION);
+        opMode.sleep(1000);
+        wristDown();
+        thumbClose();
+        opMode.sleep(1000);
+        elbowDown();
+    }
+
     /**
      * Turn on the motor that drives the lifting wench
      */
@@ -193,10 +202,10 @@ public class HangingArm
 
         } else if (gamepad.y) {
             // lower the hanging arm
-            wristDown();
-            opMode.sleep(1000);
-            thumbClose();
             elbowDown();
+            wristDown();
+            thumbClose();
+            //storeArm();
             Logger.message("Hanging Arm Down");
 
         } else  if (gamepad.dpad_up) {
