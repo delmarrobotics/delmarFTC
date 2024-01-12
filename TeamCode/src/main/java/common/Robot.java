@@ -19,7 +19,7 @@ public class Robot {
 
     // drone launcher servo position
     public static final double DRONE_ANGLE_DOWN = 0.5;
-    public static       double DRONE_ANGLE_UP   = 0.472; //ToDo Test Angle
+    public static       double DRONE_ANGLE_UP   = 0.47111; //ToDo Test Angle
     public static final double DRONE_FIRE_DOWN  = 0.52;
     public static final double DRONE_FIRE_UP    = 0.65;
 
@@ -43,8 +43,8 @@ public class Robot {
     private CRServo spinnerBucket = null;
 
     private Servo dropper = null;        // Servo to drop the purple pixel
-    private Servo droneAngle = null;
-    private Servo droneFire = null;
+    public  Servo droneAngle = null;
+    public  Servo droneFire = null;
 
     public HangingArm hangingArm = null;
     public PixelArm   pixelArm = null;
