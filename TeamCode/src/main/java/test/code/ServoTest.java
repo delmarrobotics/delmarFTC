@@ -37,7 +37,7 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 /*
  * Demonstrates an empty iterative OpMode
  */
-@TeleOp(name = "Servo Test", group = "Concept")
+@TeleOp(name = "ServoTest")
 @Disabled
 public class ServoTest extends OpMode {
 
