@@ -77,7 +77,7 @@ public class RedLeftAuto extends LinearOpMode {
             robot.forward(23.5);
             robot.turn(-90);
             robot.forward(70+2);
-            robot.strafeRight(24);
+            robot.strafeRight(30);
         }
 
         auto.strafeToDropPosition();
