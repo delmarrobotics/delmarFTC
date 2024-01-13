@@ -33,7 +33,7 @@ public class Auto {
 
     public POSITION findTeamElement() {
 
-        if (robot.vision.findTeamElement(3000)) {
+        if (robot.vision.findTeamElement(2000)) {
             // Found the team element
             double angle = robot.vision.findTeamElementAngle();
             if (angle < 0) {
@@ -76,9 +76,7 @@ public class Auto {
         robot.back(3);
         robot.pixelArm.pixelWristMove(PixelArm.PIXEL_WRIST_HOME);
         robot.pixelArm.pixelArmMove(PixelArm.PIXEL_ARM_IN);
-        opMode.sleep(1000 );
         robot.pixelArm.pixelElbowMove(PixelArm.PIXEL_ELBOW_DOWN);
-
     }
 
     public void parkCorner() {
@@ -196,11 +194,11 @@ public class Auto {
 
             if (strafe > 0) {
                 robot.strafeRight(strafe);
-                //robot.forward(8);
+                robot.forward(10);
             }
             else if (strafe < 0 ) {
                 robot.strafeLeft(-strafe);
-                //robot.forward(8);
+                robot.forward(10);
             }
         }
     }
