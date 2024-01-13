@@ -27,6 +27,7 @@ public class DroneLaunchTest extends LinearOpMode {
         telemetry.setAutoClear(false);
         telemetry.addData("Controls", "\n" +
                 "  right trigger - launch drone\n" +
+                "  left trigger  - launch down position\n" +
                 "  left bumper - decrease launch position\n" +
                 "  right bumper - increase launcg position\n" +
                 "\n" +
@@ -42,8 +43,16 @@ public class DroneLaunchTest extends LinearOpMode {
 
             if (gamepad1.right_trigger > 0) {
                 // Launch the drone
-                robot.launchDrone();
+                robot.droneAngle.setPosition(robot.DRONE_ANGLE_UP);
+                sleep(1000);
+                robot.droneFire.setPosition(robot.DRONE_FIRE_UP);
                 while (gamepad1.right_trigger > 0) sleep(100);
+            }
+
+            if (gamepad1.left_trigger > 0) {
+                robot.droneFire.setPosition(robot.DRONE_FIRE_DOWN);
+                robot.droneAngle.setPosition(robot.DRONE_ANGLE_DOWN);
+                while (gamepad1.left_trigger > 0) sleep(100);
             }
 
             if (gamepad1.left_bumper) {
