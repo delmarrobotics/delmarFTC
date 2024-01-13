@@ -210,7 +210,7 @@ public class Drive extends Thread {
 
                 driving = true;
                 lastDirection = direction;
-                Logger.message("%-12s   %6.2f %6.2f %6.2f  %6.2f   %6.2f ", direction, x , y, yaw, gamepad.left_trigger, speed);
+                //Logger.message("%-12s   %6.2f %6.2f %6.2f  %6.2f   %6.2f ", direction, x , y, yaw, gamepad.left_trigger, speed);
 
             } else if (driving) {
                 stopRobot();
