@@ -14,9 +14,12 @@ public class BackdropStrafeTest extends LinearOpMode {
     private Robot robot = null;
     Auto auto;
 
+
     public void runOpMode() {
         robot = new Robot(this);
         robot.init();
+        robot.drive.start();
+
         auto = new Auto(this, robot);
 
         telemetry.addLine("Waiting for camera");
