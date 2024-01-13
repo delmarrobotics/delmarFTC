@@ -70,9 +70,7 @@ public class TensorFlowObjectDetection extends LinearOpMode {
     //private static final String TFOD_MODEL_FILE = "team_prop_1.tflite";
     private static final String TFOD_MODEL_FILE = "TeamElement1.tflite";
     // Define the labels recognized in the model for TFOD (must be in training order!)
-    private static final String[] LABELS = {
-       "Team Element",
-    };
+    private static final String[] LABELS = { "Blue", "Red" };
 
     /**
      * The variable to store our instance of the TensorFlow Object Detection processor.
