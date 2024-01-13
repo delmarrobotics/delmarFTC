@@ -19,10 +19,12 @@ public class TensorFlowTest extends LinearOpMode {
 
   @Override
   public void runOpMode() {
-      telemetry = new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry());
+      //telemetry = new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry());
 
       Vision vision = new Vision(this);
 
+      telemetry.addLine("waiting for camera");
+      telemetry.update();
       while (vision.cameraReady())
           sleep(100);
       telemetry.addLine("camera ready, press start");
