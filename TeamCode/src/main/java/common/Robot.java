@@ -43,8 +43,8 @@ public class Robot {
     private CRServo spinnerBucket = null;
 
     private Servo dropper = null;        // Servo to drop the purple pixel
-    private Servo droneAngle = null;
-    private Servo droneFire = null;
+    public  Servo droneAngle = null;
+    public  Servo droneFire = null;
 
     public HangingArm hangingArm = null;
     public PixelArm   pixelArm = null;
