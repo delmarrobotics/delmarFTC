@@ -33,22 +33,28 @@ public class Auto {
 
     public POSITION findTeamElement() {
 
-        if (robot.vision.findTeamElement(2000)) {
+        String label = null;
+        if (color == COLOR.RED)
+            label = "red";
+        else if (color == COLOR.BLUE)
+            label = "blue";
+
+        if (robot.vision.findTeamElement(label,2000)) {
             // Found the team element
             double angle = robot.vision.findTeamElementAngle();
             if (angle < 0) {
                 // Team element is on the left spike mark
                 objectPosition = POSITION.left;
-                Logger.message("Team element at left position, angle %f", angle);
+                Logger.message("Team element %s at left position, angle %f", robot.vision.getElementLabel(), angle);
             } else {
                 // Team element is on the center spike mark
                 objectPosition = POSITION.center;
-                Logger.message("Team element at center position, angle %f", angle);
+                Logger.message("Team element %s at center position, angle %f", robot.vision.getElementLabel(), angle);
             }
         } else {
             // Team element not found, assume the team element is on the right spike mark
             objectPosition = POSITION.right;
-            Logger.message("Team element at right position");
+            Logger.message("Team element %s at right position", robot.vision.getElementLabel());
         }
         return objectPosition;
     }

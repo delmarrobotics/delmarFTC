@@ -66,8 +66,9 @@ public class Vision {
 
     private final boolean DASHBOARD_STREAM = true;              // // ToDo true for debugging
 
+    private static final String TFOD_MODEL_ASSET = "BlueRed.tflite";
     private static final String TFOD_MODEL_FILE = "TeamElement1.tflite";
-    private static final String[] LABELS = { "Team Element" };
+    private static final String[] LABELS = { "blue", "red" };
 
     // AprilTag IDs
     public static final int BLUE_LEFT_TAG   = 1;
@@ -109,8 +110,8 @@ public class Vision {
                 // choose one of the following:
                 //   Use setModelAssetName() if the custom TF Model is built in as an asset (AS only).
                 //   Use setModelFileName() if you have downloaded a custom team model to the Robot Controller.
-                //.setModelAssetName(TFOD_MODEL_ASSET)
-                .setModelFileName(TFOD_MODEL_FILE)      // custom team model downloaded to the Robot Controller
+                .setModelAssetName(TFOD_MODEL_ASSET)
+                //.setModelFileName(TFOD_MODEL_FILE)      // custom team model downloaded to the Robot Controller
                 .setModelLabels(LABELS)                 // set parameters for custom models.
 
                 // The following default settings are available to un-comment and edit as needed to
@@ -237,12 +238,14 @@ public class Vision {
     public boolean findAprilTag (int tagID) {
 
         double timeout = 2000;
-        List<AprilTagDetection> currentDetections;
+        List<AprilTagDetection> currentDetections = null;
         boolean targetFound = false;
         desiredTag  = null;
 
         searchTime.reset();
         while (true) {
+            if (! opMode.opModeIsActive()) return false;
+
             currentDetections = aprilTag.getDetections();
             if (currentDetections.size() != 0)
                 break;
@@ -310,13 +313,21 @@ public class Vision {
             return desiredTag.ftcPose.yaw;
         return 0;
     }
-
     /**
      * Find the object with the highest confidence.
      *
      * @return true if an object was detected
      */
     public boolean findTeamElement (double timeout) {
+        return findTeamElement(null, timeout);
+    }
+
+        /**
+         * Find the object with the highest confidence.
+         *
+         * @return true if an object was detected
+         */
+    public boolean findTeamElement (String name, double timeout) {
 
         element = null;
 
@@ -326,26 +337,28 @@ public class Vision {
             currentRecognitions = tfod.getRecognitions();
             if (currentRecognitions.size() != 0)
                 break;
-            //Logger.message("no team element found");
             if (timeout == 0 || searchTime.milliseconds() >= timeout)
                 break;
             opMode.sleep(100);
         }
-        Logger.message("findTeamElement: search time %6.0f", searchTime.milliseconds());
+        Logger.message("search time %6.0f", searchTime.milliseconds());
 
         currentRecognitions = tfod.getRecognitions();
         if (currentRecognitions.size() == 0)
             return false;
 
         for (Recognition recognition : currentRecognitions) {
-            if (element == null) {
-                element = recognition;
-            } else {
-                if (recognition.getConfidence() > element.getConfidence())
+            Logger.message("%s (%.0f %% Conf.)", recognition.getLabel(), recognition.getConfidence() * 100);
+            if (name == null || name.equals(recognition.getLabel())) {
+                if (element == null) {
                     element = recognition;
+                } else {
+                    if (recognition.getConfidence() > element.getConfidence())
+                        element = recognition;
+                }
             }
         }
-        return true;
+        return (element != null);
     }
 
     public double findTeamElementAngle() {
@@ -362,6 +375,10 @@ public class Vision {
         if (element != null)
             return element.getConfidence();
         return 0;
+    }
+
+    public String getElementLabel() {
+        return element.getLabel();
     }
 
     public boolean cameraReady() {
