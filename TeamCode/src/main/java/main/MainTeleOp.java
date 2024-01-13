@@ -112,7 +112,7 @@ public class MainTeleOp extends LinearOpMode {
                 while (gamepad1.b) sleep(100);
 
             } else if (gamepad1.x) {
-                robot.drive.moveToObject(2, 0.25, 2000);
+                robot.drive.moveToObject(4, 0.25, 2000);
                 while (gamepad1.x) sleep(100);
 
             } else if (gamepad1.right_bumper) {
