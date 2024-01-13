@@ -133,7 +133,7 @@ public class HangingArm
     }
 
     public void storeArm () {
-        elbow.setPosition(ELBOW_HOME_POSITION -ELBOW_TARGET_POSITION);
+        elbow.setPosition(ELBOW_HOME_POSITION - ((ELBOW_HOME_POSITION - ELBOW_TARGET_POSITION) / 2)) ;
         opMode.sleep(1000);
         wristDown();
         thumbClose();
@@ -202,10 +202,10 @@ public class HangingArm
 
         } else if (gamepad.y) {
             // lower the hanging arm
-            elbowDown();
             wristDown();
+            opMode.sleep(1000);
             thumbClose();
-            //storeArm();
+            elbowDown();
             Logger.message("Hanging Arm Down");
 
         } else  if (gamepad.dpad_up) {
