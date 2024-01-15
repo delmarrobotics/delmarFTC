@@ -30,7 +30,9 @@ public class BackdropStrafeTest extends LinearOpMode {
         telemetry.addLine("Camera ready");
         telemetry.update();
 
+        robot.vision.enableCameraStream(true);
         waitForStart();
+        robot.vision.enableCameraStream(false);
 
         // run until the end of the match (driver presses STOP)
         while (opModeIsActive()) {
@@ -65,7 +67,7 @@ public class BackdropStrafeTest extends LinearOpMode {
             }
 
             if (gamepad1.dpad_down) {
-                robot.pixelArm.positionArm(PixelArm.ARM_POSITION.HOME);
+                auto.armDown();
             }
         }
     }

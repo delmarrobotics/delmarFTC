@@ -9,15 +9,17 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
 import org.firstinspires.ftc.teamcode.drive.SampleMecanumDrive;
 
-public class Auto {
-    public enum POSITION { left, center, right }
-    public enum COLOR { RED, BLUE }
+public class Auto  extends Thread {
+    public  enum POSITION { left, center, right }
+    public  enum COLOR { RED, BLUE }
+    private enum STATE {NONE, ARM_DOWN }
 
     boolean PARK_ENABLED = true;
     boolean DROP_PIXEL = true;
 
     public POSITION objectPosition = POSITION.left;  //ToDo remove, for testing
     COLOR color;
+    STATE state = STATE.NONE;
 
     LinearOpMode opMode;
     Robot robot;
@@ -25,6 +27,27 @@ public class Auto {
     public Auto(LinearOpMode opMode, Robot robot) {
         this.opMode = opMode;
         this.robot = robot;
+        this.start();
+    }
+
+    public void run() {
+        Logger.message("auto thread started");
+        while (!opMode.isStarted()) Thread.yield();
+
+        while (opMode.opModeIsActive()) {
+            if (state == STATE.ARM_DOWN) {
+                opMode.sleep(500);
+                robot.pixelArm.pixelArmMove(PixelArm.PIXEL_ARM_IN);
+                robot.pixelArm.pixelWristMove(PixelArm.PIXEL_WRIST_HOME);
+                opMode.sleep(1000);
+                robot.pixelArm.pixelElbowMove(PixelArm.PIXEL_ELBOW_DOWN);
+                state = STATE.NONE;
+            } else {
+                Thread.yield();
+            }
+        }
+
+        Logger.message("auto thread stopped");
     }
 
     public void setColor(COLOR color ) {
@@ -59,30 +82,25 @@ public class Auto {
         return objectPosition;
     }
 
+    public void armDown() {
+        state = STATE.ARM_DOWN;
+    }
+
     public void dropYellowPixel() {
 
         if (! DROP_PIXEL) return;
 
         robot.pixelArm.positionArm(PixelArm.ARM_POSITION.YELLOW);
 
-        robot.drive.moveToObject(1.5,0.25, 10000);
-
-        /*
-        boolean found = false;
-        if (color == COLOR.BLUE)
-            found = robot.drive.moveToColor(Drive.COLOR.BLUE, 1, 0, 0.2, 2000);
-        else if (color == COLOR.RED)
-            found = robot.drive.moveToColor(Drive.COLOR.RED, 1, 0, 0.2, 2000);
-        //adjustYaw();
-        if (found)
-            robot.forward(11);
-         */
+        robot.drive.moveToObject(1.5,0.25, 5000);
 
         robot.dropYellowPixel();
+        armDown();
         robot.back(3);
-        robot.pixelArm.pixelWristMove(PixelArm.PIXEL_WRIST_HOME);
-        robot.pixelArm.pixelArmMove(PixelArm.PIXEL_ARM_IN);
-        robot.pixelArm.pixelElbowMove(PixelArm.PIXEL_ELBOW_DOWN);
+
+        //robot.pixelArm.pixelWristMove(PixelArm.PIXEL_WRIST_HOME);
+        //robot.pixelArm.pixelArmMove(PixelArm.PIXEL_ARM_IN);
+        //robot.pixelArm.pixelElbowMove(PixelArm.PIXEL_ELBOW_DOWN);
     }
 
     public void parkCorner() {
@@ -104,7 +122,7 @@ public class Auto {
             else if (objectPosition == POSITION.right)
                 robot.strafeRight(18 );
         }
-        robot.pixelArm.pixelElbowMove(PixelArm.PIXEL_ELBOW_DOWN);
+        //robot.pixelArm.pixelElbowMove(PixelArm.PIXEL_ELBOW_DOWN);
         robot.forward(12);
     }
 
@@ -124,7 +142,7 @@ public class Auto {
             else if (objectPosition == POSITION.right)
                 robot.strafeLeft(30);
         }
-        robot.pixelArm.pixelElbowMove(PixelArm.PIXEL_ELBOW_DOWN);
+        //robot.pixelArm.pixelElbowMove(PixelArm.PIXEL_ELBOW_DOWN);
         robot.forward(12);
     }
 
