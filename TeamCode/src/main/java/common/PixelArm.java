@@ -114,9 +114,11 @@ public class PixelArm {
      */
     public void pixelArmMove(int newPosition) {
 
+        int from = pixelElbow.getCurrentPosition();
         pixelArm.setTargetPosition(newPosition);
         pixelArm.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         pixelArm.setPower(Math.abs(PIXEL_ARM_SPEED));
+        Logger.message("move arm from %d to %d", from, newPosition);
 
         /*
         while (pixelArm.isBusy()) {

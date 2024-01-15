@@ -378,7 +378,9 @@ public class Vision {
     }
 
     public String getElementLabel() {
-        return element.getLabel();
+        if (element != null)
+            return element.getLabel();
+        return "none";
     }
 
     public boolean cameraReady() {

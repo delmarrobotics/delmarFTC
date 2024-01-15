@@ -5,6 +5,7 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
 import common.Auto;
+import common.PixelArm;
 import common.Robot;
 
 @TeleOp(name="Backdrop Strafe Test", group="Test")
@@ -57,6 +58,14 @@ public class BackdropStrafeTest extends LinearOpMode {
             if (gamepad1.y) {
                 robot.vision.findAprilTag(-1);
                 while (gamepad1.y) sleep(100);
+            }
+
+            if (gamepad1.dpad_up) {
+                robot.pixelArm.positionArm(PixelArm.ARM_POSITION.YELLOW);
+            }
+
+            if (gamepad1.dpad_down) {
+                robot.pixelArm.positionArm(PixelArm.ARM_POSITION.HOME);
             }
         }
     }
