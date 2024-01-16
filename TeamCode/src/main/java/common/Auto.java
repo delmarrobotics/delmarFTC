@@ -11,6 +11,7 @@ import org.firstinspires.ftc.teamcode.drive.SampleMecanumDrive;
 
 public class Auto  extends Thread {
     public  enum POSITION { left, center, right }
+    public  enum DROP_POSITION { LOW, HIGH }
     public  enum COLOR { RED, BLUE }
     private enum STATE {NONE, ARM_DOWN }
 
@@ -86,10 +87,17 @@ public class Auto  extends Thread {
     }
 
     public void dropYellowPixel() {
+        dropYellowPixel(DROP_POSITION.LOW);
+    }
+
+    public void dropYellowPixel(DROP_POSITION dropPosition) {
 
         if (! DROP_PIXEL) return;
 
-        robot.pixelArm.positionArm(PixelArm.ARM_POSITION.YELLOW);
+        if (dropPosition == DROP_POSITION.LOW)
+            robot.pixelArm.positionArm(PixelArm.ARM_POSITION.YELLOW);
+        else if (dropPosition == DROP_POSITION.HIGH)
+            robot.pixelArm.positionArm(PixelArm.ARM_POSITION.LOW);
 
         robot.drive.moveToObject(1.5,0.25, 5000);
 

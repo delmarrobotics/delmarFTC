@@ -76,7 +76,7 @@ public class RedRightAuto extends LinearOpMode {
 
         robot.vision.enableCameraStream(true);
         auto.strafeToDropPosition();
-        auto.dropYellowPixel();
+        auto.dropYellowPixel(Auto.DROP_POSITION.LOW);
         auto.parkCorner();
     }
 }

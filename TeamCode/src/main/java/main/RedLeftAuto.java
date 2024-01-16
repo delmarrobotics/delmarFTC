@@ -81,7 +81,7 @@ public class RedLeftAuto extends LinearOpMode {
         }
 
         auto.strafeToDropPosition();
-        auto.dropYellowPixel();
+        auto.dropYellowPixel(Auto.DROP_POSITION.HIGH);
         auto.parkCenter();
 
         Logger.message("Run Time %s", runtime.toString());
