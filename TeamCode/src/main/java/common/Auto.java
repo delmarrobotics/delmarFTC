@@ -36,7 +36,6 @@ public class Auto  extends Thread {
 
         while (opMode.opModeIsActive()) {
             if (state == STATE.ARM_DOWN) {
-                opMode.sleep(500);
                 robot.pixelArm.pixelArmMove(PixelArm.PIXEL_ARM_IN);
                 robot.pixelArm.pixelWristMove(PixelArm.PIXEL_WRIST_HOME);
                 opMode.sleep(1000);
@@ -62,7 +61,7 @@ public class Auto  extends Thread {
         else if (color == COLOR.BLUE)
             label = "blue";
 
-        if (robot.vision.findTeamElement(label,2000)) {
+        if (robot.vision.findTeamElement(label,1000)) {
             // Found the team element
             double angle = robot.vision.findTeamElementAngle();
             if (angle < 0) {
