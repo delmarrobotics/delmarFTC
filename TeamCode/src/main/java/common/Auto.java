@@ -6,6 +6,7 @@ package common;
 import android.util.Log;
 
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
+import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.teamcode.drive.SampleMecanumDrive;
 
@@ -21,6 +22,8 @@ public class Auto  extends Thread {
     public POSITION objectPosition = POSITION.left;  //ToDo remove, for testing
     COLOR color;
     STATE state = STATE.NONE;
+
+    private final ElapsedTime cameraReadyTime = new ElapsedTime();
 
     LinearOpMode opMode;
     Robot robot;
@@ -54,6 +57,12 @@ public class Auto  extends Thread {
         this.color = color;
     }
 
+    public void waitForCamera () {
+        while (opMode.opModeIsActive() && !robot.vision.cameraReady())
+            opMode.sleep(100);
+        cameraReadyTime.reset();
+    }
+
     public POSITION findTeamElement() {
 
         String label = null;
@@ -62,7 +71,14 @@ public class Auto  extends Thread {
         else if (color == COLOR.BLUE)
             label = "blue";
 
-        if (robot.vision.findTeamElement(label,1000)) {
+        double timeout;
+        double elapsed = cameraReadyTime.milliseconds();
+        if (elapsed < 3000)
+            timeout = 3000-elapsed;
+        else
+            timeout = 0;
+
+        if (robot.vision.findTeamElement(label,timeout)) {
             // Found the team element
             double angle = robot.vision.findTeamElementAngle();
             if (angle < 0) {

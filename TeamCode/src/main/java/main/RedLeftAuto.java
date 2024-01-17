@@ -35,8 +35,7 @@ public class RedLeftAuto extends LinearOpMode {
 
         telemetry.addLine("waiting for camera");
         telemetry.update();
-        while (! robot.vision.cameraReady())
-            sleep(100);
+        auto.waitForCamera();
         telemetry.addLine("camera ready, press start");
         telemetry.update();
         
@@ -70,9 +69,9 @@ public class RedLeftAuto extends LinearOpMode {
         } else if (objectPosition == Auto.POSITION.right) {
             robot.forward(26.5);
             robot.turn(90);
-            robot.back(14);   // ToDo check
+            robot.back(15);   // ToDo check
             robot.dropPurplePixel();
-            robot.forward(16);
+            robot.forward(17);
             robot.turn(-90);
             robot.forward(23.5);
             robot.turn(-90);
