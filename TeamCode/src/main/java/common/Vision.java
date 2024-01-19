@@ -64,7 +64,7 @@ public class Vision {
         }
     }
 
-    private final boolean DASHBOARD_STREAM = true;              // // ToDo true for debugging
+    private final boolean DASHBOARD_STREAM = false;              // // ToDo true for debugging
 
     private static final String TFOD_MODEL_ASSET = "BlueRed.tflite";
     private static final String TFOD_MODEL_FILE = "TeamElement1.tflite";
@@ -126,7 +126,10 @@ public class Vision {
         aprilTag = new AprilTagProcessor.Builder()
                 .build();
 
-        dashboard = new CameraStreamProcessor();
+        if (DASHBOARD_STREAM)
+            dashboard = new CameraStreamProcessor();
+        else
+            dashboard = null;
 
 
         // Create the vision portal by using a builder.
@@ -149,7 +152,10 @@ public class Vision {
         //builder.setAutoStopLiveView(false);
 
         // Set and enable the processor.
-        builder.addProcessors(tfod, aprilTag, dashboard);
+        if (dashboard != null)
+            builder.addProcessors(tfod, aprilTag, dashboard);
+        else
+            builder.addProcessors(tfod, aprilTag);
 
         // Build the Vision Portal, using the above settings.
         visionPortal = builder.build();
@@ -160,7 +166,8 @@ public class Vision {
         // Disable or re-enable the TFOD processor at any time.
         //visionPortal.setProcessorEnabled(tfod, true);
 
-        visionPortal.setProcessorEnabled(dashboard, false);
+        if (dashboard != null)
+            visionPortal.setProcessorEnabled(dashboard, false);
 
     }   // end method initTfod()
 
