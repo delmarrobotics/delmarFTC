@@ -35,6 +35,7 @@ public class BlueLeftAuto extends LinearOpMode {
         // Initialize the robot hardware.
         Robot robot = new Robot(this);
         robot.init();
+        robot.startVision();
 
         Auto auto = new Auto(this, robot);
 

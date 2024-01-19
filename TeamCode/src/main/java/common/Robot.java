@@ -66,7 +66,6 @@ public class Robot {
 
         hangingArm = new HangingArm(opMode);
         pixelArm = new PixelArm(opMode);
-        vision = new Vision(opMode);
         drive = new Drive(opMode);
 
         try {
@@ -85,6 +84,10 @@ public class Robot {
         } catch (Exception e) {
             Logger.error(e, "hardware not found");
         }
+    }
+
+    public void startVision () {
+        vision = new Vision(opMode);
     }
 
     /**
