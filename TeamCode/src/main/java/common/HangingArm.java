@@ -204,9 +204,9 @@ public class HangingArm
             // lower the hanging arm
             //TODO Axel wants to change this so that the elbow goes down before the wrist goes down - test when time allows
             wristDown();
-            opMode.sleep(1000);
-            thumbClose();
             elbowDown();
+            opMode.sleep(1500);
+            thumbClose();
             Logger.message("Hanging Arm Down");
 
         } else  if (gamepad.dpad_up) {
