@@ -8,7 +8,7 @@ import common.Logger;
 import common.Robot;
 
 /*
- * This file contains the OpMode for phase two of the FTS Center Stage Competition.
+ * This file contains the OpMode for phase two of the FTC Center Stage Competition.
  *
  */
 
