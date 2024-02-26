@@ -144,7 +144,7 @@ public class Drive extends Thread {
     public void run() {
 
         while (!opMode.isStarted()) Thread.yield();
-       Logger.message("robot drive thread started");
+        Logger.message("robot drive thread started");
 
         ElapsedTime driveTime = new ElapsedTime();
         double lastTime = driveTime.milliseconds();

@@ -59,7 +59,8 @@ public class Auto  extends Thread {
 
     public void waitForCamera () {
         while (opMode.opModeIsActive() && !robot.vision.cameraReady())
-            opMode.sleep(100);
+            opMode.sleep(200);
+        opMode.sleep(4000); //sometimes the camera wont init even when robot.vision.cameraReady()
         cameraReadyTime.reset();
     }
 

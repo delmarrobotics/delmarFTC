@@ -43,7 +43,6 @@ import common.Vision;
 /*
  * This file contains an a test of the Road Runner library
  */
-@Disabled
 @TeleOp(name="Calibrate Camera", group="Test")
 
 public class CalibrateCamera extends LinearOpMode {
