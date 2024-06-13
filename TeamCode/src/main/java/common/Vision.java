@@ -64,13 +64,15 @@ public class Vision {
         }
     }
 
-    private final boolean DASHBOARD_STREAM = false;              // // ToDo true for debugging
+    private final boolean DASHBOARD_STREAM = false;              // ToDo true for debugging
 
+    // ToDo change for next years models
     private static final String TFOD_MODEL_ASSET = "BlueRed.tflite";
     private static final String TFOD_MODEL_FILE = "TeamElement1.tflite";
     private static final String[] LABELS = { "blue", "red" };
 
     // AprilTag IDs
+    // ToDo change for next years AprilTags
     public static final int BLUE_LEFT_TAG   = 1;
     public static final int BLUE_CENTER_TAG = 2;
     public static final int BLUE_RIGHT_TAG  = 3;
@@ -202,6 +204,7 @@ public class Vision {
         opMode.telemetry.addData("# AprilTags Detected", currentDetections.size());
 
         // Step through the list of detections and display info for each one.
+        // ToDo update telemetry for next year
         for (AprilTagDetection detection : currentDetections) {
             if (detection.metadata != null) {
                 opMode.telemetry.addLine(String.format("\n==== (ID %d) %s", detection.id, detection.metadata.name));

@@ -12,7 +12,6 @@ import common.Robot;
  * Test code for the hanging arm
  */
 @TeleOp(name="Drive To Line Test", group="Test")
-@Disabled
 @SuppressWarnings("unused")
 public class DriveToLineTest extends LinearOpMode {
 
@@ -27,6 +26,8 @@ public class DriveToLineTest extends LinearOpMode {
 
     Robot robot = new Robot(this);
     robot.init();
+
+    robot.drive.setBraking(true);
 
     // Wait for the game to start (driver presses PLAY)
     waitForStart();

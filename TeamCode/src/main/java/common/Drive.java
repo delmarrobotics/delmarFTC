@@ -31,13 +31,13 @@ public class Drive extends Thread {
 
     static final boolean LOG_VERBOSE = false;
 
-    public static double DRIVE_FACTOR  = 0.94;      // 1;
+    public static double DRIVE_FACTOR  = 0.635;      // 0.97;
     public static double STRAFE_FACTOR = 1.2;       // 1.11;
-    public static double TURN_FACTOR   = 13.38;     // (24.9/2);
+    public static double TURN_FACTOR   = 11.3;     // 13.38;
 
     // Drive train
-    private final double COUNTS_PER_MOTOR_REV = 28;              // HD Hex Motor Encoder
-    private final double DRIVE_GEAR_REDUCTION = 20;              // Gearing
+    private final double COUNTS_PER_MOTOR_REV = 28;              // Gobilda 5203 Yellow Jacket
+    private final double DRIVE_GEAR_REDUCTION = 19.2;              // Gearing
     private final double WHEEL_DIAMETER_INCHES = (96 / 25.4);    // 96 mm wheels converted to inches
     private final double COUNTS_PER_INCH =
             (COUNTS_PER_MOTOR_REV * DRIVE_GEAR_REDUCTION) / (WHEEL_DIAMETER_INCHES * Math.PI);
@@ -53,7 +53,7 @@ public class Drive extends Thread {
     public enum DIRECTION { FORWARD, BACK, LEFT, RIGHT, TURN_LEFT, TURN_RIGHT, DRIVER, STOOPED }
 
     // Color sensor
-    static final float COLOR_SENSOR_GAIN = 2.2F;
+    static final float COLOR_SENSOR_GAIN = 1.86F;
 
     public enum COLOR {RED, BLUE}
 
@@ -109,15 +109,13 @@ public class Drive extends Thread {
 
             distanceSensor = opMode.hardwareMap.get(DistanceSensor.class, Config.DISTANCE_SENSOR);
 
-            sideEncoder = new Encoder(opMode.hardwareMap.get(DcMotorEx.class, Config.PIXEL_INTAKE));
-
         } catch (Exception e) {
             Logger.error(e, "Hardware not found");
         }
 
         leftFrontDrive.setDirection(DcMotorSimple.Direction.FORWARD);
-        rightFrontDrive.setDirection(DcMotorSimple.Direction.FORWARD);
-        leftBackDrive.setDirection(DcMotorSimple.Direction.REVERSE);
+        rightFrontDrive.setDirection(DcMotorSimple.Direction.REVERSE);
+        leftBackDrive.setDirection(DcMotorSimple.Direction.FORWARD);
         rightBackDrive.setDirection(DcMotorSimple.Direction.REVERSE);
 
         motors = Arrays.asList(leftFrontDrive, rightFrontDrive, leftBackDrive, rightBackDrive);
@@ -158,7 +156,7 @@ public class Drive extends Thread {
             Gamepad gamepad = opMode.gamepad1;
             double x = -gamepad.left_stick_y / 2.0;  // Reduce drive rate to 50%.
             double y = -gamepad.left_stick_x / 2.0;  // Reduce strafe rate to 50%.
-            double yaw = -gamepad.right_stick_x / 3.0;  // Reduce rotate rate to 33%.
+            double yaw = gamepad.right_stick_x / 3.0;  // Reduce rotate rate to 33%.
             double speed = (gamepad.left_trigger * (MAX_SPEED - MIN_SPEED)) + MIN_SPEED;
 
             // limit acceleration and deceleration to prevent skidding.
@@ -587,12 +585,12 @@ public class Drive extends Thread {
             float saturation = hsvValues[1];
             //Logger.message("hue %f saturation %f", hue, saturation);
             if (color == COLOR.BLUE) {
-                if (hue >= 190 && hue <= 230 && saturation >= .5) {
+                if (hue >= 190 && hue <= 230 && saturation >= .7) {
                     Logger.message("blue line found");
                     found = true;
                 }
             } else if (color == COLOR.RED) {
-                if ((hue >= 0 && hue <= 90) && saturation >= .5) {
+                if (hue >= 30 && hue <= 90 && saturation >= .5) {
                     Logger.message("red line found");
                     found = true;
                 }

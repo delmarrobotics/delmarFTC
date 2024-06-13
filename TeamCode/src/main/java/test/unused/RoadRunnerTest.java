@@ -29,17 +29,11 @@
 
 package test.unused;
 
-import com.acmerobotics.roadrunner.geometry.Pose2d;
 import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
-import org.firstinspires.ftc.teamcode.trajectorysequence.TrajectorySequence;
-
 import common.Auto;
-import common.Drive;
-import common.Logger;
-import common.PixelArm;
 import common.Robot;
 
 
@@ -73,8 +67,8 @@ public class RoadRunnerTest extends LinearOpMode {
         // Wait for the game to start (driver presses PLAY)
         waitForStart();
 
-        auto.setColor(Auto.COLOR.RED);
-        auto.objectPosition = Auto.POSITION.right;
+        //auto.setColor(Auto.COLOR.RED);
+        //auto.objectPosition = Auto.POSITION.right;
 
     }
 

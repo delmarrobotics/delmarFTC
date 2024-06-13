@@ -16,7 +16,7 @@ import common.Robot;
 @SuppressWarnings("unused")
 public class MainTeleOp extends LinearOpMode {
 
-    public enum GamepadMode { PIXEL, HANGING }
+    public enum GamepadMode { ONE, TWO }
     GamepadMode mode;
 
     // Declare OpMode members.
@@ -42,9 +42,8 @@ public class MainTeleOp extends LinearOpMode {
         runtime.reset();
 
         displayControls();
-        robot.pixelArm.displayControls();
         displayControls2();
-        mode = GamepadMode.PIXEL;
+        mode = GamepadMode.ONE;
 
         // run until the end of the match (driver presses STOP)
         while (opModeIsActive()) {
@@ -67,57 +66,45 @@ public class MainTeleOp extends LinearOpMode {
             */
 
             if (gamepad2.back) {
-                if (runtime.seconds() > 90 && mode == GamepadMode.PIXEL)
+                if (runtime.seconds() > 90 && mode == GamepadMode.ONE)
                     Logger.message("Changed gamepad at %f", runtime.seconds());
                 changeGamepadMode();
                 while (gamepad2.back) sleep(100);
             }
 
-            if (mode == GamepadMode.HANGING) {
-                if (robot.hangingArm.control()) {
+            if (mode == GamepadMode.TWO) {
+                /*if (robot.hangingArm.control()) {
                     continue;
 
-                } else if (gamepad2.b) {
-                    robot.hangRobotLockIn();
+                } else if (gamepad2.b) {*/
+                if (gamepad2.b) {
                     while (gamepad2.b) sleep(250);
-
                 } else  if (gamepad2.right_trigger > 0) {
-                    // Launch the drone
-                    robot.launchDrone();
                     while (gamepad2.right_trigger > 0) sleep(100);
                 }
 
-            } else if (mode == GamepadMode.PIXEL) {
-                if (robot.pixelArm.positionCommand())
+            } else if (mode == GamepadMode.ONE) {
+                /*if (robot.pixelArm.positionCommand())
                     robot.intakeOff();
                 else if (robot.pixelArm.dropCommand())
                     robot.dropPixel();
                 if (robot.pixelArm.control())
-                    continue;
+                    continue;*/
             }
 
             if (gamepad1.a) {
-                // Toggle the intake and the two spinners on / off
-                robot.toggleIntake();
                 while (gamepad1.a) sleep(100);
 
             } else if (gamepad1.y) {
-                // Reverse the intake and the spinners
-                robot.intakeReverse();
                 while (gamepad1.y) sleep(100);
 
-            } else if (gamepad1.b) {
-                // Raise or lower the pixel intake
-                robot.toggleIntakeRotate();
+            } else if (gamepad1.b) {;
                 while (gamepad1.b) sleep(100);
 
             } else if (gamepad1.x) {
-                robot.drive.moveToObject(4, 0.25, 2000);
                 while (gamepad1.x) sleep(100);
 
             } else if (gamepad1.right_bumper) {
-                // drop the purple pixel, in case it wasn't drop during autonomous
-                robot.dropPurplePixel();
                 while (gamepad1.right_bumper) sleep(100);
             }
 
@@ -126,16 +113,14 @@ public class MainTeleOp extends LinearOpMode {
     }
 
     private void changeGamepadMode () {
-        if (mode == GamepadMode.PIXEL) {
-            mode = GamepadMode.HANGING;
+        if (mode == GamepadMode.ONE) {
+            mode = GamepadMode.TWO;
             displayControls();
-            robot.hangingArm.displayControls();
             displayControls2();
 
-        } else if (mode == GamepadMode.HANGING) {
-            mode = GamepadMode.PIXEL;
+        } else if (mode == GamepadMode.TWO) {
+            mode = GamepadMode.ONE;
             displayControls();
-            robot.pixelArm.displayControls();
             displayControls2();
         }
     }
@@ -152,7 +137,7 @@ public class MainTeleOp extends LinearOpMode {
                 "\n");
     }
     public void displayControls2() {
-        if (mode == GamepadMode.HANGING)
+        if (mode == GamepadMode.TWO)
             telemetry.addLine(" right trigger - launch drone");
         telemetry.addLine("\n  back - toggle gamepad2 (pixelArm / hangingArm)");
     }
