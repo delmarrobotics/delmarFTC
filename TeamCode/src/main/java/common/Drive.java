@@ -585,12 +585,12 @@ public class Drive extends Thread {
             float saturation = hsvValues[1];
             //Logger.message("hue %f saturation %f", hue, saturation);
             if (color == COLOR.BLUE) {
-                if (hue >= 190 && hue <= 230 && saturation >= .7) {
+                if (hue >= 190 && hue <= 230 && saturation >= .5) {
                     Logger.message("blue line found");
                     found = true;
                 }
             } else if (color == COLOR.RED) {
-                if (hue >= 30 && hue <= 90 && saturation >= .5) {
+                if ((hue >= 0 && hue <= 90) && saturation >= .5) {
                     Logger.message("red line found");
                     found = true;
                 }
