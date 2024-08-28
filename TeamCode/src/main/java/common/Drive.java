@@ -31,8 +31,8 @@ public class Drive extends Thread {
 
     static final boolean LOG_VERBOSE = false;
 
-    public static double DRIVE_FACTOR  = 0.635;      // 0.97;
-    public static double STRAFE_FACTOR = 1.2;       // 1.11;
+    public static double DRIVE_FACTOR  = 0.635;    // 0.97;
+    public static double STRAFE_FACTOR = 1.2;      // 1.11;
     public static double TURN_FACTOR   = 11.3;     // 13.38;
 
     // Drive train
@@ -46,16 +46,16 @@ public class Drive extends Thread {
     private final double RAMP_TIME = 1000;                       // ramp up time in milliseconds
     private final double RAMP_MIN_SPEED = 0.2;
 
-    private final double MIN_SPEED = 0.25;
-    private final double MAX_SPEED = 0.9;
-    private final double MAX_ROTATE_SPEED = 0.50;
+    private final double MIN_SPEED = 0.30;
+    private final double MAX_SPEED = 1;
+    private final double MAX_ROTATE_SPEED = 1;
 
     public enum DIRECTION { FORWARD, BACK, LEFT, RIGHT, TURN_LEFT, TURN_RIGHT, DRIVER, STOOPED }
 
     // Color sensor
-    static final float COLOR_SENSOR_GAIN = 1.86F;
+    static final float COLOR_SENSOR_GAIN = 1.75F;
 
-    public enum COLOR {RED, BLUE}
+    public enum COLOR {RED, BLUE};
 
     //  Drive train motors
     public DcMotorEx leftFrontDrive = null;   //  Used to control the left front drive wheel

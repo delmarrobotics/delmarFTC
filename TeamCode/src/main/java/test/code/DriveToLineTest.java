@@ -19,6 +19,9 @@ public class DriveToLineTest extends LinearOpMode {
 
   private final ElapsedTime runtime = new ElapsedTime();
 
+  private String mode = "RED";
+
+
   @Override
   public void runOpMode() {
     telemetry.addData("Status", "Press start");
@@ -33,11 +36,14 @@ public class DriveToLineTest extends LinearOpMode {
     waitForStart();
     runtime.reset();
 
-    robot.drive.moveToColor(Drive.COLOR.RED, 1, 0, MIN_SPEED, 4000);
-
     // run until the end of the match (driver presses STOP)
     while (opModeIsActive()) {
-
+      if (mode == "RED" && gamepad1.x) {
+        robot.drive.moveToColor(Drive.COLOR.RED, 1, 0, MIN_SPEED, 4000);
+      } else if (gamepad1.x) {
+        robot.drive.moveToColor(Drive.COLOR.BLUE, 1, 0, MIN_SPEED, 4000);
+      }
+      telemetry.addData("Mode", mode);
       telemetry.addData("Status", "Run Time: " + runtime);
       telemetry.update();
       }

@@ -176,7 +176,7 @@ public class  SensorColorTest extends LinearOpMode {
 
       if (hue >= 190 && hue <= 230 && saturation >= .7){
         telemetry.addData("Line", "Blue line found");
-      } else if ((hue >= 30 && hue <= 90) && saturation >= .5) {
+      } else if ((hue >= 0 && hue <= 90) && saturation >= .5) {
         telemetry.addData("Line", "Red line found");
       } else {
         telemetry.addData("Line", "No line found");
