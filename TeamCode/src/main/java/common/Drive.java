@@ -46,8 +46,8 @@ public class Drive extends Thread {
     private final double RAMP_TIME = 1000;                       // ramp up time in milliseconds
     private final double RAMP_MIN_SPEED = 0.2;
 
-    private final double MIN_SPEED = 0.30;
-    private final double MAX_SPEED = 1;
+    private final double MIN_SPEED = 0.40;
+    private final double MAX_SPEED = 0.9;
     private final double MAX_ROTATE_SPEED = 1;
 
     public enum DIRECTION { FORWARD, BACK, LEFT, RIGHT, TURN_LEFT, TURN_RIGHT, DRIVER, STOOPED }
@@ -155,7 +155,7 @@ public class Drive extends Thread {
             // Left stick to go forward back and strafe. Right stick to rotate. Left trigger accelerate.
             Gamepad gamepad = opMode.gamepad1;
             double x = -gamepad.left_stick_y / 2.0;  // Reduce drive rate to 50%.
-            double y = -gamepad.left_stick_x / 2.0;  // Reduce strafe rate to 50%.
+            double y = -gamepad.left_stick_x / 1.5;  // Reduce strafe rate to 66%. (was 50%)
             double yaw = gamepad.right_stick_x / 3.0;  // Reduce rotate rate to 33%.
             double speed = (gamepad.left_trigger * (MAX_SPEED - MIN_SPEED)) + MIN_SPEED;
 

@@ -6,7 +6,6 @@ package common;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 
-import com.acmerobotics.dashboard.FtcDashboard;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
